@@ -1,0 +1,19 @@
+name: fuelet_secure_layer
+description: "Fuelet wallet secure layer features"
+version: 1.0.0
+homepage:
+
+environment:
+  sdk: '>=3.3.4 <4.0.0'
+  flutter: ">=3.19.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
