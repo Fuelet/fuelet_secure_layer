@@ -10,8 +10,11 @@ dependencies:
   flutter:
     sdk: flutter
 
-  flutter_fuels: 0.0.34
+  flutter_fuels: 0.0.38+1
+  flutter_fuelet_smart_contract_wallet: 0.0.12
 
+  convert: ^3.1.1
+  secure_enclave: 0.1.1
   flutter_secure_storage: ^7.0.1
   hive: ^2.2.3
   hive_flutter: ^1.1.0
@@ -19,6 +22,12 @@ dependencies:
   freezed: ^2.3.2
   freezed_annotation: ^2.1.0
   equatable: ^2.0.5
+
+  graphql: # TODO: replace with a version from pubspec once https://github.com/zino-hofmann/graphql-flutter/pull/1393 is added to a release
+    git:
+      url: https://github.com/zino-hofmann/graphql-flutter.git
+      path: packages/graphql
+      ref: 56d9a24e8f102fba565c509302a9374034e16525
 
   dartz: ^0.10.1
 

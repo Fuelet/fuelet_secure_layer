@@ -34,9 +34,11 @@ class Account with EquatableMixin {
 
   // TODO must be private
   // We don't store privateKey in hive, but separately in secure storage
+  @Deprecated('Access to privateKey will be removed')
   late final String? privateKey;
 
   // We don't store seedPhrase in hive, but separately in secure storage
+  @Deprecated('Access to seedPhrase will be removed')
   late final String? seedPhrase;
 
   Account({
