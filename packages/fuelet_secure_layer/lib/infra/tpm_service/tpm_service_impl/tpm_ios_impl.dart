@@ -6,7 +6,6 @@ import 'package:fuelet_secure_layer/infra/tpm_service/tpm_service_exceptions/tpm
 import 'package:fuelet_secure_layer/infra/tpm_service/tpm_service_exceptions/tpm_service_exceptions.dart';
 import 'package:secure_enclave/secure_enclave.dart';
 
-// @injectable
 class TPMServiceIosImpl implements TPMService {
   final SecureEnclave _secureEnclave;
 

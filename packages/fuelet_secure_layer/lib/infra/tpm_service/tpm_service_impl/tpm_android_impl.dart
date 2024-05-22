@@ -1,7 +1,6 @@
 import 'package:fuelet_secure_layer/infra/tpm_service/tpm_service.dart';
 import 'package:fuelet_secure_layer/infra/tpm_service/tpm_service_exceptions/tpm_service_either.dart';
 
-// @injectable
 class TPMServiceAndroidImpl implements TPMService {
   @override
   bool isServiceAvailable() => false;

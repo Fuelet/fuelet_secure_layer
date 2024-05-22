@@ -1,5 +1,7 @@
+import 'package:fuelet_secure_layer/core/account/entity/account.dart';
+import 'package:fuelet_secure_layer/core/account/entity/adding_method.dart';
+import 'package:fuelet_secure_layer/core/account/entity/wallet_group.dart';
 import 'package:fuelet_secure_layer/core/wallet_import/entity/wallet_import_typedef.dart';
-import 'package:fuelet_secure_layer/fuelet_secure_layer.dart';
 
 abstract class IWalletCreateRepository {
   Future<Account> createAccount();

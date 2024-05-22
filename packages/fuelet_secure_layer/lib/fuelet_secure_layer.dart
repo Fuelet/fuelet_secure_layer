@@ -10,6 +10,7 @@ export 'core/network/repository/blockchain_network_repository.dart';
 export 'core/wallet_create/repository/wallet_create_repository.dart';
 export 'core/wallet_import/entity/wallet_import_failure.dart';
 export 'core/wallet_import/entity/wallet_import_typedef.dart';
+export 'infra/account/manager/hive_account_manager.dart';
 export 'infra/account/repository/accounts_local_repository.dart';
 export 'infra/data/repository/constants.dart';
 export 'infra/data/repository/private_key_repository.dart';
