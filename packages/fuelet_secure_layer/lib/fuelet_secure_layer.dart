@@ -5,6 +5,7 @@ export 'core/account/repository/accounts_local_repository.dart';
 export 'core/balance/entity/token_balance.dart';
 export 'core/data/repository/network_provider_repository.dart';
 export 'core/graph_ql/repository/graph_ql_repository.dart';
+export 'core/hardware_signer/entity/recovery_pk_null_exception.dart';
 export 'core/network/entity/blockchain_network.dart';
 export 'core/network/repository/blockchain_network_repository.dart';
 export 'core/wallet_create/repository/wallet_create_repository.dart';

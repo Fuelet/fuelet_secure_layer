@@ -1,6 +1,7 @@
 import 'package:fuelet_secure_layer/core/account/entity/account.dart';
 import 'package:fuelet_secure_layer/core/account/entity/adding_method.dart';
 import 'package:fuelet_secure_layer/core/account/entity/wallet_group.dart';
+import 'package:fuelet_secure_layer/core/wallet_create/entity/contract_id.dart';
 import 'package:fuelet_secure_layer/core/wallet_import/entity/wallet_import_typedef.dart';
 
 abstract class IWalletCreateRepository {
@@ -29,10 +30,5 @@ abstract class IWalletCreateRepository {
     required AccountAddingMethod addingMethod,
   });
 
-  Future<Account> createHSAccount({
-    required String bech32Address,
-    required String name,
-    required String tag,
-    required String recoveryPrivateKey,
-  });
+  Future<(Account, ContractId)> createHSAccount({required String name});
 }

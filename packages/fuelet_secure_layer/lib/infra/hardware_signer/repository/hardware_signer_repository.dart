@@ -1,8 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_fuelet_smart_contract_wallet/wallet/smart_contract_wallet.dart';
+import 'package:fuelet_secure_layer/core/account/repository/accounts_local_repository.dart';
 import 'package:fuelet_secure_layer/core/data/repository/network_provider_repository.dart';
 import 'package:fuelet_secure_layer/core/graph_ql/repository/graph_ql_repository.dart';
 import 'package:fuelet_secure_layer/core/graph_ql/repository/query_storage.dart';
+import 'package:fuelet_secure_layer/core/hardware_signer/entity/recovery_pk_null_exception.dart';
 import 'package:fuelet_secure_layer/core/network/entity/blockchain_network.dart';
 import 'package:fuelet_secure_layer/core/network/repository/blockchain_network_repository.dart';
 import 'package:fuelet_secure_layer/infra/hardware_signer/repository/hardware_signer_exception.dart';
@@ -12,6 +14,7 @@ import 'package:fuelet_secure_layer/utils/either_x.dart';
 import 'package:fuelet_secure_layer/utils/iterable_x.dart';
 
 class HardwareSignerRepository {
+  final IAccountsLocalRepository _accountsRepository;
   final TPMService _tpmService;
   final BlockchainNetworkRepository _blockchainNetworkRepository;
   final FuelNetworkProviderRepository _fuelNetworkProviderRepository;
@@ -22,6 +25,7 @@ class HardwareSignerRepository {
   final Map<String, String?> _supportedHardwareSigners = {};
 
   HardwareSignerRepository(
+    this._accountsRepository,
     this._tpmService,
     this._blockchainNetworkRepository,
     this._fuelNetworkProviderRepository,
@@ -139,10 +143,16 @@ class HardwareSignerRepository {
 
   Future<HardwareSignerEither<bool>> checkDeploymentContractByWallet(
     String bech32,
-    String recoveryWalletPrivateKey,
     BlockchainNetwork network,
   ) async {
     try {
+      final recoveryWalletPrivateKey =
+          _accountsRepository.selectedAccount?.privateKey;
+
+      if (recoveryWalletPrivateKey == null) {
+        throw (Exception(RecoveryWalletPrivateKeyIsNullException()));
+      }
+
       final tag = getTagByBech32(bech32);
       if (tag == null) {
         return const Left(
