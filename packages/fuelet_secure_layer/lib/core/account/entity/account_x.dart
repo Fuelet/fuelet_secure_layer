@@ -7,10 +7,12 @@ extension AccountX on Account {
   @Deprecated('Access to privateKey will be removed')
   bool get seedPhraseExists => seedPhrase != null;
 
+  @Deprecated('Access to privateKey will be removed')
   bool get isOwner => privateKey != null || seedPhrase != null || isHsWallet;
 
   String get address => fuelAddress.bech32Address;
 
+  @Deprecated('Access to privateKey will be removed')
   bool get isWatchlist => !isOwner;
 
   String get nameOrUnnamed => name ?? 'Unnamed';

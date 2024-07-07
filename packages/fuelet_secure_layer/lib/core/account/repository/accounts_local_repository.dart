@@ -1,12 +1,14 @@
 import 'package:fuelet_secure_layer/core/account/entity/account.dart';
-import 'package:fuelet_secure_layer/core/account/entity/key_pair.dart';
 
 abstract class IAccountsLocalRepository {
   bool get hasAccounts;
 
+  // bech32
+  String? get selectedAccount;
+
   @Deprecated(
-      'Should be replaced with a field returning an address without private key')
-  KeyPair? get selectedAccount;
+      'Should be replaced with a stream returning an address without private key')
+  Stream<String?> get selectedAccountStream;
 
   /// Loads [Account]s from the localStorage.
   Future<List<Account>> loadAccounts();

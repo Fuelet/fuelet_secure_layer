@@ -10,6 +10,8 @@ dependencies:
   flutter:
     sdk: flutter
 
+  uikit:
+    path: ../../../Fuelet/packages/uikit
   flutter_fuels: 0.0.50
   flutter_fuelet_smart_contract_wallet: 0.0.13+1
 
@@ -23,6 +25,7 @@ dependencies:
   freezed: ^2.3.2
   freezed_annotation: ^2.1.0
   equatable: ^2.0.5
+  get_it: ^7.7.0 # MIT (LICENSE)
 
   graphql: # TODO: replace with a version from pubspec once https://github.com/zino-hofmann/graphql-flutter/pull/1393 is added to a release
     git:

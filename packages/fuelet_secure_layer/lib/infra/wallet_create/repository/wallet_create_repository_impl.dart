@@ -1,28 +1,28 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_fuels/flutter_fuels.dart';
+import 'package:fuelet_secure_layer/core/account/entity/account_address_bech32.dart';
+import 'package:fuelet_secure_layer/core/account/entity/account_private_data.dart';
+import 'package:fuelet_secure_layer/core/account/repository/accounts_private_data_repository.dart';
 import 'package:fuelet_secure_layer/core/wallet_create/entity/contract_id.dart';
 import 'package:fuelet_secure_layer/fuelet_secure_layer.dart';
 import 'package:fuelet_secure_layer/utils/either_x.dart';
 
 class WalletCreateRepositoryImpl implements IWalletCreateRepository {
   final IAccountsLocalRepository _accountsRepository;
-  final FuelNetworkProviderRepository _networkProviderRepository;
-  final PrivateKeyRepository _privateKeyRepository;
+  final IAccountsPrivateDataRepository _accountsPrivateDataRepository;
   final HardwareSignerRepository _hardwareSignerRepository;
-  final FuelWalletAddressConverter _addressConverter;
 
   const WalletCreateRepositoryImpl(
     this._accountsRepository,
-    this._networkProviderRepository,
-    this._privateKeyRepository,
+    this._accountsPrivateDataRepository,
     this._hardwareSignerRepository,
-    this._addressConverter,
   );
 
   @override
-  Future<Account> createAccount() async {
+  Future<WalletImportResponse> createAccount(
+      {required String currentNetworkUrl}) async {
     final wallet = await FuelWallet.generateNewWallet(
-      networkUrl: _networkProviderRepository.currentNetwork,
+      networkUrl: currentNetworkUrl,
     );
 
     final account = Account(
@@ -35,18 +35,23 @@ class WalletCreateRepositoryImpl implements IWalletCreateRepository {
     account.privateKey = wallet.privateKey;
     account.seedPhrase = wallet.mnemonicPhrase;
 
-    return account;
+    return importAccountWithMnemonic(
+      wallet.mnemonicPhrase!,
+      addingMethod: AccountAddingMethod.create,
+      currentNetworkUrl: currentNetworkUrl,
+    );
   }
 
   @override
   Future<WalletImportResponse> importAccountWithMnemonic(
     String mnemonic, {
     required AccountAddingMethod addingMethod,
+    required String currentNetworkUrl,
   }) async {
     late FuelWallet wallet;
     try {
       wallet = await FuelWallet.newFromMnemonicPhrase(
-        networkUrl: _networkProviderRepository.currentNetwork,
+        networkUrl: currentNetworkUrl,
         mnemonic: mnemonic,
       );
     } catch (_) {
@@ -77,14 +82,18 @@ class WalletCreateRepositoryImpl implements IWalletCreateRepository {
     String mnemonic, {
     required int count,
     required int fromIndex,
+    required String currentNetworkUrl,
   }) async {
     try {
       final List<Future<Account>> requests = [];
       final currentTime = DateTime.now();
-      final AccountAddress mainAddress = await getMainAccountAddress(mnemonic);
+      final AccountAddress mainAddress = await getMainAccountAddress(
+        mnemonic,
+        currentNetworkUrl: currentNetworkUrl,
+      );
       for (int i = fromIndex; i < fromIndex + count; ++i) {
         Future<Account> request = FuelWallet.newFromMnemonicPhraseAndIndex(
-          networkUrl: _networkProviderRepository.currentNetwork,
+          networkUrl: currentNetworkUrl,
           mnemonic: mnemonic,
           index: i,
         ).then(
@@ -112,9 +121,12 @@ class WalletCreateRepositoryImpl implements IWalletCreateRepository {
     }
   }
 
-  Future<AccountAddress> getMainAccountAddress(String mnemonic) =>
+  Future<AccountAddress> getMainAccountAddress(
+    String mnemonic, {
+    required String currentNetworkUrl,
+  }) =>
       FuelWallet.newFromMnemonicPhraseAndIndex(
-        networkUrl: _networkProviderRepository.currentNetwork,
+        networkUrl: currentNetworkUrl,
         mnemonic: mnemonic,
         index: 0,
       ).then(
@@ -128,11 +140,12 @@ class WalletCreateRepositoryImpl implements IWalletCreateRepository {
   Future<WalletImportResponse> importAccountWithPrivateKey(
     String privateKey, {
     required AccountAddingMethod addingMethod,
+    required String currentNetworkUrl,
   }) async {
     late FuelWallet wallet;
     try {
       wallet = await FuelWallet.newFromPrivateKey(
-        networkUrl: _networkProviderRepository.currentNetwork,
+        networkUrl: currentNetworkUrl,
         privateKey: privateKey,
       );
     } catch (_) {
@@ -169,7 +182,8 @@ class WalletCreateRepositoryImpl implements IWalletCreateRepository {
       final fuelAddress = AccountAddress(
         bech32Address: bech32Address,
         b256Address:
-            await _addressConverter.b256StringFromBech32String(bech32Address),
+            await FuelWalletAddressConverter.b256StringFromBech32String(
+                bech32Address),
       );
 
       final account = Account(
@@ -190,21 +204,32 @@ class WalletCreateRepositoryImpl implements IWalletCreateRepository {
   }
 
   @override
-  Future<(Account, ContractId)> createHSAccount({required String name}) async {
-    final recoveryPrivateKey = _accountsRepository.selectedAccount?.privateKey;
+  Future<(Account, ContractId)> createHSAccount({
+    required String name,
+    required GraphQLRepository graphQLRepository,
+    required String currentNetworkUrl,
+    required BlockchainNetwork network,
+  }) async {
+    final recoveryPrivateKey = _accountsPrivateDataRepository
+        .data[_accountsRepository.selectedAccount]?.privateKey;
     if (recoveryPrivateKey == null) {
       throw Exception('Failed to get private key');
     }
 
-    final createdHsInfo = (await _hardwareSignerRepository
-            .createHardwareSigner(recoveryPrivateKey))
+    final createdHsInfo = (await _hardwareSignerRepository.createHardwareSigner(
+      recoveryPrivateKey,
+      graphQLRepository,
+      currentNetworkUrl,
+      network,
+    ))
         .asRight();
 
     if (createdHsInfo == null) {
       throw Exception('createdHsInfo is null');
     }
 
-    final b256Address = await _addressConverter.b256StringFromBech32String(
+    final b256Address =
+        await FuelWalletAddressConverter.b256StringFromBech32String(
       createdHsInfo.bech32,
     );
     final account = Account(
@@ -221,10 +246,13 @@ class WalletCreateRepositoryImpl implements IWalletCreateRepository {
     account.privateKey = recoveryPrivateKey;
     account.seedPhrase = null;
 
-    await _privateKeyRepository.saveWalletPrivateKey(
-      privateKey: recoveryPrivateKey,
-      walletAddress: account.address,
-    );
+    final data = <AccountAddressBech32, AccountPrivateData>{
+      account.address: AccountPrivateData(
+        privateKey: recoveryPrivateKey,
+        seedPhrase: null,
+      )
+    };
+    await _accountsPrivateDataRepository.saveData(data);
 
     return (account, createdHsInfo.contractId);
   }

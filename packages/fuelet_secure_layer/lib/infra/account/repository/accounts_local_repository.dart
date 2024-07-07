@@ -1,4 +1,8 @@
-import 'package:fuelet_secure_layer/core/account/entity/key_pair.dart';
+import 'dart:async';
+
+import 'package:fuelet_secure_layer/core/account/entity/account_address_bech32.dart';
+import 'package:fuelet_secure_layer/core/account/entity/account_private_data.dart';
+import 'package:fuelet_secure_layer/core/account/repository/accounts_private_data_repository.dart';
 import 'package:fuelet_secure_layer/fuelet_secure_layer.dart';
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,25 +11,19 @@ const _selectedAccountPrefKey = 'selectedAccountAddress';
 
 class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
   final SharedPreferences _sharedPreferences;
-  final PrivateKeyRepository _privateKeyRepository;
-  final SeedPhraseRepository _seedPhraseRepository;
+  late final IAccountsPrivateDataRepository _privateDataRepository;
+
+  final _selectedAccountStreamController = StreamController<String?>();
 
   AccountsLocalRepositoryImpl(
     this._sharedPreferences,
-    this._privateKeyRepository,
-    this._seedPhraseRepository,
-  ) {
-    _init();
-  }
+    this._privateDataRepository,
+  );
 
-  Future<void> _init() async {
+  void init() async {
     final address = _sharedPreferences.getString(_selectedAccountPrefKey);
-    _selectedAccount = KeyPair(
-      bech32: address,
-      privateKey: address != null
-          ? await _privateKeyRepository.getWalletPrivateKey(address)
-          : null,
-    );
+    _selectedAccount = address;
+    _selectedAccountStreamController.add(_selectedAccount);
   }
 
   @override
@@ -33,28 +31,30 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
     return Hive.box<Account>(SecureLayerConstants.kAccountsBox).isNotEmpty;
   }
 
-  KeyPair? _selectedAccount;
+  String? _selectedAccount;
 
   @override
-  KeyPair? get selectedAccount => _selectedAccount;
+  String? get selectedAccount => _selectedAccount;
+
+  @override
+  Stream<String?> get selectedAccountStream =>
+      _selectedAccountStreamController.stream;
 
   @override
   Future<List<Account>> loadAccounts() async {
     final accountsBox = Hive.box<Account>(SecureLayerConstants.kAccountsBox);
     final accounts = accountsBox.values.toList();
 
-    // settinGg prviate key for every account and adding to model
-    for (Account account in accounts) {
-      final privateKey = await _privateKeyRepository.getWalletPrivateKey(
-        account.address,
-      );
-      final seedPhrase = await _seedPhraseRepository.getWalletSeedPhrase(
-        account.address,
-      );
+    for (final account in accounts) {
+      await _privateDataRepository.loadData(account.address);
 
-      account.privateKey = privateKey;
-      account.seedPhrase = seedPhrase;
+      // TODO remove later
+      account.privateKey =
+          _privateDataRepository.data[account.address]?.privateKey;
+      account.seedPhrase =
+          _privateDataRepository.data[account.address]?.seedPhrase;
     }
+
     return accounts;
   }
 
@@ -62,18 +62,23 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
   Future<void> saveAccounts(List<Account> accounts) async {
     final accountsBox = Hive.box<Account>(SecureLayerConstants.kAccountsBox);
     final List<Future<void>> futures = [];
+
+    final Map<AccountAddressBech32, AccountPrivateData?> privateData = {};
+
     for (final account in accounts) {
       futures.add(accountsBox.put(account.address, account));
+
+      final privateKey = account.privateKey;
+      if (privateKey != null) {
+        privateData[account.address] = AccountPrivateData(
+          privateKey: privateKey,
+          seedPhrase: account.seedPhrase,
+        );
+      }
     }
     await Future.wait(futures);
-    await _seedPhraseRepository.saveWalletsSeedPhrases(
-      addressesAndSeedPhrases:
-          accounts.map((e) => (e.address, e.seedPhrase)).toList(),
-    );
-    await _privateKeyRepository.saveWalletsPrivateKeys(
-      addressesAndPrivateKeys:
-          accounts.map((e) => (e.address, e.privateKey)).toList(),
-    );
+
+    await _privateDataRepository.saveData(privateData);
   }
 
   @override
@@ -85,23 +90,27 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
 
   @override
   Future<void> setSelectedAccount(String address) async {
-    final privateKey = await _privateKeyRepository.getWalletPrivateKey(address);
     await HiveAccountManager.openAccountBox(address);
     await _sharedPreferences.setString(_selectedAccountPrefKey, address);
-    _selectedAccount = KeyPair(bech32: address, privateKey: privateKey);
+    _selectedAccount = address;
+    _selectedAccountStreamController.sink.add(_selectedAccount);
   }
 
   @override
   Future<void> resetSelectedAccount() {
     _selectedAccount = null;
+    _selectedAccountStreamController.sink.add(_selectedAccount);
+    _privateDataRepository.clearData();
+
     return _sharedPreferences.remove(_selectedAccountPrefKey);
   }
 
   @override
   Future<void> removeAccount(String address) async {
     final accountsBox = Hive.box<Account>(SecureLayerConstants.kAccountsBox);
-
     await accountsBox.delete(address);
+
+    await _privateDataRepository.removeData(address);
   }
 
   @override
@@ -109,5 +118,7 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
     final accountsBox = Hive.box<Account>(SecureLayerConstants.kAccountsBox);
 
     await accountsBox.clear();
+
+    await _privateDataRepository.clearData();
   }
 }

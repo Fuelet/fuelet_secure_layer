@@ -1,12 +1,11 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_fuelet_smart_contract_wallet/wallet/smart_contract_wallet.dart';
 import 'package:fuelet_secure_layer/core/account/repository/accounts_local_repository.dart';
-import 'package:fuelet_secure_layer/core/data/repository/network_provider_repository.dart';
+import 'package:fuelet_secure_layer/core/account/repository/accounts_private_data_repository.dart';
 import 'package:fuelet_secure_layer/core/graph_ql/repository/graph_ql_repository.dart';
 import 'package:fuelet_secure_layer/core/graph_ql/repository/query_storage.dart';
 import 'package:fuelet_secure_layer/core/hardware_signer/entity/recovery_pk_null_exception.dart';
 import 'package:fuelet_secure_layer/core/network/entity/blockchain_network.dart';
-import 'package:fuelet_secure_layer/core/network/repository/blockchain_network_repository.dart';
 import 'package:fuelet_secure_layer/infra/hardware_signer/repository/hardware_signer_exception.dart';
 import 'package:fuelet_secure_layer/infra/hardware_signer/repository/hardware_signer_utils.dart';
 import 'package:fuelet_secure_layer/infra/tpm_service/tpm_service.dart';
@@ -15,32 +14,27 @@ import 'package:fuelet_secure_layer/utils/iterable_x.dart';
 
 class HardwareSignerRepository {
   final IAccountsLocalRepository _accountsRepository;
+  final IAccountsPrivateDataRepository _accountsPrivateDataRepository;
   final TPMService _tpmService;
-  final BlockchainNetworkRepository _blockchainNetworkRepository;
-  final FuelNetworkProviderRepository _fuelNetworkProviderRepository;
-  final GraphQLRepository _graphQLRepository;
-  final BlockchainNetwork _defaultNetwork;
 
   // Map <Tag, Bech32?>
   final Map<String, String?> _supportedHardwareSigners = {};
 
   HardwareSignerRepository(
     this._accountsRepository,
+    this._accountsPrivateDataRepository,
     this._tpmService,
-    this._blockchainNetworkRepository,
-    this._fuelNetworkProviderRepository,
-    this._graphQLRepository,
-    this._defaultNetwork,
   ) {
     for (int i = 0; i < hardwareSignersLimitIos; ++i) {
       _supportedHardwareSigners[HardwareSignerUtils.getTag(i)] = null;
     }
   }
 
-  bool isEnabled(String bech32) =>
-      _supportedHardwareSigners.values.contains(bech32);
-
   bool get isServiceAvailable => _tpmService.isServiceAvailable();
+
+  bool canTransferViaHS(String bech32) =>
+      !_supportedHardwareSigners.values.contains(bech32) ||
+      !_accountsPrivateDataRepository.privateKeyExists(bech32);
 
   Future<void> loadCachedHardwareSigners(
     List<(String, String)> tagsAndBech32,
@@ -120,34 +114,15 @@ class HardwareSignerRepository {
     }
   }
 
-  Future<HardwareSignerEither<bool>> checkDeploymentContract(
-    String contractId,
-    BlockchainNetwork network,
-  ) async {
-    try {
-      final request = await _graphQLRepository.query(
-        network.indexerUrl,
-        QueryStorage.getContract,
-        {"contractId": contractId},
-      );
-      final wasDeployed = request.data?["contract"] != null ? true : false;
-      return Right(wasDeployed);
-    } on Exception catch (e) {
-      return Left(
-        HardwareSignerException(
-          message: e.toString(),
-        ),
-      );
-    }
-  }
-
   Future<HardwareSignerEither<bool>> checkDeploymentContractByWallet(
     String bech32,
+    GraphQLRepository graphQLRepository,
     BlockchainNetwork network,
+    String currentNetworkUrl,
   ) async {
     try {
-      final recoveryWalletPrivateKey =
-          _accountsRepository.selectedAccount?.privateKey;
+      final recoveryWalletPrivateKey = _accountsPrivateDataRepository
+          .data[_accountsRepository.selectedAccount]?.privateKey;
 
       if (recoveryWalletPrivateKey == null) {
         throw (Exception(RecoveryWalletPrivateKeyIsNullException()));
@@ -171,11 +146,15 @@ class HardwareSignerRepository {
           HardwareSignerUtils.convertPublicKey(r1PublicKey);
 
       final wallet = await SmartContractWallet.connect(
-        networkUrl: _fuelNetworkProviderRepository.currentNetwork,
+        networkUrl: currentNetworkUrl,
         r1PublicKey: convertedPublicKey,
         recoveryWalletPrivateKey: recoveryWalletPrivateKey,
       );
-      return await checkDeploymentContract(wallet.contractId, network);
+      return _checkDeploymentContract(
+        graphQLRepository,
+        wallet.contractId,
+        network,
+      );
     } on Exception catch (e) {
       return Left(
         HardwareSignerException(message: e.toString()),
@@ -185,6 +164,9 @@ class HardwareSignerRepository {
 
   Future<HardwareSignerEither<CreatedHardwareSignerInfo>> createHardwareSigner(
     String recoveryWalletPrivateKey,
+    GraphQLRepository graphQLRepository,
+    String currentNetworkUrl,
+    BlockchainNetwork network,
   ) async {
     String? tag;
     SmartContractWallet? wallet;
@@ -217,13 +199,14 @@ class HardwareSignerRepository {
       final convertedPublicKey =
           HardwareSignerUtils.convertPublicKey(r1PublicKey);
       wallet = await SmartContractWallet.connect(
-        networkUrl: _fuelNetworkProviderRepository.currentNetwork,
+        networkUrl: currentNetworkUrl,
         r1PublicKey: convertedPublicKey,
         recoveryWalletPrivateKey: recoveryWalletPrivateKey,
       );
-      final either = await checkDeploymentContract(
+      final either = await _checkDeploymentContract(
+        graphQLRepository,
         wallet.contractId,
-        _blockchainNetworkRepository.currentNetwork ?? _defaultNetwork,
+        network, // _blockchainNetworkRepository.currentNetwork ?? _defaultNetwork,
       );
 
       final wasDeployed = either.asRight() ?? false;
@@ -319,5 +302,27 @@ class HardwareSignerRepository {
     return _supportedHardwareSigners.entries
         .firstWhereOrNull((element) => element.value == null)
         ?.key;
+  }
+
+  Future<HardwareSignerEither<bool>> _checkDeploymentContract(
+    GraphQLRepository graphQLRepository,
+    String contractId,
+    BlockchainNetwork network,
+  ) async {
+    try {
+      final request = await graphQLRepository.query(
+        network.indexerUrl,
+        QueryStorage.getContract,
+        {"contractId": contractId},
+      );
+      final wasDeployed = request.data?["contract"] != null ? true : false;
+      return Right(wasDeployed);
+    } on Exception catch (e) {
+      return Left(
+        HardwareSignerException(
+          message: e.toString(),
+        ),
+      );
+    }
   }
 }
