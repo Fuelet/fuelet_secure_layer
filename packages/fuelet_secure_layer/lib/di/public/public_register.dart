@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter_cloud_kit/flutter_cloud_kit.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fuelet_secure_layer/core/account/repository/accounts_local_repository.dart';
 import 'package:fuelet_secure_layer/core/account/repository/accounts_private_data_repository.dart';
@@ -8,8 +9,12 @@ import 'package:fuelet_secure_layer/di/common/common_locator.dart';
 import 'package:fuelet_secure_layer/di/public/public_locator.dart';
 import 'package:fuelet_secure_layer/infra/account/repository/accounts_local_repository.dart';
 import 'package:fuelet_secure_layer/infra/account/repository/accounts_private_data_repository_impl.dart';
+import 'package:fuelet_secure_layer/infra/cloud_backup/cloud_backup_repository_android_impl.dart';
+import 'package:fuelet_secure_layer/infra/cloud_backup/cloud_backup_repository_ios_impl.dart';
+import 'package:fuelet_secure_layer/infra/cloud_backup/cloud_backup_repository_web.dart';
 import 'package:fuelet_secure_layer/infra/data/repository/private_key_repository.dart';
 import 'package:fuelet_secure_layer/infra/data/repository/seed_phrase_repository.dart';
+import 'package:fuelet_secure_layer/infra/google_api_manager/google_api_manager.dart';
 import 'package:fuelet_secure_layer/infra/hardware_signer/repository/hardware_signer_repository.dart';
 import 'package:fuelet_secure_layer/infra/hardware_signer/service/wallet_connect_service.dart';
 import 'package:fuelet_secure_layer/infra/tpm_service/tpm_service.dart';
@@ -76,6 +81,27 @@ class PublicSecureLayerRegister {
           secureLayerLocator<IAccountsLocalRepository>(),
           _privateSecureLayerLocator<IAccountsPrivateDataRepository>(),
         ),
+      )
+      ..registerLazySingleton(
+          () => FlutterCloudKit(containerId: 'iCloud.fueletSecretBackups'))
+      ..registerFactory(() => GoogleApiManager())
+      ..registerFactory(
+        () => CloudBackupRepositoryAndroidImpl(
+            secureLayerLocator<GoogleApiManager>()),
+      )
+      ..registerFactory(() =>
+          CloudBackupRepositoryIOSImpl(secureLayerLocator<FlutterCloudKit>()))
+      ..registerFactory(() => CloudBackupRepositoryWebImpl())
+      ..registerLazySingleton(
+        () {
+          if (Platform.isIOS) {
+            return secureLayerLocator<CloudBackupRepositoryIOSImpl>();
+          } else if (Platform.isAndroid) {
+            return secureLayerLocator<CloudBackupRepositoryAndroidImpl>();
+          } else {
+            return secureLayerLocator<CloudBackupRepositoryWebImpl>();
+          }
+        },
       );
   }
 }

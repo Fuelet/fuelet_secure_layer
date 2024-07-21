@@ -3,6 +3,7 @@ library fuelet_secure_layer;
 export 'core/account/entity/export.dart';
 export 'core/account/repository/accounts_local_repository.dart';
 export 'core/balance/entity/export.dart';
+export 'core/cloud_backup/repository/cloud_backup_repository.dart';
 export 'core/data/repository/network_provider_repository.dart';
 export 'core/graph_ql/repository/graph_ql_repository.dart';
 export 'core/hardware_signer/entity/export.dart';
