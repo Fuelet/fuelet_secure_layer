@@ -1,6 +1,6 @@
 part of 'package:fuelet_secure_layer/di/public/public_register.dart';
 
-// the variable if private in order to limit access from outside of the package
+// the variable is private in order to limit access from outside of the package
 final _privateSecureLayerLocator = GetIt.asNewInstance();
 
 class PrivateSecureLayerRegister {

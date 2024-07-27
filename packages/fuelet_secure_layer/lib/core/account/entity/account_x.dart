@@ -1,14 +1,14 @@
-import 'package:fuelet_secure_layer/core/account/entity/account.dart';
+part of 'account.dart';
 
 extension AccountX on Account {
   @Deprecated('Access to privateKey will be removed')
-  bool get privateKeyExists => privateKey != null;
+  bool get privateKeyExists => _privateKey != null;
 
   @Deprecated('Access to privateKey will be removed')
   bool get seedPhraseExists => seedPhrase != null;
 
   @Deprecated('Access to privateKey will be removed')
-  bool get isOwner => privateKey != null || seedPhrase != null || isHsWallet;
+  bool get isOwner => _privateKey != null || seedPhrase != null || isHsWallet;
 
   String get address => fuelAddress.bech32Address;
 

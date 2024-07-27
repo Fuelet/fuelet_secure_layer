@@ -30,6 +30,7 @@ export 'infra/tpm_service/tpm_service_impl/tpm_ios_impl.dart';
 export 'infra/tpm_service/tpm_service_impl/tpm_web_impl.dart';
 export 'infra/wallet_create/repository/wallet_create_repository_impl.dart';
 export 'infra/wallet_unlocked/wallet_unlocked_service.dart';
+export 'presentation/hardware_signer/ui/l10n_save_sensitive_data_screen.dart';
 export 'presentation/seed_phrase/seed_phrase_column.dart';
 export 'presentation/seed_phrase/seed_phrase_widget.dart';
 export 'utils/wallet_address_converter.dart';

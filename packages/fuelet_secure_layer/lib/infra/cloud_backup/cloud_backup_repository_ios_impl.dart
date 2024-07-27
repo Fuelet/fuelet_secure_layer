@@ -3,7 +3,6 @@ import 'package:flutter_cloud_kit/types/cloud_ket_record.dart';
 import 'package:flutter_cloud_kit/types/cloud_kit_account_status.dart';
 import 'package:flutter_cloud_kit/types/database_scope.dart';
 import 'package:fuelet_secure_layer/core/account/entity/account.dart';
-import 'package:fuelet_secure_layer/core/account/entity/account_x.dart';
 import 'package:fuelet_secure_layer/core/cloud_backup/repository/cloud_backup_repository.dart';
 import 'package:fuelet_secure_layer/env/env.dart';
 

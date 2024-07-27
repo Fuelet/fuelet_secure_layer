@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:fuelet_secure_layer/core/account/entity/account_x.dart';
 import 'package:fuelet_secure_layer/core/account/entity/adding_method.dart';
 import 'package:fuelet_secure_layer/core/account/entity/address.dart';
 import 'package:fuelet_secure_layer/core/account/entity/derivative_info.dart';
@@ -7,6 +6,7 @@ import 'package:fuelet_secure_layer/core/account/entity/wallet_group.dart';
 import 'package:hive/hive.dart';
 
 part 'account.g.dart';
+part 'account_x.dart';
 
 @HiveType(typeId: 0)
 class Account with EquatableMixin {
@@ -35,7 +35,9 @@ class Account with EquatableMixin {
   // TODO must be private
   // We don't store privateKey in hive, but separately in secure storage
   @Deprecated('Access to privateKey will be removed')
-  late final String? privateKey;
+  late final String? _privateKey;
+  String? get privateKey => _privateKey; // TODO rm
+  set privateKey(String? value) => _privateKey = value;
 
   // We don't store seedPhrase in hive, but separately in secure storage
   @Deprecated('Access to seedPhrase will be removed')
@@ -71,7 +73,7 @@ class Account with EquatableMixin {
     );
 
     /// [privateKey] and [seedPhrase] never will be changed!
-    account.privateKey = privateKey;
+    account.privateKey = _privateKey;
     account.seedPhrase = seedPhrase;
 
     return account;
