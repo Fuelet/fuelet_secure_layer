@@ -17,6 +17,11 @@ class PrivateSecureLayerRegister {
           _privateSecureLayerLocator<PrivateKeyRepository>(),
           _privateSecureLayerLocator<SeedPhraseRepository>(),
         ),
+      )
+      ..registerFactory(
+        () => WalletUnlockedService(
+          _privateSecureLayerLocator<IAccountsPrivateDataRepository>(),
+        ),
       );
   }
 }

@@ -1,5 +1,16 @@
 library fuelet_secure_layer;
 
+export 'package:flutter_fuels/flutter_fuels.dart'
+    show
+        FuelUtils,
+        CallResult,
+        Input,
+        Output,
+        TransactionCreate,
+        TransactionScript,
+        TransactionMint,
+        TransactionCost;
+
 export 'src/di/common/common_locator.dart';
 export 'src/di/common/export.dart';
 export 'src/di/dependencies_builder.dart';
@@ -36,12 +47,12 @@ export 'src/features/shared_prefs/shared_pref.dart';
 export 'src/features/tpm_service/tpm_service_impl/tpm_android_impl.dart';
 export 'src/features/tpm_service/tpm_service_impl/tpm_ios_impl.dart';
 export 'src/features/tpm_service/tpm_service_impl/tpm_web_impl.dart';
+export 'src/features/transaction/manager/transaction_manager.dart';
 export 'src/features/wallet_create/repository/wallet_create_repository.dart';
 export 'src/features/wallet_create/repository/wallet_create_repository_impl.dart';
 export 'src/features/wallet_import/application/wallet_import_bloc.dart';
 export 'src/features/wallet_import/application/wallet_import_type.dart';
 export 'src/features/wallet_import/entity/export.dart';
 export 'src/features/wallet_import/entity/wallet_import_typedef.dart';
-export 'src/features/wallet_unlocked/wallet_unlocked_service.dart';
 export 'src/utils/string_utils.dart';
 export 'src/utils/wallet_address_converter.dart';
