@@ -1,12 +1,16 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
-import 'package:fuelet_secure_layer/src/features/account/entity/adding_method.dart';
-import 'package:fuelet_secure_layer/src/features/account/entity/address.dart';
-import 'package:fuelet_secure_layer/src/features/account/entity/derivative_info.dart';
-import 'package:fuelet_secure_layer/src/features/account/entity/wallet_group.dart';
+import 'package:fuelet_secure_layer/fuelet_secure_layer.dart';
+import 'package:fuelet_secure_layer/src/features/account/entity/account_address_bech32.dart';
+import 'package:fuelet_secure_layer/src/features/account/entity/account_private_data.dart';
+import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
 import 'package:hive/hive.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'account.g.dart';
 part 'account_x.dart';
+part 'package:fuelet_secure_layer/src/features/account/repository/accounts_local_repository_impl.dart';
 
 @HiveType(typeId: 0)
 class Account with EquatableMixin {
@@ -32,17 +36,12 @@ class Account with EquatableMixin {
   @HiveField(6)
   String? hardwareSignerTag;
 
-  // // TODO must be private
   // // We don't store privateKey in hive, but separately in secure storage
-  // @Deprecated('Access to privateKey will be removed')
   late final String? _privateKey;
-  // String? get privateKey => _privateKey; // TODO rm
   set privateKey(String? value) => _privateKey = value;
-  //
+
   // // We don't store seedPhrase in hive, but separately in secure storage
-  // @Deprecated('Access to seedPhrase will be removed')
   late final String? _seedPhrase;
-  // String? get seedPhrase => _seedPhrase; // TODO rm
   set seedPhrase(String? value) => _seedPhrase = value;
 
   Account({
@@ -74,7 +73,7 @@ class Account with EquatableMixin {
       name: name ?? this.name,
     );
 
-    /// [privateKey] and [seedPhrase] never will be changed!
+    /// [privateKey] and [seedPhrase] will never change
     account.privateKey = _privateKey;
     account.seedPhrase = _seedPhrase;
 

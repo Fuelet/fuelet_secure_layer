@@ -1,11 +1,4 @@
-import 'dart:async';
-
-import 'package:fuelet_secure_layer/fuelet_secure_layer.dart';
-import 'package:fuelet_secure_layer/src/features/account/entity/account_address_bech32.dart';
-import 'package:fuelet_secure_layer/src/features/account/entity/account_private_data.dart';
-import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
-import 'package:hive/hive.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+part of 'package:fuelet_secure_layer/src/features/account/entity/account.dart';
 
 const _selectedAccountPrefKey = 'selectedAccountAddress';
 
@@ -68,11 +61,11 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
     for (final account in accounts) {
       futures.add(accountsBox.put(account.address, account));
 
-      final privateKey = account.privateKey;
+      final privateKey = account._privateKey;
       if (privateKey != null) {
         privateData[account.address] = AccountPrivateData(
           privateKey: privateKey,
-          seedPhrase: account.seedPhrase,
+          seedPhrase: account._seedPhrase,
         );
       }
     }
