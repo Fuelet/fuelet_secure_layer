@@ -2,6 +2,8 @@ name: fuelet_secure_layer
 description: "Fuelet wallet secure layer features"
 version: 1.0.0
 
+publish_to: none
+
 environment:
   sdk: '>=3.3.4 <4.0.0'
   flutter: ">=3.19.0"
@@ -35,6 +37,8 @@ dependencies:
   envied: ^0.3.0+3 # MIT (LICENSE)
   flutter_cloud_kit: 0.0.2 # MIT (LICENSE)
   flutter_bloc: ^8.1.1 # MIT (LICENSE)
+  rxdart: ^0.27.7 # Apache-2.0 (LICENSE)
+  logger: ^2.4.0 # MIT (LICENSE)
 
   graphql: # TODO: replace with a version from pubspec once https://github.com/zino-hofmann/graphql-flutter/pull/1393 is added to a release
     git:

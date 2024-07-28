@@ -6,6 +6,7 @@ import 'package:fuelet_secure_layer/src/env/env.dart';
 import 'package:fuelet_secure_layer/src/features/account/entity/account.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
 import 'package:fuelet_secure_layer/src/features/cloud_backup/repository/cloud_backup_repository.dart';
+import 'package:fuelet_secure_layer/src/utils/logger.dart';
 
 const _cloudKitRecordType = 'AccountBackup';
 const _privateDbScope = CloudKitDatabaseScope.private;
@@ -69,8 +70,7 @@ class CloudBackupRepositoryIOSImpl implements ICloudBackupRepository {
         final decryptedSecret = await Aes256GcmUtils.decrypt(secret);
         decryptedAccounts[accountName] = decryptedSecret;
       } catch (e) {
-        // TODO: log properly
-        print('Got error parsing account dto: $e. Skipping');
+        logger.e('Got error parsing account dto: $e. Skipping');
       }
     }
     return decryptedAccounts;
@@ -85,8 +85,7 @@ class CloudBackupRepositoryIOSImpl implements ICloudBackupRepository {
 
       return await _recordsToAccounts(records);
     } catch (e) {
-      // TODO: log properly
-      print('Got error parsing accounts dto: $e');
+      logger.e('Got error parsing accounts dto: $e');
       return {};
     }
   }

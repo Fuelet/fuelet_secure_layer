@@ -1,10 +1,16 @@
 import 'dart:async';
 
 import 'package:equatable/equatable.dart';
-import 'package:fuelet_secure_layer/fuelet_secure_layer.dart';
 import 'package:fuelet_secure_layer/src/features/account/entity/account_address_bech32.dart';
 import 'package:fuelet_secure_layer/src/features/account/entity/account_private_data.dart';
+import 'package:fuelet_secure_layer/src/features/account/entity/adding_method.dart';
+import 'package:fuelet_secure_layer/src/features/account/entity/address.dart';
+import 'package:fuelet_secure_layer/src/features/account/entity/derivative_info.dart';
+import 'package:fuelet_secure_layer/src/features/account/entity/wallet_group.dart';
+import 'package:fuelet_secure_layer/src/features/account/manager/hive_account_manager.dart';
+import 'package:fuelet_secure_layer/src/features/account/repository/accounts_local_repository.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
+import 'package:fuelet_secure_layer/src/features/private_data/utils/constants.dart';
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
