@@ -43,4 +43,5 @@ export 'src/features/wallet_import/application/wallet_import_type.dart';
 export 'src/features/wallet_import/entity/export.dart';
 export 'src/features/wallet_import/entity/wallet_import_typedef.dart';
 export 'src/features/wallet_unlocked/wallet_unlocked_service.dart';
+export 'src/utils/string_utils.dart';
 export 'src/utils/wallet_address_converter.dart';

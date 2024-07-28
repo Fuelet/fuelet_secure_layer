@@ -38,14 +38,15 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
     final accountsBox = Hive.box<Account>(SecureLayerConstants.kAccountsBox);
     final accounts = accountsBox.values.toList();
 
-    for (final account in accounts) {
+    for (Account account in accounts) {
       await _privateDataRepository.loadData(account.address);
 
-      // TODO remove later
       account.privateKey =
           _privateDataRepository.data[account.address]?.privateKey;
       account.seedPhrase =
           _privateDataRepository.data[account.address]?.seedPhrase;
+
+      account = _replaceForbiddenSymbolsIfNeeded(account);
     }
 
     return accounts;
@@ -58,7 +59,9 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
 
     final Map<AccountAddressBech32, AccountPrivateData?> privateData = {};
 
-    for (final account in accounts) {
+    for (Account account in accounts) {
+      account = _replaceForbiddenSymbolsIfNeeded(account);
+
       futures.add(accountsBox.put(account.address, account));
 
       final privateKey = account._privateKey;
@@ -75,10 +78,14 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
   }
 
   @override
-  Future<void> updateAccount(Account updatedAccount) async {
+  Future<Account> updateAccount(Account account) async {
+    final updatedAccount = _replaceForbiddenSymbolsIfNeeded(account);
+
     final accountsBox = Hive.box<Account>(SecureLayerConstants.kAccountsBox);
 
     await accountsBox.put(updatedAccount.address, updatedAccount);
+
+    return updatedAccount;
   }
 
   @override
@@ -113,5 +120,15 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
     await accountsBox.clear();
 
     await _privateDataRepository.clearData();
+  }
+
+  Account _replaceForbiddenSymbolsIfNeeded(Account account) {
+    var updatedAccount = account;
+    if (StringUtils.isThereForbiddenSymbols(account.name ?? "")) {
+      updatedAccount = account.copyWith(
+          name: StringUtils.cutForbiddenSymbols(account.name ?? ""));
+    }
+
+    return updatedAccount;
   }
 }

@@ -11,6 +11,7 @@ import 'package:fuelet_secure_layer/src/features/account/manager/hive_account_ma
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_local_repository.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
 import 'package:fuelet_secure_layer/src/features/private_data/utils/constants.dart';
+import 'package:fuelet_secure_layer/src/utils/string_utils.dart';
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

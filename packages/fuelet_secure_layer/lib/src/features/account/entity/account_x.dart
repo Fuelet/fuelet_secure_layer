@@ -17,15 +17,15 @@ extension AccountX on Account {
 
   String get shortName {
     /// A -> A
-    if (nameOrUnnamed.length == 1) {
+    if (nameOrUnnamed.length <= 1) {
       return nameOrUnnamed;
     }
 
     /// First Account -> FA
-    if (nameOrUnnamed.split(' ').length > 1) {
-      final splitedItems =
-          nameOrUnnamed.split(' ').where((s) => s.isNotEmpty).toList();
-      return '${splitedItems[0][0]}${splitedItems[1][0]}';
+    final List<String> accountNameParts =
+        nameOrUnnamed.split(' ').where((s) => s.isNotEmpty).toList();
+    if (accountNameParts.length > 1) {
+      return '${accountNameParts[0][0]}${accountNameParts[1][0]}';
     }
 
     /// Account -> Ac

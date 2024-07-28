@@ -17,7 +17,7 @@ abstract class IAccountsLocalRepository {
   Future<void> saveAccounts(List<Account> accounts);
 
   /// Updates certain account in local storage
-  Future<void> updateAccount(Account updatedAccount);
+  Future<Account> updateAccount(Account updatedAccount);
 
   /// Sets specific account address as selected
   Future<void> setSelectedAccount(String address);

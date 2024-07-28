@@ -34,4 +34,6 @@ abstract class RegExpValidator {
   static bool hex(String input) => _hexRegex.hasMatch(input);
 
   static bool appVersion(String input) => _appVersionRegex.hasMatch(input);
+
+  static const String forbiddenSymblosRegEx = r'[^a-zA-Z0-9 ]+';
 }
