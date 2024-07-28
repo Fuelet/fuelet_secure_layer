@@ -3,6 +3,7 @@ import 'package:flutter_cloud_kit/types/cloud_ket_record.dart';
 import 'package:flutter_cloud_kit/types/cloud_kit_account_status.dart';
 import 'package:flutter_cloud_kit/types/database_scope.dart';
 import 'package:fuelet_secure_layer/core/account/entity/account.dart';
+import 'package:fuelet_secure_layer/core/account/repository/accounts_private_data_repository.dart';
 import 'package:fuelet_secure_layer/core/cloud_backup/repository/cloud_backup_repository.dart';
 import 'package:fuelet_secure_layer/env/env.dart';
 
@@ -12,8 +13,12 @@ const _secretAttribute = 'secret';
 
 class CloudBackupRepositoryIOSImpl implements ICloudBackupRepository {
   final FlutterCloudKit cloudKit;
+  final IAccountsPrivateDataRepository _accountsPrivateDataRepository;
 
-  const CloudBackupRepositoryIOSImpl(this.cloudKit);
+  const CloudBackupRepositoryIOSImpl(
+    this.cloudKit,
+    this._accountsPrivateDataRepository,
+  );
 
   Future<bool> _checkCloudKitAvailable() async {
     try {
@@ -98,9 +103,10 @@ class CloudBackupRepositoryIOSImpl implements ICloudBackupRepository {
 
     for (var account in accounts) {
       if (account.isOwner) {
+        final data = _accountsPrivateDataRepository.data[account.address];
         backups = {
           ...backups,
-          account.address: account.seedPhrase ?? account.privateKey!,
+          account.address: data?.seedPhrase ?? data!.privateKey,
         };
       }
     }

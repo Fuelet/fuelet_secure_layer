@@ -34,6 +34,7 @@ dependencies:
   extension_google_sign_in_as_googleapis_auth: ^2.0.10 # # BSD-3-Clause (LICENSE)
   envied: ^0.3.0+3 # MIT (LICENSE)
   flutter_cloud_kit: 0.0.2 # MIT (LICENSE)
+  flutter_bloc: ^8.1.1 # MIT (LICENSE)
 
   graphql: # TODO: replace with a version from pubspec once https://github.com/zino-hofmann/graphql-flutter/pull/1393 is added to a release
     git:

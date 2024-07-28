@@ -1,0 +1,1 @@
+enum WalletImportType { withSeedPhrase, withPrivateKey }

@@ -1,7 +1,5 @@
 part of 'package:fuelet_secure_layer/di/public/public_register.dart';
 
-enum SensitiveDataType { privateKey, seedPhrase }
-
 class SaveSensitiveDataScreen extends StatefulWidget {
   final AccountAddress accountAddress;
   final bool isBackedUp;
@@ -40,6 +38,7 @@ class _SaveSensitiveDataScreenState extends State<SaveSensitiveDataScreen> {
 
     final privateDataRepository =
         _privateSecureLayerLocator<IAccountsPrivateDataRepository>();
+
     final privateData =
         privateDataRepository.data[widget.accountAddress.bech32Address];
 

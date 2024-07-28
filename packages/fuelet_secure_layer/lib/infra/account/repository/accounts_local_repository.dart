@@ -11,7 +11,7 @@ const _selectedAccountPrefKey = 'selectedAccountAddress';
 
 class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
   final SharedPreferences _sharedPreferences;
-  late final IAccountsPrivateDataRepository _privateDataRepository;
+  final IAccountsPrivateDataRepository _privateDataRepository;
 
   final _selectedAccountStreamController = StreamController<String?>();
 

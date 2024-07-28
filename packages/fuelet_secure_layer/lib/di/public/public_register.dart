@@ -1,35 +1,22 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cloud_kit/flutter_cloud_kit.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:fuelet_secure_layer/core/account/entity/address.dart';
-import 'package:fuelet_secure_layer/core/account/repository/accounts_local_repository.dart';
 import 'package:fuelet_secure_layer/core/account/repository/accounts_private_data_repository.dart';
-import 'package:fuelet_secure_layer/core/wallet_create/repository/wallet_create_repository.dart';
-import 'package:fuelet_secure_layer/di/common/common_locator.dart';
-import 'package:fuelet_secure_layer/di/public/export.dart';
-import 'package:fuelet_secure_layer/di/public/public_locator.dart';
-import 'package:fuelet_secure_layer/infra/account/repository/accounts_local_repository.dart';
+import 'package:fuelet_secure_layer/core/network/fuel_network_manager.dart';
+import 'package:fuelet_secure_layer/fuelet_secure_layer.dart';
 import 'package:fuelet_secure_layer/infra/account/repository/accounts_private_data_repository_impl.dart';
 import 'package:fuelet_secure_layer/infra/cloud_backup/cloud_backup_repository_android_impl.dart';
 import 'package:fuelet_secure_layer/infra/cloud_backup/cloud_backup_repository_ios_impl.dart';
 import 'package:fuelet_secure_layer/infra/cloud_backup/cloud_backup_repository_web.dart';
-import 'package:fuelet_secure_layer/infra/data/repository/private_key_repository.dart';
-import 'package:fuelet_secure_layer/infra/data/repository/seed_phrase_repository.dart';
 import 'package:fuelet_secure_layer/infra/google_api_manager/google_api_manager.dart';
-import 'package:fuelet_secure_layer/infra/hardware_signer/repository/hardware_signer_repository.dart';
-import 'package:fuelet_secure_layer/infra/hardware_signer/service/wallet_connect_service.dart';
+import 'package:fuelet_secure_layer/infra/network/fuel_network_manager_impl.dart';
+import 'package:fuelet_secure_layer/infra/network/network_manager.dart';
 import 'package:fuelet_secure_layer/infra/tpm_service/tpm_service.dart';
-import 'package:fuelet_secure_layer/infra/tpm_service/tpm_service_impl/tpm_android_impl.dart';
-import 'package:fuelet_secure_layer/infra/tpm_service/tpm_service_impl/tpm_ios_impl.dart';
-import 'package:fuelet_secure_layer/infra/tpm_service/tpm_service_impl/tpm_web_impl.dart';
-import 'package:fuelet_secure_layer/infra/wallet_create/repository/wallet_create_repository_impl.dart';
-import 'package:fuelet_secure_layer/infra/wallet_unlocked/wallet_unlocked_service.dart';
 import 'package:fuelet_secure_layer/presentation/hardware_signer/ui/check_tile.dart';
-import 'package:fuelet_secure_layer/presentation/hardware_signer/ui/l10n_save_sensitive_data_screen.dart';
 import 'package:fuelet_secure_layer/presentation/hardware_signer/ui/sensitive_data_widget.dart';
-import 'package:fuelet_secure_layer/presentation/seed_phrase/seed_phrase_widget.dart';
 import 'package:fuelet_secure_layer/utils/clipboard.dart';
 import 'package:get_it/get_it.dart';
 import 'package:secure_enclave/secure_enclave.dart';
@@ -40,6 +27,8 @@ import 'package:uikit/uikit.dart';
 part 'package:fuelet_secure_layer/di/private/private_register.dart';
 // In order to let SaveSensitiveDataScreen use _privateSecureLayerLocator
 part 'package:fuelet_secure_layer/presentation/hardware_signer/ui/save_sensitive_data_screen.dart';
+// In order to let ShowSensitiveDataScreen use _privateSecureLayerLocator
+part 'package:fuelet_secure_layer/presentation/hardware_signer/ui/show_sensitive_data_screen.dart';
 
 class PublicSecureLayerRegister {
   static Future<void> init() async {
@@ -99,10 +88,16 @@ class PublicSecureLayerRegister {
       ..registerFactory(() => GoogleApiManager())
       ..registerFactory(
         () => CloudBackupRepositoryAndroidImpl(
-            secureLayerLocator<GoogleApiManager>()),
+          secureLayerLocator<GoogleApiManager>(),
+          _privateSecureLayerLocator<IAccountsPrivateDataRepository>(),
+        ),
       )
-      ..registerFactory(() =>
-          CloudBackupRepositoryIOSImpl(secureLayerLocator<FlutterCloudKit>()))
+      ..registerFactory(
+        () => CloudBackupRepositoryIOSImpl(
+          secureLayerLocator<FlutterCloudKit>(),
+          _privateSecureLayerLocator<IAccountsPrivateDataRepository>(),
+        ),
+      )
       ..registerFactory(() => CloudBackupRepositoryWebImpl())
       ..registerLazySingleton(
         () {
@@ -114,6 +109,18 @@ class PublicSecureLayerRegister {
             return secureLayerLocator<CloudBackupRepositoryWebImpl>();
           }
         },
+      )
+      ..registerFactory(() => SecureLayerSharedPrefsManager(
+          commonSecureLayerLocator<SharedPrefsRawManager>()))
+      ..registerFactory(() =>
+          NetworkManager(secureLayerLocator<SecureLayerSharedPrefsManager>()))
+      ..registerFactory<FuelNetworkManager>(
+          () => FuelNetworkManagerImpl(secureLayerLocator<NetworkManager>()))
+      ..registerFactory(
+        () => WalletImportBloc(
+            secureLayerLocator<IWalletCreateRepository>(),
+            secureLayerLocator<NetworkManager>()
+                as FuelNetworkProviderRepository),
       );
   }
 }

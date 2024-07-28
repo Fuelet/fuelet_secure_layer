@@ -32,16 +32,18 @@ class Account with EquatableMixin {
   @HiveField(6)
   String? hardwareSignerTag;
 
-  // TODO must be private
-  // We don't store privateKey in hive, but separately in secure storage
-  @Deprecated('Access to privateKey will be removed')
+  // // TODO must be private
+  // // We don't store privateKey in hive, but separately in secure storage
+  // @Deprecated('Access to privateKey will be removed')
   late final String? _privateKey;
-  String? get privateKey => _privateKey; // TODO rm
+  // String? get privateKey => _privateKey; // TODO rm
   set privateKey(String? value) => _privateKey = value;
-
-  // We don't store seedPhrase in hive, but separately in secure storage
-  @Deprecated('Access to seedPhrase will be removed')
-  late final String? seedPhrase;
+  //
+  // // We don't store seedPhrase in hive, but separately in secure storage
+  // @Deprecated('Access to seedPhrase will be removed')
+  late final String? _seedPhrase;
+  // String? get seedPhrase => _seedPhrase; // TODO rm
+  set seedPhrase(String? value) => _seedPhrase = value;
 
   Account({
     required this.fuelAddress,
@@ -74,7 +76,7 @@ class Account with EquatableMixin {
 
     /// [privateKey] and [seedPhrase] never will be changed!
     account.privateKey = _privateKey;
-    account.seedPhrase = seedPhrase;
+    account.seedPhrase = _seedPhrase;
 
     return account;
   }

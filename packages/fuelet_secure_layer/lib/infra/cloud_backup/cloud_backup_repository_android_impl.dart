@@ -1,12 +1,17 @@
 import 'package:fuelet_secure_layer/core/account/entity/account.dart';
+import 'package:fuelet_secure_layer/core/account/repository/accounts_private_data_repository.dart';
 import 'package:fuelet_secure_layer/core/cloud_backup/repository/cloud_backup_repository.dart';
 import 'package:fuelet_secure_layer/infra/cloud_backup/models/backup_accouts_dto.dart';
 import 'package:fuelet_secure_layer/infra/google_api_manager/google_api_manager.dart';
 
 class CloudBackupRepositoryAndroidImpl implements ICloudBackupRepository {
   final GoogleApiManager googleApiManager;
+  final IAccountsPrivateDataRepository _accountsPrivateDataRepository;
 
-  const CloudBackupRepositoryAndroidImpl(this.googleApiManager);
+  const CloudBackupRepositoryAndroidImpl(
+    this.googleApiManager,
+    this._accountsPrivateDataRepository,
+  );
 
   @override
   Future<Map<String, String>> createBackups({
@@ -16,9 +21,10 @@ class CloudBackupRepositoryAndroidImpl implements ICloudBackupRepository {
 
     for (var account in accounts) {
       if (account.isOwner) {
+        final data = _accountsPrivateDataRepository.data[account.address];
         backups = {
           ...backups,
-          account.address: account.seedPhrase ?? account.privateKey!,
+          account.address: data?.seedPhrase ?? data!.privateKey,
         };
       }
     }
