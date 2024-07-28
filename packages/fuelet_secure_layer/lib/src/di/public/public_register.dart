@@ -112,13 +112,13 @@ class PublicSecureLayerRegister {
           commonSecureLayerLocator<SharedPrefsRawManager>()))
       ..registerFactory(() =>
           NetworkManager(secureLayerLocator<SecureLayerSharedPrefsManager>()))
-      ..registerFactory<FuelNetworkManager>(
-          () => FuelNetworkManagerImpl(secureLayerLocator<NetworkManager>()))
-      ..registerFactory(
-        () => WalletImportBloc(
-            secureLayerLocator<IWalletCreateRepository>(),
-            secureLayerLocator<NetworkManager>()
-                as FuelNetworkProviderRepository),
+      ..registerFactoryAsync<FuelNetworkManager>(() async =>
+          FuelNetworkManagerImpl(secureLayerLocator<NetworkManager>())..init())
+      ..registerFactoryAsync(
+        () async => WalletImportBloc(
+          secureLayerLocator<IWalletCreateRepository>(),
+          await secureLayerLocator.getAsync<FuelNetworkManager>(),
+        ),
       );
   }
 }
