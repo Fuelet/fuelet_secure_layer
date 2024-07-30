@@ -1,4 +1,14 @@
-part of 'package:fuelet_secure_layer/src/features/account/entity/account.dart';
+import 'dart:async';
+
+import 'package:fuelet_secure_layer/src/features/account/entity/account.dart';
+import 'package:fuelet_secure_layer/src/features/account/entity/account_x.dart';
+import 'package:fuelet_secure_layer/src/features/account/manager/hive_account_manager.dart';
+import 'package:fuelet_secure_layer/src/features/account/repository/accounts_local_repository.dart';
+import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
+import 'package:fuelet_secure_layer/src/features/private_data/utils/constants.dart';
+import 'package:fuelet_secure_layer/src/utils/string_utils.dart';
+import 'package:hive/hive.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const _selectedAccountPrefKey = 'selectedAccountAddress';
 
