@@ -40,12 +40,10 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
 
     for (Account account in accounts) {
       await _privateDataRepository.loadData(account.address);
-
-      account.privateKey =
-          _privateDataRepository.data[account.address]?.privateKey;
-      account.seedPhrase =
-          _privateDataRepository.data[account.address]?.seedPhrase;
-
+      account.privateKeyExists =
+          _privateDataRepository.privateKeyExists(account.address);
+      account.seedPhraseExists =
+          _privateDataRepository.seedPhraseExists(account.address);
       account = _replaceForbiddenSymbolsIfNeeded(account);
     }
 
@@ -57,24 +55,12 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
     final accountsBox = Hive.box<Account>(SecureLayerConstants.kAccountsBox);
     final List<Future<void>> futures = [];
 
-    final Map<AccountAddressBech32, AccountPrivateData?> privateData = {};
-
     for (Account account in accounts) {
       account = _replaceForbiddenSymbolsIfNeeded(account);
-
       futures.add(accountsBox.put(account.address, account));
-
-      final privateKey = account._privateKey;
-      if (privateKey != null) {
-        privateData[account.address] = AccountPrivateData(
-          privateKey: privateKey,
-          seedPhrase: account._seedPhrase,
-        );
-      }
     }
     await Future.wait(futures);
-
-    await _privateDataRepository.saveData(privateData);
+    await _privateDataRepository.flushData();
   }
 
   @override

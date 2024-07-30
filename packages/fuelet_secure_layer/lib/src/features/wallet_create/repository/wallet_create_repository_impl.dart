@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_fuels/flutter_fuels.dart';
 import 'package:fuelet_secure_layer/fuelet_secure_layer.dart';
-import 'package:fuelet_secure_layer/src/features/account/entity/account_address_bech32.dart';
 import 'package:fuelet_secure_layer/src/features/account/entity/account_private_data.dart';
+import 'package:fuelet_secure_layer/src/features/account/entity/account_x.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
 import 'package:fuelet_secure_layer/src/features/wallet_create/entity/contract_id.dart';
 import 'package:fuelet_secure_layer/src/utils/either_x.dart';
@@ -18,28 +18,43 @@ class WalletCreateRepositoryImpl implements IWalletCreateRepository {
     this._hardwareSignerRepository,
   );
 
+  void _captureAccountPrivateData(
+      Account account, AccountPrivateData privateData) {
+    _accountsPrivateDataRepository.addPrivateData(account.address, privateData);
+    account.privateKeyExists = true;
+    account.seedPhraseExists = privateData.seedPhrase != null;
+  }
+
+  Account _accountFromWallet(FuelWallet wallet, DateTime createdAt,
+      AccountAddingMethod addingMethod, DerivativeInfo? derivativeInfo) {
+    final shouldSaveSeedPhrase =
+        derivativeInfo == null || derivativeInfo.index == 0;
+    final account = Account(
+      fuelAddress: AccountAddress(
+        b256Address: wallet.b256Address,
+        bech32Address: wallet.bech32Address,
+      ),
+      createdAt: createdAt,
+      addingMethod: addingMethod,
+      derivativeInfo: derivativeInfo,
+    );
+    final privateData = AccountPrivateData(
+      privateKey: wallet.privateKey,
+      seedPhrase: shouldSaveSeedPhrase ? wallet.mnemonicPhrase : null,
+    );
+    _captureAccountPrivateData(account, privateData);
+    return account;
+  }
+
   @override
   Future<WalletImportResponse> createAccount(
       {required String currentNetworkUrl}) async {
     final wallet = await FuelWallet.generateNewWallet(
       networkUrl: currentNetworkUrl,
     );
-
-    final account = Account(
-      fuelAddress: AccountAddress(
-        b256Address: wallet.b256Address,
-        bech32Address: wallet.bech32Address,
-      ),
-      createdAt: DateTime.now(),
-    );
-    account.privateKey = wallet.privateKey;
-    account.seedPhrase = wallet.mnemonicPhrase;
-
-    return importAccountWithMnemonic(
-      wallet.mnemonicPhrase!,
-      addingMethod: AccountAddingMethod.create,
-      currentNetworkUrl: currentNetworkUrl,
-    );
+    final account = _accountFromWallet(
+        wallet, DateTime.now(), AccountAddingMethod.create, null);
+    return Right(account);
   }
 
   @override
@@ -55,26 +70,12 @@ class WalletCreateRepositoryImpl implements IWalletCreateRepository {
         mnemonic: mnemonic,
       );
     } catch (_) {
-      return const Left(WalletImportFailure.unexpected());
-    }
-
-    try {
-      final account = Account(
-        fuelAddress: AccountAddress(
-          b256Address: wallet.b256Address,
-          bech32Address: wallet.bech32Address,
-        ),
-        addingMethod: addingMethod,
-        createdAt: DateTime.now(),
-      );
-
-      account.privateKey = wallet.privateKey;
-      account.seedPhrase = wallet.mnemonicPhrase;
-
-      return Right(account);
-    } catch (err) {
       return const Left(WalletImportFailure.invalidMnemonic());
     }
+
+    final account =
+        _accountFromWallet(wallet, DateTime.now(), addingMethod, null);
+    return Right(account);
   }
 
   @override
@@ -87,37 +88,31 @@ class WalletCreateRepositoryImpl implements IWalletCreateRepository {
     try {
       final List<Future<Account>> requests = [];
       final currentTime = DateTime.now();
-      final AccountAddress mainAddress = await getMainAccountAddress(
-        mnemonic,
-        currentNetworkUrl: currentNetworkUrl,
-      );
+      final AccountAddress mainAddress;
+      try {
+        mainAddress = await getMainAccountAddress(
+          mnemonic,
+          currentNetworkUrl: currentNetworkUrl,
+        );
+      } catch (e) {
+        return const Left(WalletImportFailure.invalidMnemonic());
+      }
       for (int i = fromIndex; i < fromIndex + count; ++i) {
         Future<Account> request = FuelWallet.newFromMnemonicPhraseAndIndex(
           networkUrl: currentNetworkUrl,
           mnemonic: mnemonic,
           index: i,
-        ).then(
-          (fuelWallet) => Account(
-            fuelAddress: AccountAddress(
-              b256Address: fuelWallet.b256Address,
-              bech32Address: fuelWallet.bech32Address,
-            ),
-            addingMethod: AccountAddingMethod.importWithSeedPhrase,
-            createdAt: currentTime,
-            derivativeInfo: DerivativeInfo(
-              index: i,
-              derivedFrom: mainAddress,
-            ),
-          )
-            ..privateKey = fuelWallet.privateKey
-            ..seedPhrase = i == 0 ? fuelWallet.mnemonicPhrase : null,
-        );
+        ).then((fuelWallet) => _accountFromWallet(
+            fuelWallet,
+            currentTime,
+            AccountAddingMethod.importWithSeedPhrase,
+            DerivativeInfo(index: i, derivedFrom: mainAddress)));
         requests.add(request);
       }
 
       return Right(await Future.wait(requests));
     } catch (e) {
-      return const Left(WalletImportFailure.invalidMnemonic());
+      return const Left(WalletImportFailure.unexpected());
     }
   }
 
@@ -152,23 +147,9 @@ class WalletCreateRepositoryImpl implements IWalletCreateRepository {
       return const Left(WalletImportFailure.invalidPrivateKey());
     }
 
-    try {
-      final account = Account(
-        fuelAddress: AccountAddress(
-          b256Address: wallet.b256Address,
-          bech32Address: wallet.bech32Address,
-        ),
-        addingMethod: addingMethod,
-        createdAt: DateTime.now(),
-      );
-
-      account.privateKey = wallet.privateKey;
-      account.seedPhrase = wallet.mnemonicPhrase;
-
-      return Right(account);
-    } catch (err) {
-      return const Left(WalletImportFailure.invalidPrivateKey());
-    }
+    final account =
+        _accountFromWallet(wallet, DateTime.now(), addingMethod, null);
+    return Right(account);
   }
 
   @override
@@ -194,8 +175,8 @@ class WalletCreateRepositoryImpl implements IWalletCreateRepository {
         name: name,
       );
 
-      account.privateKey = null;
-      account.seedPhrase = null;
+      account.privateKeyExists = false;
+      account.seedPhraseExists = false;
 
       return Right(account);
     } catch (err) {
@@ -243,17 +224,11 @@ class WalletCreateRepositoryImpl implements IWalletCreateRepository {
     );
 
     // TODO: temp solution, remove later
-    account.privateKey = recoveryPrivateKey;
-    account.seedPhrase = null;
-
-    final data = <AccountAddressBech32, AccountPrivateData>{
-      account.address: AccountPrivateData(
-        privateKey: recoveryPrivateKey,
-        seedPhrase: null,
-      )
-    };
-    await _accountsPrivateDataRepository.saveData(data);
-
+    final privateData = AccountPrivateData(
+      privateKey: recoveryPrivateKey,
+      seedPhrase: null,
+    );
+    _captureAccountPrivateData(account, privateData);
     return (account, createdHsInfo.contractId);
   }
 }

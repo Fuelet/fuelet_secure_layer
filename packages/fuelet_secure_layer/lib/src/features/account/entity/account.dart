@@ -1,8 +1,7 @@
 import 'dart:async';
 
 import 'package:equatable/equatable.dart';
-import 'package:fuelet_secure_layer/src/features/account/entity/account_address_bech32.dart';
-import 'package:fuelet_secure_layer/src/features/account/entity/account_private_data.dart';
+import 'package:fuelet_secure_layer/src/features/account/entity/account_x.dart';
 import 'package:fuelet_secure_layer/src/features/account/entity/adding_method.dart';
 import 'package:fuelet_secure_layer/src/features/account/entity/address.dart';
 import 'package:fuelet_secure_layer/src/features/account/entity/derivative_info.dart';
@@ -16,7 +15,7 @@ import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'account.g.dart';
-part 'account_x.dart';
+
 part 'package:fuelet_secure_layer/src/features/account/repository/accounts_local_repository_impl.dart';
 
 @HiveType(typeId: 0)
@@ -43,13 +42,9 @@ class Account with EquatableMixin {
   @HiveField(6)
   String? hardwareSignerTag;
 
-  // // We don't store privateKey in hive, but separately in secure storage
-  late final String? _privateKey;
-  set privateKey(String? value) => _privateKey = value;
+  late final bool privateKeyExists;
 
-  // // We don't store seedPhrase in hive, but separately in secure storage
-  late final String? _seedPhrase;
-  set seedPhrase(String? value) => _seedPhrase = value;
+  late final bool seedPhraseExists;
 
   Account({
     required this.fuelAddress,
@@ -80,9 +75,8 @@ class Account with EquatableMixin {
       name: name ?? this.name,
     );
 
-    /// [privateKey] and [seedPhrase] will never change
-    account.privateKey = _privateKey;
-    account.seedPhrase = _seedPhrase;
+    account.privateKeyExists = privateKeyExists;
+    account.seedPhraseExists = seedPhraseExists;
 
     return account;
   }

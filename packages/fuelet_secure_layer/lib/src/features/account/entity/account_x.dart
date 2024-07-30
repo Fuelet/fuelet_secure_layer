@@ -1,13 +1,9 @@
-part of 'account.dart';
+import 'package:fuelet_secure_layer/src/features/account/entity/account.dart';
 
 const _defaultShortName = 'Ac';
 
 extension AccountX on Account {
-  bool get privateKeyExists => _privateKey != null;
-
-  bool get seedPhraseExists => _seedPhrase != null;
-
-  bool get isOwner => _privateKey != null || _seedPhrase != null || isHsWallet;
+  bool get isOwner => privateKeyExists || seedPhraseExists || isHsWallet;
 
   String get address => fuelAddress.bech32Address;
 
