@@ -4,7 +4,6 @@ abstract class ICloudBackupRepository {
   /// Attempts to save the provided backups into cloud.
   /// Returns the successfully saved backups.
   Future<Map<String, String>> createBackups({
-    // accountAddress : seedPhraseOrPrivateKey
     required List<Account> accounts,
   });
 

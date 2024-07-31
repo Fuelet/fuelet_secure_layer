@@ -6,8 +6,6 @@ abstract class IAccountsLocalRepository {
   // bech32
   String? get selectedAccount;
 
-  @Deprecated(
-      'Should be replaced with a stream returning an address without private key')
   Stream<String?> get selectedAccountStream;
 
   /// Loads [Account]s from the localStorage.

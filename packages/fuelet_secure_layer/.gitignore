@@ -29,4 +29,5 @@ migrate_working_dir/
 build/
 
 # Custom
-.env
+*.env
+*env.g.dart
