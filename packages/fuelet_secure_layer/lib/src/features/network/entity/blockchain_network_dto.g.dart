@@ -6,7 +6,8 @@ part of 'blockchain_network_dto.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-BlockchainNetworkDto _$BlockchainNetworkDtoFromJson(Map json) =>
+BlockchainNetworkDto _$BlockchainNetworkDtoFromJson(
+        Map<String, dynamic> json) =>
     BlockchainNetworkDto(
       host: json['host'] as String,
       indexerUrl: json['indexerUrl'] as String,
@@ -17,21 +18,12 @@ BlockchainNetworkDto _$BlockchainNetworkDtoFromJson(Map json) =>
     );
 
 Map<String, dynamic> _$BlockchainNetworkDtoToJson(
-    BlockchainNetworkDto instance) {
-  final val = <String, dynamic>{
-    'host': instance.host,
-    'indexerUrl': instance.indexerUrl,
-  };
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('faucetUrl', instance.faucetUrl);
-  val['networkName'] = instance.networkName;
-  val['isCustom'] = instance.isCustom;
-  val['id'] = instance.id;
-  return val;
-}
+        BlockchainNetworkDto instance) =>
+    <String, dynamic>{
+      'host': instance.host,
+      'indexerUrl': instance.indexerUrl,
+      'faucetUrl': instance.faucetUrl,
+      'networkName': instance.networkName,
+      'isCustom': instance.isCustom,
+      'id': instance.id,
+    };

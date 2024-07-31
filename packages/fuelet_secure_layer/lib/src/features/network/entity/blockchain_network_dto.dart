@@ -21,7 +21,7 @@ class BlockchainNetworkDto {
     required this.id,
   });
 
-  factory BlockchainNetworkDto.fromJson(Map json) =>
+  factory BlockchainNetworkDto.fromJson(Map<String, dynamic> json) =>
       _$BlockchainNetworkDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$BlockchainNetworkDtoToJson(this);
