@@ -100,7 +100,6 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
   Future<void> resetSelectedAccount() {
     _selectedAccount = null;
     _selectedAccountStreamController.sink.add(_selectedAccount);
-    _privateDataRepository.clearData();
 
     return _sharedPreferences.remove(_selectedAccountPrefKey);
   }
