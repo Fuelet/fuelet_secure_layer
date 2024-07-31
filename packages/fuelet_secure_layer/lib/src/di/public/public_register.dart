@@ -39,10 +39,10 @@ import 'package:fuelet_secure_layer/src/features/wallet_create/repository/wallet
 import 'package:fuelet_secure_layer/src/features/wallet_import/application/wallet_import_bloc.dart';
 import 'package:fuelet_secure_layer/src/features/wallet_unlocked/wallet_unlocked_service.dart';
 import 'package:fuelet_secure_layer/src/utils/clipboard.dart';
+import 'package:fuelet_uikit/fuelet_uikit.dart';
 import 'package:get_it/get_it.dart';
 import 'package:secure_enclave/secure_enclave.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uikit/uikit.dart';
 
 import '../../features/account/entity/address.dart';
 

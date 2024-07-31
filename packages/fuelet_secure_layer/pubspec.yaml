@@ -15,8 +15,10 @@ dependencies:
   # Sensitive deps
   aes256gcm: 1.0.1
 
-  uikit:
-    path: ../../../Fuelet/packages/uikit
+  fuelet_uikit:
+    git:
+      url: https://github.com/Fuelet/fuelet_uikit.git
+      tag: v1.0.0
   flutter_fuels: 0.0.51
   flutter_fuelet_smart_contract_wallet: 0.0.13+1
 

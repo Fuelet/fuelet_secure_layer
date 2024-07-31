@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:uikit/uikit.dart';
+import 'package:fuelet_uikit/fuelet_uikit.dart';
 
 class SeedPhraseColumn extends StatelessWidget {
   final int startCountingFrom;

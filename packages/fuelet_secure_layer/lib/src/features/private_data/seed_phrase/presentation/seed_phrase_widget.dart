@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fuelet_secure_layer/src/features/private_data/seed_phrase/presentation/seed_phrase_column.dart';
-import 'package:uikit/uikit.dart';
+import 'package:fuelet_uikit/fuelet_uikit.dart';
 
 class SeedPhraseWidget extends StatelessWidget {
   final List<String> phrase;

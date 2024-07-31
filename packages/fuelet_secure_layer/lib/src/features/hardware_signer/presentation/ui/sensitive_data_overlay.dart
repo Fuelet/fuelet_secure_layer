@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:uikit/uikit.dart';
+import 'package:fuelet_uikit/fuelet_uikit.dart';
 
 class SensitiveDataOverlay extends StatelessWidget {
   final String overlayText;
