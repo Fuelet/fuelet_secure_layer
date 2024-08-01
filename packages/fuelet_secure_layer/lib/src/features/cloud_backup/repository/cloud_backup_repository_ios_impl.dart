@@ -4,6 +4,7 @@ import 'package:flutter_cloud_kit/types/cloud_kit_account_status.dart';
 import 'package:flutter_cloud_kit/types/database_scope.dart';
 import 'package:fuelet_secure_layer/src/env/env.dart';
 import 'package:fuelet_secure_layer/src/features/account/entity/account.dart';
+import 'package:fuelet_secure_layer/src/features/account/entity/account_x.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
 import 'package:fuelet_secure_layer/src/features/cloud_backup/repository/cloud_backup_repository.dart';
 import 'package:fuelet_secure_layer/src/utils/logger.dart';

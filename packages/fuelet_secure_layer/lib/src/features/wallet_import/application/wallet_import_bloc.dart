@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:fuelet_secure_layer/fuelet_secure_layer.dart';
+import 'package:fuelet_secure_layer/src/features/account/entity/account_x.dart';
 import 'package:fuelet_secure_layer/src/features/wallet_import/application/validators.dart';
 import 'package:fuelet_secure_layer/src/utils/account_utils.dart';
 import 'package:fuelet_secure_layer/src/utils/either_x.dart';

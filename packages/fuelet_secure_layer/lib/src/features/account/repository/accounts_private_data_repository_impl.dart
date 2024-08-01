@@ -17,17 +17,22 @@ class AccountsPrivateDataRepositoryImpl
     this._seedPhraseRepository,
   );
 
-  final Map<AccountAddressBech32, AccountPrivateData?> _data = {};
+  final Map<AccountAddressBech32, AccountPrivateData> _data = {};
 
   final _dataStreamController =
-      StreamController<Map<AccountAddressBech32, AccountPrivateData?>>();
+      StreamController<Map<AccountAddressBech32, AccountPrivateData>>();
 
   @override
-  Map<AccountAddressBech32, AccountPrivateData?> get data => _data;
+  Map<AccountAddressBech32, AccountPrivateData> get data => _data;
 
   @override
-  Stream<Map<AccountAddressBech32, AccountPrivateData?>> get dataStream =>
+  Stream<Map<AccountAddressBech32, AccountPrivateData>> get dataStream =>
       _dataStreamController.stream;
+
+  @override
+  void addPrivateData(AccountAddressBech32 address, AccountPrivateData data) {
+    _updateData(address, data);
+  }
 
   @override
   bool privateKeyExists(AccountAddressBech32 address) =>
@@ -38,29 +43,14 @@ class AccountsPrivateDataRepositoryImpl
       data[address]?.seedPhrase != null;
 
   @override
-  Future<void> saveData(
-      Map<AccountAddressBech32, AccountPrivateData?> data) async {
+  Future<void> flushData() async {
     final addressesAndPrivateKeys = <(String, String?)>[];
     final addressesAndSeedPhrases = <(String, String?)>[];
 
-    for (final entry in data.entries) {
+    for (final entry in _data.entries) {
       final accountAddress = entry.key;
-      final privateKey = entry.value?.privateKey;
-      final seedPhrase = entry.value?.seedPhrase;
-
-      if (privateKey != null) {
-        final accountPrivateData = AccountPrivateData(
-          privateKey: privateKey,
-          seedPhrase: seedPhrase,
-        );
-
-        _updateData(accountAddress, accountPrivateData);
-
-        addressesAndPrivateKeys.add((accountAddress, privateKey));
-        addressesAndSeedPhrases.add((accountAddress, seedPhrase));
-      } else {
-        throw const SavePrivateDataException();
-      }
+      addressesAndPrivateKeys.add((accountAddress, entry.value.privateKey));
+      addressesAndSeedPhrases.add((accountAddress, entry.value.seedPhrase));
     }
 
     await _privateKeyRepository.saveWalletsPrivateKeys(
@@ -109,7 +99,11 @@ class AccountsPrivateDataRepositoryImpl
   Future<void> dispose() => _dataStreamController.close();
 
   void _updateData(AccountAddressBech32 address, AccountPrivateData? data) {
-    _data[address] = data;
+    if (data == null) {
+      _data.remove(address);
+    } else {
+      _data[address] = data;
+    }
     _dataStreamController.add(_data);
   }
 }
