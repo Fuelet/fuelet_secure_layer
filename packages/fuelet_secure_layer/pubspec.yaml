@@ -1,7 +1,8 @@
 name: fuelet_secure_layer
 description: "Fuelet wallet secure layer features"
 version: 1.0.0
-homepage:
+
+publish_to: none
 
 environment:
   sdk: '>=3.3.4 <4.0.0'
@@ -11,9 +12,52 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Sensitive deps
+  aes256gcm: 1.0.1
+
+  fuelet_uikit:
+    git:
+      url: https://github.com/Fuelet/fuelet_uikit.git
+      tag: v1.0.0
+  flutter_fuels: 0.0.51
+  flutter_fuelet_smart_contract_wallet: 0.0.13+1
+
+  convert: ^3.1.1
+  secure_enclave: 0.1.1
+  flutter_secure_storage: ^7.0.1
+  shared_preferences: ^2.0.16
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  json_annotation: ^4.8.0
+  freezed: ^2.3.2
+  freezed_annotation: ^2.1.0
+  equatable: ^2.0.5
+  get_it: ^7.7.0 # MIT (LICENSE)
+  google_sign_in: ^6.2.1 # BSD-3-Clause (LICENSE)
+  googleapis: ^11.2.0 #
+  extension_google_sign_in_as_googleapis_auth: ^2.0.10 # # BSD-3-Clause (LICENSE)
+  envied: ^0.3.0+3 # MIT (LICENSE)
+  flutter_cloud_kit: 0.0.2 # MIT (LICENSE)
+  flutter_bloc: ^8.1.1 # MIT (LICENSE)
+  rxdart: ^0.27.7 # Apache-2.0 (LICENSE)
+  logger: ^2.4.0 # MIT (LICENSE)
+
+  graphql: # TODO: replace with a version from pubspec once https://github.com/zino-hofmann/graphql-flutter/pull/1393 is added to a release
+    git:
+      url: https://github.com/zino-hofmann/graphql-flutter.git
+      path: packages/graphql
+      ref: 56d9a24e8f102fba565c509302a9374034e16525
+
+  dartz: ^0.10.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+
+  build_runner: ^2.3.3
+  hive_generator: ^2.0.0
+  json_serializable: ^6.6.1
+  envied_generator: ^0.3.0+3 # MIT (LICENSE)
 
 flutter:
