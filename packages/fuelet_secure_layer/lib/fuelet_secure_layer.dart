@@ -38,6 +38,7 @@ export 'src/di/common/export.dart';
 export 'src/di/dependencies_builder.dart';
 export 'src/di/public/export.dart';
 export 'src/di/public/public_locator.dart';
+export 'src/features/account/entity/account_x.dart';
 export 'src/features/account/entity/export.dart';
 export 'src/features/account/manager/hive_account_manager.dart';
 export 'src/features/account/repository/accounts_local_repository.dart';
