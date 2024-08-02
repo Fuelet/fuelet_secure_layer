@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cloud_kit/flutter_cloud_kit.dart';
@@ -48,10 +46,8 @@ import '../../features/account/entity/address.dart';
 
 // In order to access _privateSecureLayerLocator
 part 'package:fuelet_secure_layer/src/di/private/private_register.dart';
-
 // In order to let SaveSensitiveDataScreen use _privateSecureLayerLocator
 part 'package:fuelet_secure_layer/src/features/hardware_signer/presentation/ui/save_sensitive_data_screen.dart';
-
 // In order to let ShowSensitiveDataScreen use _privateSecureLayerLocator
 part 'package:fuelet_secure_layer/src/features/hardware_signer/presentation/ui/show_sensitive_data_screen.dart';
 
@@ -66,10 +62,10 @@ class PublicSecureLayerRegister {
       ..registerFactory(() => TPMServiceAndroidImpl())
       ..registerFactory(() => TPMServiceWebImpl())
       ..registerLazySingleton<TPMService>(() {
-        if (Platform.isIOS) {
+        if (defaultTargetPlatform == TargetPlatform.iOS) {
           return secureLayerLocator<TPMServiceIosImpl>();
         }
-        if (Platform.isAndroid) {
+        if (defaultTargetPlatform == TargetPlatform.android) {
           return secureLayerLocator<TPMServiceAndroidImpl>();
         }
 
@@ -122,13 +118,12 @@ class PublicSecureLayerRegister {
       ..registerFactory(() => CloudBackupRepositoryWebImpl())
       ..registerLazySingleton(
         () {
-          if (Platform.isIOS) {
+          if (defaultTargetPlatform == TargetPlatform.iOS) {
             return secureLayerLocator<CloudBackupRepositoryIOSImpl>();
-          } else if (Platform.isAndroid) {
+          } else if (defaultTargetPlatform == TargetPlatform.android) {
             return secureLayerLocator<CloudBackupRepositoryAndroidImpl>();
-          } else {
-            return secureLayerLocator<CloudBackupRepositoryWebImpl>();
           }
+          return secureLayerLocator<CloudBackupRepositoryWebImpl>();
         },
       )
       ..registerFactory(() => SecureLayerSharedPrefsManager(
