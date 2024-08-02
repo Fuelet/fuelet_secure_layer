@@ -3,6 +3,7 @@ library fuelet_secure_layer;
 export 'package:flutter_fuels/flutter_fuels.dart'
     show
         FuelUtils,
+        FuelAddress,
         CallResult,
         Input,
         InputContract,
