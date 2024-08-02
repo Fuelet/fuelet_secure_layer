@@ -141,7 +141,7 @@ class PublicSecureLayerRegister {
       ..registerFactoryAsync(
         () async => TransactionManager(
           await secureLayerLocator.getAsync<FuelNetworkManager>(),
-          secureLayerLocator<WalletUnlockedService>(),
+          _privateSecureLayerLocator<WalletUnlockedService>(),
           secureLayerLocator<IAccountsLocalRepository>(),
         ),
       );

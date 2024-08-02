@@ -21,7 +21,7 @@ class WalletUnlockedService {
     }
 
     final wallet = await FuelWallet.newFromPrivateKey(
-      networkUrl: currentNetwork, //fuelNetworkManager.currentNetwork,
+      networkUrl: currentNetwork,
       privateKey: privateKey,
     );
 
