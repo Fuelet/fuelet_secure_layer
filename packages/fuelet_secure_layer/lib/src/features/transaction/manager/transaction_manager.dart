@@ -20,7 +20,7 @@ class TransactionManager {
   }) async {
     final walletUnlocked = await _getWalletUnlocked(address);
 
-    final callResult = await walletUnlocked.simulateTransaction(
+    final callResult = await walletUnlocked!.simulateTransaction(
         transactionRequestHexOrJson: transactionRequestHexOrJson);
     validateTransactionReceipts(callResult);
 
@@ -33,7 +33,7 @@ class TransactionManager {
   }) async {
     final walletUnlocked = await _getWalletUnlocked(address);
 
-    return walletUnlocked.sendTransaction(
+    return walletUnlocked!.sendTransaction(
         transactionRequestHexOrJson: transactionRequestHexOrJson);
   }
 
@@ -43,10 +43,10 @@ class TransactionManager {
   }) async {
     final walletUnlocked = await _getWalletUnlocked(address);
 
-    return walletUnlocked.signMessage(message: message);
+    return walletUnlocked!.signMessage(message: message);
   }
 
-  Future<(String, String)> createTransferTransactionRequest({
+  Future<(String, String)?> createTransferTransactionRequest({
     required String address,
     required String destinationB256Address,
     required int fractionalAmount,
@@ -54,14 +54,14 @@ class TransactionManager {
   }) async {
     final walletUnlocked = await _getWalletUnlocked(address);
 
-    return walletUnlocked.createTransferTransactionRequest(
+    return walletUnlocked?.createTransferTransactionRequest(
       destinationB256Address: destinationB256Address,
       fractionalAmount: fractionalAmount,
       assetId: assetId,
     );
   }
 
-  Future<FuelWallet> _getWalletUnlocked(String address) async {
+  Future<FuelWallet?> _getWalletUnlocked(String address) async {
     final walletUnlocked =
         await _walletUnlockedService.getSelectedWalletUnlocked(
       address,
@@ -69,6 +69,6 @@ class TransactionManager {
       selectedAccount: _accountsRepository.selectedAccount,
     );
 
-    return walletUnlocked!;
+    return walletUnlocked;
   }
 }

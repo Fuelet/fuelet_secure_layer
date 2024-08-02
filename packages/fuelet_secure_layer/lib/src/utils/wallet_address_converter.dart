@@ -26,6 +26,9 @@ class FuelWalletAddressConverter {
     }
   }
 
+  static String fuelAddressFromString(String value) =>
+      FuelAddress.fromString(_addressValue);
+
   static bool isBech32(String address) {
     return address.startsWith('fuel');
   }
