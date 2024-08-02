@@ -2,11 +2,11 @@ import 'package:flutter_cloud_kit/flutter_cloud_kit.dart';
 import 'package:flutter_cloud_kit/types/cloud_ket_record.dart';
 import 'package:flutter_cloud_kit/types/cloud_kit_account_status.dart';
 import 'package:flutter_cloud_kit/types/database_scope.dart';
-import 'package:fuelet_secure_layer/src/env/env.dart';
 import 'package:fuelet_secure_layer/src/features/account/entity/account.dart';
 import 'package:fuelet_secure_layer/src/features/account/entity/account_x.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
 import 'package:fuelet_secure_layer/src/features/cloud_backup/repository/cloud_backup_repository.dart';
+import 'package:fuelet_secure_layer/src/utils/aes256gcm_utils.dart';
 import 'package:fuelet_secure_layer/src/utils/logger.dart';
 
 const _cloudKitRecordType = 'AccountBackup';
@@ -16,10 +16,12 @@ const _secretAttribute = 'secret';
 class CloudBackupRepositoryIOSImpl implements ICloudBackupRepository {
   final FlutterCloudKit cloudKit;
   final IAccountsPrivateDataRepository _accountsPrivateDataRepository;
+  final String _cloudBackupAesPassword;
 
   const CloudBackupRepositoryIOSImpl(
     this.cloudKit,
     this._accountsPrivateDataRepository,
+    this._cloudBackupAesPassword,
   );
 
   Future<bool> _checkCloudKitAvailable() async {
@@ -42,11 +44,12 @@ class CloudBackupRepositoryIOSImpl implements ICloudBackupRepository {
   }
 
   /// Inserts or updates the account record in the CloudKit private database
-  Future<bool> _upsertAccount(String accountAddress, String secret) async {
+  Future<bool> _upsertAccount(
+      String accountAddress, String secret, String password) async {
     try {
       // ignore the result cause we don't care if the key existed
       await _deleteAccount(accountAddress);
-      final encryptedSecret = await Aes256GcmUtils.encrypt(secret);
+      final encryptedSecret = await Aes256GcmUtils.encrypt(secret, password);
       final record = {_secretAttribute: encryptedSecret};
       await cloudKit.saveRecord(
         scope: _privateDbScope,
@@ -61,14 +64,13 @@ class CloudBackupRepositoryIOSImpl implements ICloudBackupRepository {
   }
 
   Future<Map<String, String>> _recordsToAccounts(
-    List<CloudKitRecord> records,
-  ) async {
+      List<CloudKitRecord> records, String password) async {
     final Map<String, String> decryptedAccounts = {};
     for (final record in records) {
       try {
         final accountName = record.recordName;
         final secret = record.values[_secretAttribute];
-        final decryptedSecret = await Aes256GcmUtils.decrypt(secret);
+        final decryptedSecret = await Aes256GcmUtils.decrypt(secret, password);
         decryptedAccounts[accountName] = decryptedSecret;
       } catch (e) {
         logger.e('Got error parsing account dto: $e. Skipping');
@@ -77,14 +79,14 @@ class CloudBackupRepositoryIOSImpl implements ICloudBackupRepository {
     return decryptedAccounts;
   }
 
-  Future<Map<String, String>> _getAccounts() async {
+  Future<Map<String, String>> _getAccounts(String password) async {
     try {
       final records = await cloudKit.getRecordsByType(
         scope: _privateDbScope,
         recordType: _cloudKitRecordType,
       );
 
-      return await _recordsToAccounts(records);
+      return await _recordsToAccounts(records, password);
     } catch (e) {
       logger.e('Got error parsing accounts dto: $e');
       return {};
@@ -114,7 +116,8 @@ class CloudBackupRepositoryIOSImpl implements ICloudBackupRepository {
     Map<String, String> successfullySavedBackups = {};
 
     for (var entry in backups.entries) {
-      if (await _upsertAccount(entry.key, entry.value)) {
+      if (await _upsertAccount(
+          entry.key, entry.value, _cloudBackupAesPassword)) {
         successfullySavedBackups[entry.key] = entry.value;
       }
     }
@@ -128,7 +131,7 @@ class CloudBackupRepositoryIOSImpl implements ICloudBackupRepository {
       return false;
     }
     bool isSuccess = true;
-    final accounts = await _getAccounts();
+    final accounts = await _getAccounts(_cloudBackupAesPassword);
 
     for (var accountAddress in accounts.keys) {
       if (!await _deleteAccount(accountAddress) && isSuccess) {
@@ -144,7 +147,7 @@ class CloudBackupRepositoryIOSImpl implements ICloudBackupRepository {
     if (!await _checkCloudKitAvailable()) {
       return null;
     }
-    return await _getAccounts();
+    return await _getAccounts(_cloudBackupAesPassword);
   }
 
   @override

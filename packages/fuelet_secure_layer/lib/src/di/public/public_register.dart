@@ -48,13 +48,15 @@ import '../../features/account/entity/address.dart';
 
 // In order to access _privateSecureLayerLocator
 part 'package:fuelet_secure_layer/src/di/private/private_register.dart';
+
 // In order to let SaveSensitiveDataScreen use _privateSecureLayerLocator
 part 'package:fuelet_secure_layer/src/features/hardware_signer/presentation/ui/save_sensitive_data_screen.dart';
+
 // In order to let ShowSensitiveDataScreen use _privateSecureLayerLocator
 part 'package:fuelet_secure_layer/src/features/hardware_signer/presentation/ui/show_sensitive_data_screen.dart';
 
 class PublicSecureLayerRegister {
-  static Future<void> init() async {
+  static Future<void> init(String cloudBackupAesPassword) async {
     await commonSecureLayerLocator.allReady();
     await _privateSecureLayerLocator.allReady();
 
@@ -107,12 +109,14 @@ class PublicSecureLayerRegister {
         () => CloudBackupRepositoryAndroidImpl(
           secureLayerLocator<GoogleApiManager>(),
           _privateSecureLayerLocator<IAccountsPrivateDataRepository>(),
+          cloudBackupAesPassword,
         ),
       )
       ..registerFactory(
         () => CloudBackupRepositoryIOSImpl(
           secureLayerLocator<FlutterCloudKit>(),
           _privateSecureLayerLocator<IAccountsPrivateDataRepository>(),
+          cloudBackupAesPassword,
         ),
       )
       ..registerFactory(() => CloudBackupRepositoryWebImpl())

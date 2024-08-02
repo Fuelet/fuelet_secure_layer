@@ -8,10 +8,12 @@ import 'package:fuelet_secure_layer/src/features/google_api/manager/google_api_m
 class CloudBackupRepositoryAndroidImpl implements ICloudBackupRepository {
   final GoogleApiManager googleApiManager;
   final IAccountsPrivateDataRepository _accountsPrivateDataRepository;
+  final String _cloudBackupAesPassword;
 
   const CloudBackupRepositoryAndroidImpl(
     this.googleApiManager,
     this._accountsPrivateDataRepository,
+    this._cloudBackupAesPassword,
   );
 
   @override
@@ -31,7 +33,8 @@ class CloudBackupRepositoryAndroidImpl implements ICloudBackupRepository {
     }
 
     try {
-      final existingBackup = await googleApiManager.getBackupAccounts();
+      final existingBackup =
+          await googleApiManager.getBackupAccounts(_cloudBackupAesPassword);
 
       BackupAccountsDto backupsToSave;
       if (existingBackup != null) {
@@ -49,8 +52,8 @@ class CloudBackupRepositoryAndroidImpl implements ICloudBackupRepository {
         );
       }
 
-      final savedSuccessfully =
-          await googleApiManager.saveBackups(backupsToSave);
+      final savedSuccessfully = await googleApiManager.saveBackups(
+          backupsToSave, _cloudBackupAesPassword);
       if (savedSuccessfully) {
         return backups;
       } else {
@@ -68,6 +71,7 @@ class CloudBackupRepositoryAndroidImpl implements ICloudBackupRepository {
         const BackupAccountsDto(
           backupAccounts: {},
         ),
+        _cloudBackupAesPassword,
       );
     } catch (e) {
       return false;
@@ -77,7 +81,8 @@ class CloudBackupRepositoryAndroidImpl implements ICloudBackupRepository {
   @override
   Future<Map<String, String>?> fetchBackups() async {
     try {
-      final existingBackup = await googleApiManager.getBackupAccounts();
+      final existingBackup =
+          await googleApiManager.getBackupAccounts(_cloudBackupAesPassword);
 
       if (existingBackup != null) {
         return existingBackup.backupAccounts;
@@ -95,14 +100,16 @@ class CloudBackupRepositoryAndroidImpl implements ICloudBackupRepository {
   @override
   Future<bool> deleteCertainBackup(String address) async {
     try {
-      final existingBackup = await googleApiManager.getBackupAccounts();
+      final existingBackup =
+          await googleApiManager.getBackupAccounts(_cloudBackupAesPassword);
       final accounts = {...existingBackup?.backupAccounts ?? {}};
 
       return await googleApiManager.saveBackups(
-        BackupAccountsDto(
-          backupAccounts: accounts..removeWhere((key, value) => key == address),
-        ),
-      );
+          BackupAccountsDto(
+            backupAccounts: accounts
+              ..removeWhere((key, value) => key == address),
+          ),
+          _cloudBackupAesPassword);
     } catch (e) {
       return false;
     }

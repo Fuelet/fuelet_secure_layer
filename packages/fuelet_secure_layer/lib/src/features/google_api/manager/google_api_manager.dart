@@ -50,7 +50,8 @@ class GoogleApiManager {
     return null;
   }
 
-  Future<BackupAccountsDto?> getBackupAccounts({
+  Future<BackupAccountsDto?> getBackupAccounts(
+    String password, {
     bool resignGoogle = false,
   }) async {
     final drive = await _configureDriveApi(resignGoogle);
@@ -69,18 +70,19 @@ class GoogleApiManager {
     final stringContent =
         await BackupUtils.streamToString(contentResponse.stream);
 
-    return await BackupAccountsDto.fromRawJson(stringContent);
+    return await BackupAccountsDto.fromRawJson(stringContent, password);
   }
 
   Future<bool> saveBackups(
-    BackupAccountsDto backup, [
+    BackupAccountsDto backup,
+    String password, [
     bool resignGoogle = false,
   ]) async {
     final drive = await _configureDriveApi(resignGoogle);
 
     final backupFileId = await _getBackupFileId(drive);
 
-    final jsonString = await backup.toRawJson();
+    final jsonString = await backup.toRawJson(password);
     final uploadMedia = Media(
       Stream<List<int>>.fromIterable([utf8.encode(jsonString)]),
       jsonString.length,
