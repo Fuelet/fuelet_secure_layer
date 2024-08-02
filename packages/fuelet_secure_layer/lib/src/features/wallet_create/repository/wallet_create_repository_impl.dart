@@ -2,7 +2,6 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_fuels/flutter_fuels.dart';
 import 'package:fuelet_secure_layer/fuelet_secure_layer.dart';
 import 'package:fuelet_secure_layer/src/features/account/entity/account_private_data.dart';
-import 'package:fuelet_secure_layer/src/features/account/entity/account_x.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
 import 'package:fuelet_secure_layer/src/features/wallet_create/entity/contract_id.dart';
 import 'package:fuelet_secure_layer/src/utils/either_x.dart';
