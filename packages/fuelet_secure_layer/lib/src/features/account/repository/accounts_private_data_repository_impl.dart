@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:fuelet_secure_layer/src/features/account/entity/account_address_bech32.dart';
 import 'package:fuelet_secure_layer/src/features/account/entity/account_private_data.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
-import 'package:fuelet_secure_layer/src/features/account/repository/exceptions/private_data_exceptions.dart';
 import 'package:fuelet_secure_layer/src/features/private_data/private_key/repository/private_key_repository.dart';
 import 'package:fuelet_secure_layer/src/features/private_data/seed_phrase/repository/seed_phrase_repository.dart';
 
@@ -73,8 +72,6 @@ class AccountsPrivateDataRepositoryImpl
           AccountPrivateData(privateKey: privateKey, seedPhrase: seedPhrase);
 
       _updateData(address, data);
-    } else {
-      throw const LoadPrivateDataException();
     }
   }
 
