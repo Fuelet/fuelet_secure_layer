@@ -7,30 +7,25 @@ typedef WalletAddressConvertor = Future<String> Function(String);
 
 class FuelWalletAddressConverter {
   static Future<String> bech32StringFromB256String(String b256Address) async {
-    try {
-      final bech32Address = await FuelUtils.bech32FromB256String(b256Address);
-
-      return bech32Address;
-    } catch (e) {
-      return b256Address;
-    }
+    final FuelAddress fuelAddress = FuelAddress.fromString(b256Address);
+    return fuelAddress.bech32Address;
   }
 
   static Future<String> b256StringFromBech32String(String bech32Address) async {
-    try {
-      final b256Address = await FuelUtils.b256FromBech32String(bech32Address);
-
-      return b256Address;
-    } catch (e) {
-      return bech32Address;
-    }
+    final FuelAddress fuelAddress = FuelAddress.fromString(bech32Address);
+    return fuelAddress.b256Address;
   }
 
   static FuelAddress fuelAddressFromString(String value) =>
       FuelAddress.fromString(value);
 
   static bool isBech32(String address) {
-    return address.startsWith('fuel');
+    try {
+      final FuelAddress fuelAddress = FuelAddress.fromString(address);
+      return fuelAddress.bech32Address == address;
+    } catch (ex) {
+      return false;
+    }
   }
 
   static Future<AccountAddress> accountAddressFromB256String(

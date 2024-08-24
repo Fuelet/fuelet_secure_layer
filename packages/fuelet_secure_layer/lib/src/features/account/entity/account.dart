@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:fuelet_secure_layer/src/features/account/entity/account_x.dart';
 import 'package:fuelet_secure_layer/src/features/account/entity/adding_method.dart';
 import 'package:fuelet_secure_layer/src/features/account/entity/address.dart';
 import 'package:fuelet_secure_layer/src/features/account/entity/derivative_info.dart';
@@ -47,7 +46,7 @@ class Account with EquatableMixin {
   });
 
   @override
-  List<Object?> get props => [address, name, addingMethod];
+  List<Object?> get props => [fuelAddress.bech32Address, name, addingMethod];
 
   Account copyWith({
     String? name,

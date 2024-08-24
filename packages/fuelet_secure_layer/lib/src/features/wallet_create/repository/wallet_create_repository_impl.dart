@@ -19,11 +19,12 @@ class WalletCreateRepositoryImpl implements IWalletCreateRepository {
 
   void _captureAccountPrivateData(
       Account account, AccountPrivateData privateData) {
-    _accountsPrivateDataRepository.addPrivateData(account.address, privateData);
-    account.privateKeyExists =
-        _accountsPrivateDataRepository.privateKeyExists(account.address);
-    account.seedPhraseExists =
-        _accountsPrivateDataRepository.seedPhraseExists(account.address);
+    _accountsPrivateDataRepository.addPrivateData(
+        account.fuelAddress.bech32Address, privateData);
+    account.privateKeyExists = _accountsPrivateDataRepository
+        .privateKeyExists(account.fuelAddress.bech32Address);
+    account.seedPhraseExists = _accountsPrivateDataRepository
+        .seedPhraseExists(account.fuelAddress.bech32Address);
   }
 
   Account _accountFromWallet(FuelWallet wallet, DateTime createdAt,

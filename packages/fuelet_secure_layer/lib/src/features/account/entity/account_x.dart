@@ -5,8 +5,6 @@ const _defaultShortName = 'Ac';
 extension AccountX on Account {
   bool get isOwner => privateKeyExists || seedPhraseExists || isHsWallet;
 
-  String get address => fuelAddress.bech32Address;
-
   bool get isWatchlist => !isOwner;
 
   String get nameOrUnnamed => name ?? 'Unnamed';
