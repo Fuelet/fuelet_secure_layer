@@ -20,11 +20,13 @@ class ShowSensitiveDataScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = NFTTheme.of(context);
 
+    final selectedAccount =
+        secureLayerLocator<IAccountsLocalRepository>().selectedAccount;
     final privateDataRepository =
         _privateSecureLayerLocator<IAccountsPrivateDataRepository>();
 
-    final privateData =
-        privateDataRepository.data[accountAddress?.bech32Address];
+    final address = accountAddress?.bech32Address ?? selectedAccount;
+    final privateData = privateDataRepository.data[address];
 
     final seedPhrase = privateData?.seedPhrase ?? 'n/a';
     final privateKey = privateData?.privateKey ?? 'n/a';
