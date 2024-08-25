@@ -1,6 +1,7 @@
 part of 'package:fuelet_secure_layer/src/di/public/public_register.dart';
 
 class ShowSensitiveDataScreen extends StatelessWidget {
+  final SensitiveDataType dataType;
   final AccountAddress? accountAddress;
   final L10nShowSensitiveDataScreen l10n;
   final VoidCallback onSuccessPressed;
@@ -9,6 +10,7 @@ class ShowSensitiveDataScreen extends StatelessWidget {
   const ShowSensitiveDataScreen({
     super.key,
     this.accountAddress,
+    required this.dataType,
     required this.l10n,
     required this.onSuccessPressed,
     required this.backupWidget,
@@ -24,12 +26,9 @@ class ShowSensitiveDataScreen extends StatelessWidget {
     final privateData =
         privateDataRepository.data[accountAddress?.bech32Address];
 
-    final seedPhrase = privateData?.seedPhrase;
-    final privateKey = privateData?.privateKey;
-    final data = seedPhrase ?? privateKey ?? 'n/a';
-    final dataType = data == seedPhrase
-        ? SensitiveDataType.seedPhrase
-        : SensitiveDataType.privateKey;
+    final seedPhrase = privateData?.seedPhrase ?? 'n/a';
+    final privateKey = privateData?.privateKey ?? 'n/a';
+
     final isPrivateKey = dataType == SensitiveDataType.privateKey;
 
     return FLTScaffold(
@@ -62,7 +61,7 @@ class ShowSensitiveDataScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          data,
+                          privateKey,
                           style: NFTTypography.body2SemiBold.copyWith(
                             color: theme.colorScheme.mainTextColor,
                           ),
@@ -70,7 +69,7 @@ class ShowSensitiveDataScreen extends StatelessWidget {
                         ),
                       )
                     : SeedPhraseWidget(
-                        phrase: data.split(' '),
+                        phrase: seedPhrase.split(' '),
                       ),
               ),
             ),
@@ -81,7 +80,7 @@ class ShowSensitiveDataScreen extends StatelessWidget {
               child: FLTMonocoloredSecondaryButton(
                 onPressed: () {
                   ClipboardManager.copyToBuffer(
-                    data,
+                    isPrivateKey ? privateKey : seedPhrase,
                     onSuccess: onSuccessPressed,
                   );
                 },
