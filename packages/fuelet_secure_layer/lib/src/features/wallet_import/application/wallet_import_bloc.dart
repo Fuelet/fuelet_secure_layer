@@ -160,8 +160,8 @@ class WalletImportBloc extends Bloc<WalletImportEvent, WalletImportState> {
       Account account =
           acc.copyWith(name: AccountUtils.generateName(event.existingAccounts));
 
-      final existingAccount = event.existingAccounts
-          .firstWhereOrNull((e) => e.address == account.address);
+      final existingAccount = event.existingAccounts.firstWhereOrNull((e) =>
+          e.fuelAddress.bech32Address == account.fuelAddress.bech32Address);
 
       if (existingAccount != null) {
         // Account is already added, just going to update state with failure
@@ -218,8 +218,8 @@ class WalletImportBloc extends Bloc<WalletImportEvent, WalletImportState> {
         Account account =
             acc.copyWith(name: AccountUtils.generateName(existingAccounts));
 
-        final existingAccount = existingAccounts
-            .firstWhereOrNull((e) => e.address == account.address);
+        final existingAccount = existingAccounts.firstWhereOrNull((e) =>
+            e.fuelAddress.bech32Address == account.fuelAddress.bech32Address);
 
         if (existingAccount != null) {
           if (existingAccount.isOwner) {
@@ -233,7 +233,9 @@ class WalletImportBloc extends Bloc<WalletImportEvent, WalletImportState> {
             );
 
             existingAccounts = existingAccounts
-                .where((a) => a.address != existingAccount.address)
+                .where((a) =>
+                    a.fuelAddress.bech32Address !=
+                    existingAccount.fuelAddress.bech32Address)
                 .toList();
 
             emit(
@@ -280,7 +282,9 @@ class WalletImportBloc extends Bloc<WalletImportEvent, WalletImportState> {
     final account = response.asRight();
     if (account != null) {
       final isAccountAlreadyAdded = event.existingAccounts.indexWhere(
-            (element) => element.address == account.address,
+            (element) =>
+                element.fuelAddress.bech32Address ==
+                account.fuelAddress.bech32Address,
           ) !=
           -1;
 

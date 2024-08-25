@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:fuelet_secure_layer/src/features/account/entity/account.dart';
-import 'package:fuelet_secure_layer/src/features/account/entity/account_x.dart';
 import 'package:fuelet_secure_layer/src/features/account/manager/hive_account_manager.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_local_repository.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
@@ -49,11 +48,11 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
     final accounts = accountsBox.values.toList();
 
     for (Account account in accounts) {
-      await _privateDataRepository.loadData(account.address);
-      account.privateKeyExists =
-          _privateDataRepository.privateKeyExists(account.address);
-      account.seedPhraseExists =
-          _privateDataRepository.seedPhraseExists(account.address);
+      await _privateDataRepository.loadData(account.fuelAddress.bech32Address);
+      account.privateKeyExists = _privateDataRepository
+          .privateKeyExists(account.fuelAddress.bech32Address);
+      account.seedPhraseExists = _privateDataRepository
+          .seedPhraseExists(account.fuelAddress.bech32Address);
       account = _replaceForbiddenSymbolsIfNeeded(account);
     }
 
@@ -67,7 +66,7 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
 
     for (Account account in accounts) {
       account = _replaceForbiddenSymbolsIfNeeded(account);
-      futures.add(accountsBox.put(account.address, account));
+      futures.add(accountsBox.put(account.fuelAddress.bech32Address, account));
     }
     await Future.wait(futures);
     await _privateDataRepository.flushData();
@@ -79,7 +78,8 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
 
     final accountsBox = Hive.box<Account>(SecureLayerConstants.kAccountsBox);
 
-    await accountsBox.put(updatedAccount.address, updatedAccount);
+    await accountsBox.put(
+        updatedAccount.fuelAddress.bech32Address, updatedAccount);
 
     return updatedAccount;
   }
