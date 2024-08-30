@@ -19,7 +19,7 @@ dependencies:
     git:
       url: https://github.com/Fuelet/fuelet_uikit.git
       tag: v1.0.1
-  flutter_fuels: 0.0.51
+  flutter_fuels: 0.0.55
   flutter_fuelet_smart_contract_wallet: 0.0.13+1
 
   convert: ^3.1.1
