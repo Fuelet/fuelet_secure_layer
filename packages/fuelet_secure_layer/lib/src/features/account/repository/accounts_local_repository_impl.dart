@@ -65,15 +65,15 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
     final accountsBox = Hive.box<Account>(SecureLayerConstants.kAccountsBox);
     final List<Future<void>> futures = [];
 
+    final accountAddressesToFlush = <String>{};
     for (Account account in accounts) {
       account = _replaceForbiddenSymbolsIfNeeded(account);
+      if (account.isOwner) {
+        accountAddressesToFlush.add(account.fuelAddress.bech32Address);
+      }
       futures.add(accountsBox.put(account.fuelAddress.bech32Address, account));
     }
     await Future.wait(futures);
-    final accountAddressesToFlush = accounts
-        .where((acc) => acc.isOwner)
-        .map((acc) => acc.fuelAddress.bech32Address)
-        .toSet();
     await _privateDataRepository.flushData(accountAddressesToFlush);
   }
 
