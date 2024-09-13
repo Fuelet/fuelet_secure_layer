@@ -18,6 +18,10 @@ class AccountsPrivateDataRepositoryImpl
 
   final Map<AccountAddressBech32, AccountPrivateData> _data = {};
 
+  /// Data that is about to be flushed to secure storage, but not accessible
+  /// for reading yet
+  final Map<AccountAddressBech32, AccountPrivateData> _ephemeralData = {};
+
   final _dataStreamController =
       StreamController<Map<AccountAddressBech32, AccountPrivateData>>();
 
@@ -30,7 +34,7 @@ class AccountsPrivateDataRepositoryImpl
 
   @override
   void addPrivateData(AccountAddressBech32 address, AccountPrivateData data) {
-    _updateData(address, data);
+    _updateEphemeralData(address, data);
   }
 
   @override
@@ -42,7 +46,9 @@ class AccountsPrivateDataRepositoryImpl
       data[address]?.seedPhrase != null;
 
   @override
-  Future<void> flushData() async {
+  Future<void> flushData(Set<String> ephemeralAddressesToSave) async {
+    _propagateAndClearEphemeralData(ephemeralAddressesToSave);
+
     final addressesAndPrivateKeys = <(String, String?)>[];
     final addressesAndSeedPhrases = <(String, String?)>[];
 
@@ -78,6 +84,7 @@ class AccountsPrivateDataRepositoryImpl
   @override
   Future<void> removeData(AccountAddressBech32 address) async {
     _updateData(address, null);
+    _updateEphemeralData(address, null);
 
     await _privateKeyRepository.deleteWalletPrivateKey(address);
     await _seedPhraseRepository.deleteWalletSeedPhrase(address);
@@ -86,6 +93,7 @@ class AccountsPrivateDataRepositoryImpl
   @override
   Future<void> clearData() async {
     _data.clear();
+    _ephemeralData.clear();
     _dataStreamController.add(_data);
 
     await _privateKeyRepository.deletePrivateKeys();
@@ -101,6 +109,30 @@ class AccountsPrivateDataRepositoryImpl
     } else {
       _data[address] = data;
     }
+    _dataStreamController.add(_data);
+  }
+
+  void _updateEphemeralData(
+      AccountAddressBech32 address, AccountPrivateData? data) {
+    if (data == null) {
+      _ephemeralData.remove(address);
+    } else {
+      _ephemeralData[address] = data;
+    }
+  }
+
+  void _propagateAndClearEphemeralData(Set<String> ephemeralAddressesToSave) {
+    // normalization, just in case
+    ephemeralAddressesToSave =
+        ephemeralAddressesToSave.map((e) => e.toLowerCase()).toSet();
+
+    for (final entry in _ephemeralData.entries) {
+      final accountAddress = entry.key;
+      if (ephemeralAddressesToSave.contains(accountAddress.toLowerCase())) {
+        _data[accountAddress] = entry.value;
+      }
+    }
+    _ephemeralData.clear();
     _dataStreamController.add(_data);
   }
 }

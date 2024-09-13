@@ -12,7 +12,9 @@ abstract interface class IAccountsPrivateDataRepository {
 
   bool seedPhraseExists(AccountAddressBech32 address);
 
-  Future<void> flushData();
+  /// Flushes private data to the underlying secure storage.
+  /// `ephemeralAddressesToSave` are used to filter out ephemeral data that should be saved.
+  Future<void> flushData(Set<String> ephemeralAddressesToSave);
 
   Future<void> loadData(AccountAddressBech32 address);
 

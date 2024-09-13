@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fuelet_secure_layer/src/features/account/entity/account.dart';
+import 'package:fuelet_secure_layer/src/features/account/entity/account_x.dart';
 import 'package:fuelet_secure_layer/src/features/account/manager/hive_account_manager.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_local_repository.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
@@ -64,12 +65,16 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
     final accountsBox = Hive.box<Account>(SecureLayerConstants.kAccountsBox);
     final List<Future<void>> futures = [];
 
+    final accountAddressesToFlush = <String>{};
     for (Account account in accounts) {
       account = _replaceForbiddenSymbolsIfNeeded(account);
+      if (account.isOwner) {
+        accountAddressesToFlush.add(account.fuelAddress.bech32Address);
+      }
       futures.add(accountsBox.put(account.fuelAddress.bech32Address, account));
     }
     await Future.wait(futures);
-    await _privateDataRepository.flushData();
+    await _privateDataRepository.flushData(accountAddressesToFlush);
   }
 
   @override
