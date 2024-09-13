@@ -69,7 +69,10 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
       futures.add(accountsBox.put(account.fuelAddress.bech32Address, account));
     }
     await Future.wait(futures);
-    await _privateDataRepository.flushData();
+    final accountAddresses = accounts
+        .map((account) => account.fuelAddress.bech32Address)
+        .toSet();
+    await _privateDataRepository.flushData(accountAddresses);
   }
 
   @override
