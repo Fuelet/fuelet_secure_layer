@@ -1,5 +1,10 @@
 import 'package:fuelet_secure_layer/fuelet_secure_layer.dart';
 
+class BlockchainNetworkIds {
+  static const String testnet = "testnet";
+  static const String mainnet = "mainnet";
+}
+
 abstract class BlockchainNetworkUtils {
   static const mainnetNetwork = BlockchainNetwork(
     host: 'https://mainnet.fuel.network',
@@ -7,7 +12,7 @@ abstract class BlockchainNetworkUtils {
     faucetUrl: null,
     networkName: 'mainnet',
     isCustom: false,
-    id: 'mainnet',
+    id: BlockchainNetworkIds.mainnet,
   );
 
   static const testnetNetwork = BlockchainNetwork(
@@ -16,7 +21,7 @@ abstract class BlockchainNetworkUtils {
     faucetUrl: 'https://faucet-testnet.fuel.network',
     networkName: 'testnet',
     isCustom: false,
-    id: 'testnet',
+    id: BlockchainNetworkIds.testnet,
   );
 
   static const builtInNetworks = [mainnetNetwork, testnetNetwork];
