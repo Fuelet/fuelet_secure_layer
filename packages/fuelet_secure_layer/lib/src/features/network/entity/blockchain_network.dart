@@ -59,8 +59,8 @@ class BlockchainNetwork with EquatableMixin {
   static List<String> networkNamesForNftFetching(
       List<BlockchainNetwork> networks) {
     final existing = networks.map((n) => n.networkName).toList();
-    final additionalNetworks = ['beta3', 'beta4'];
-    return existing + additionalNetworks;
+    final additionalNetworks = ['beta3', 'beta4', 'beta5', 'testnet'];
+    return (existing + additionalNetworks).toSet().toList();
   }
 
   @override
