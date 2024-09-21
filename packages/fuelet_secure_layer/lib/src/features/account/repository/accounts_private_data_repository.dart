@@ -4,8 +4,6 @@ import 'package:fuelet_secure_layer/src/features/account/entity/account_private_
 abstract interface class IAccountsPrivateDataRepository {
   Map<AccountAddressBech32, AccountPrivateData?> get data;
 
-  Stream<Map<AccountAddressBech32, AccountPrivateData?>> get dataStream;
-
   void addPrivateData(AccountAddressBech32 address, AccountPrivateData data);
 
   bool privateKeyExists(AccountAddressBech32 address);
@@ -21,6 +19,4 @@ abstract interface class IAccountsPrivateDataRepository {
   Future<void> removeData(AccountAddressBech32 address);
 
   Future<void> clearData();
-
-  Future<void> dispose();
 }

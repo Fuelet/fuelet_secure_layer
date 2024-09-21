@@ -22,15 +22,8 @@ class AccountsPrivateDataRepositoryImpl
   /// for reading yet
   final Map<AccountAddressBech32, AccountPrivateData> _ephemeralData = {};
 
-  final _dataStreamController =
-      StreamController<Map<AccountAddressBech32, AccountPrivateData>>();
-
   @override
   Map<AccountAddressBech32, AccountPrivateData> get data => _data;
-
-  @override
-  Stream<Map<AccountAddressBech32, AccountPrivateData>> get dataStream =>
-      _dataStreamController.stream;
 
   @override
   void addPrivateData(AccountAddressBech32 address, AccountPrivateData data) {
@@ -94,14 +87,10 @@ class AccountsPrivateDataRepositoryImpl
   Future<void> clearData() async {
     _data.clear();
     _ephemeralData.clear();
-    _dataStreamController.add(_data);
 
     await _privateKeyRepository.deletePrivateKeys();
     await _seedPhraseRepository.deleteSeedPhrases();
   }
-
-  @override
-  Future<void> dispose() => _dataStreamController.close();
 
   void _updateData(AccountAddressBech32 address, AccountPrivateData? data) {
     if (data == null) {
@@ -109,7 +98,6 @@ class AccountsPrivateDataRepositoryImpl
     } else {
       _data[address] = data;
     }
-    _dataStreamController.add(_data);
   }
 
   void _updateEphemeralData(
@@ -133,6 +121,5 @@ class AccountsPrivateDataRepositoryImpl
       }
     }
     _ephemeralData.clear();
-    _dataStreamController.add(_data);
   }
 }
