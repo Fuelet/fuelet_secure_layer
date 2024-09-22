@@ -5,6 +5,7 @@ class ShowSensitiveDataScreen extends StatelessWidget {
   final AccountAddress? accountAddress;
   final L10nShowSensitiveDataScreen l10n;
   final VoidCallback onSuccessPressed;
+  final Function(bool isSensitiveDataShown)? sensitiveDataShownCallBack;
   final Widget backupWidget;
 
   const ShowSensitiveDataScreen({
@@ -14,6 +15,7 @@ class ShowSensitiveDataScreen extends StatelessWidget {
     required this.l10n,
     required this.onSuccessPressed,
     required this.backupWidget,
+    this.sensitiveDataShownCallBack,
   });
 
   @override
@@ -52,6 +54,7 @@ class ShowSensitiveDataScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: SensitiveDataWidget(
+                sensitiveDataShownCallBack: sensitiveDataShownCallBack,
                 overlayText: isPrivateKey
                     ? '${l10n.tapToRevealYour}\n ${l10n.privateKey}'
                     : '${l10n.tapToRevealYour}\n ${l10n.secretPhrase}',

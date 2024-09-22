@@ -4,11 +4,13 @@ import 'package:fuelet_secure_layer/src/features/hardware_signer/presentation/ui
 class SensitiveDataWidget extends StatefulWidget {
   final Widget child;
   final String overlayText;
+  final Function(bool isSensitiveDataShown)? sensitiveDataShownCallBack;
 
   const SensitiveDataWidget({
     super.key,
     required this.child,
     required this.overlayText,
+    this.sensitiveDataShownCallBack,
   });
 
   @override
@@ -21,6 +23,7 @@ class _SensitiveDataWidgetState extends State<SensitiveDataWidget> {
   void _onTap() {
     setState(() {
       _isHidden = false;
+      widget.sensitiveDataShownCallBack?.call(true);
     });
   }
 
