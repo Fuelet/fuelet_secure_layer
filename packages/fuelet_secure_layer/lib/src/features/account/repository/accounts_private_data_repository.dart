@@ -12,9 +12,16 @@ abstract interface class IAccountsPrivateDataRepository {
 
   /// Flushes private data to the underlying secure storage.
   /// `ephemeralAddressesToSave` are used to filter out ephemeral data that should be saved.
-  Future<void> flushData(Set<String> ephemeralAddressesToSave);
+  Future<void> flushData(
+    Set<String> ephemeralAddressesToSave, {
+    required String cryptographicKey,
+  });
 
-  Future<void> loadData(AccountAddressBech32 address);
+  Future<void> loadData(
+    AccountAddressBech32 address, {
+    required bool encryptionEnabled,
+    String? cryptographicKey,
+  });
 
   Future<void> removeData(AccountAddressBech32 address);
 

@@ -6,13 +6,17 @@ abstract class IAccountsLocalRepository {
   // bech32
   String? get selectedAccount;
 
-  Stream<String?> get selectedAccountStream;
-
   /// Loads [Account]s from the localStorage.
-  Future<List<Account>> loadAccounts();
+  Future<List<Account>> loadAccounts({
+    required bool encryptionEnabled,
+    String? cryptographicKey,
+  });
 
   /// Saves given [Account]s to the local storage.
-  Future<void> saveAccounts(List<Account> accounts);
+  Future<void> saveAccounts(
+    List<Account> accounts, {
+    required cryptographicKey,
+  });
 
   /// Updates certain account in local storage
   Future<Account> updateAccount(Account updatedAccount);

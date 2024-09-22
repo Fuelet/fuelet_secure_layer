@@ -16,8 +16,6 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
   final SharedPreferences _sharedPreferences;
   final IAccountsPrivateDataRepository _privateDataRepository;
 
-  final _selectedAccountStreamController = StreamController<String?>();
-
   AccountsLocalRepositoryImpl(
     this._sharedPreferences,
     this._privateDataRepository,
@@ -26,7 +24,6 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
   void init() async {
     final address = _sharedPreferences.getString(_selectedAccountPrefKey);
     _selectedAccount = address;
-    _selectedAccountStreamController.add(_selectedAccount);
   }
 
   @override
@@ -40,16 +37,25 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
   String? get selectedAccount => _selectedAccount;
 
   @override
-  Stream<String?> get selectedAccountStream =>
-      _selectedAccountStreamController.stream;
+  Future<List<Account>> loadAccounts({
+    required bool encryptionEnabled,
+    String? cryptographicKey,
+  }) async {
+    assert(
+      (encryptionEnabled == true && cryptographicKey != null) ||
+          encryptionEnabled == false,
+      'cryptographicKey must not be null if encryption is enabled',
+    );
 
-  @override
-  Future<List<Account>> loadAccounts() async {
     final accountsBox = Hive.box<Account>(SecureLayerConstants.kAccountsBox);
     final accounts = accountsBox.values.toList();
 
     for (Account account in accounts) {
-      await _privateDataRepository.loadData(account.fuelAddress.bech32Address);
+      await _privateDataRepository.loadData(
+        account.fuelAddress.bech32Address,
+        encryptionEnabled: encryptionEnabled,
+        cryptographicKey: cryptographicKey,
+      );
       account.privateKeyExists = _privateDataRepository
           .privateKeyExists(account.fuelAddress.bech32Address);
       account.seedPhraseExists = _privateDataRepository
@@ -61,7 +67,10 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
   }
 
   @override
-  Future<void> saveAccounts(List<Account> accounts) async {
+  Future<void> saveAccounts(
+    List<Account> accounts, {
+    required cryptographicKey,
+  }) async {
     final accountsBox = Hive.box<Account>(SecureLayerConstants.kAccountsBox);
     final List<Future<void>> futures = [];
 
@@ -74,7 +83,10 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
       futures.add(accountsBox.put(account.fuelAddress.bech32Address, account));
     }
     await Future.wait(futures);
-    await _privateDataRepository.flushData(accountAddressesToFlush);
+    await _privateDataRepository.flushData(
+      accountAddressesToFlush,
+      cryptographicKey: cryptographicKey,
+    );
   }
 
   @override
@@ -92,7 +104,6 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
   @override
   Future<void> setSelectedAccount(String address) async {
     _selectedAccount = address;
-    _selectedAccountStreamController.sink.add(_selectedAccount);
     await HiveAccountManager.openAccountBox(address);
     await _sharedPreferences.setString(_selectedAccountPrefKey, address);
   }
@@ -100,7 +111,6 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
   @override
   Future<void> resetSelectedAccount() {
     _selectedAccount = null;
-    _selectedAccountStreamController.sink.add(_selectedAccount);
 
     return _sharedPreferences.remove(_selectedAccountPrefKey);
   }

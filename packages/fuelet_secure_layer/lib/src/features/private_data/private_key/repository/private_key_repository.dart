@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:fuelet_secure_layer/src/utils/hex_helper.dart';
 import 'package:fuelet_secure_layer/src/utils/json_parsing_helper.dart';
 
 class PrivateKeyRepository {
@@ -20,11 +19,11 @@ class PrivateKeyRepository {
   }
 
   Future<void> saveWalletPrivateKey({
-    required walletAddress,
+    required address,
     required privateKey,
   }) async {
     final keys = await _getPrivateKeysMap();
-    keys[walletAddress] = privateKey;
+    keys[address] = privateKey;
 
     await _secureStorage.write(
       key: _storageKey,
@@ -52,8 +51,7 @@ class PrivateKeyRepository {
     if (data == null) return null;
 
     final privateKeysMap = JsonParsingHelper.jsonMapFromString(data);
-    final privateKey = privateKeysMap[walletAddress];
-    return privateKey == null ? null : addHexPrefix(privateKey);
+    return privateKeysMap[walletAddress];
   }
 
   Future<void> deletePrivateKeys() {
