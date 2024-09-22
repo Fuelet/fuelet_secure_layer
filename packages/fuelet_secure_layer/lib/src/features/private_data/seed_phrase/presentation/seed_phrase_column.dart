@@ -32,7 +32,7 @@ class SeedPhraseColumn extends StatelessWidget {
               Text(
                 words[i],
                 style: NFTTypography.header6w500.copyWith(
-                  color: FLTColors.blue,
+                  color: NFTTheme.of(context).colorScheme.coloredText,
                   height: 32 / 19,
                 ),
               ),
