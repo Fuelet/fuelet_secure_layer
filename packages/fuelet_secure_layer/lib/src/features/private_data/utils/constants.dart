@@ -4,5 +4,5 @@ abstract class SecureLayerConstants {
   static const kAccountsBox = 'accounts_box';
 
   static AccountAddressType priorityAccountAddressType =
-      AccountAddressType.bech32Address;
+      AccountAddressType.b256Address;
 }
