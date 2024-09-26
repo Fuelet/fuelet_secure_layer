@@ -19,8 +19,7 @@ abstract interface class IAccountsPrivateDataRepository {
 
   Future<void> loadData(
     AccountAddressBech32 address, {
-    required bool encryptionEnabled,
-    String? cryptographicKey,
+    required String cryptographicKey,
   });
 
   Future<void> removeData(AccountAddressBech32 address);

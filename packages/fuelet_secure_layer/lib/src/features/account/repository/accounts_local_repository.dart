@@ -8,8 +8,7 @@ abstract class IAccountsLocalRepository {
 
   /// Loads [Account]s from the localStorage.
   Future<List<Account>> loadAccounts({
-    required bool encryptionEnabled,
-    String? cryptographicKey,
+    required String cryptographicKey,
   });
 
   /// Saves given [Account]s to the local storage.
