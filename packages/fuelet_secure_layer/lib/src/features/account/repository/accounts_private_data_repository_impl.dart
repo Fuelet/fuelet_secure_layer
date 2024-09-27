@@ -8,6 +8,9 @@ import 'package:fuelet_secure_layer/src/features/private_data/private_key/reposi
 import 'package:fuelet_secure_layer/src/features/private_data/seed_phrase/repository/seed_phrase_repository.dart';
 import 'package:fuelet_secure_layer/src/utils/hex_helper.dart';
 
+// The encryption tag is used to easily distinguish between encrypted and non-encrypted data
+String _encryptionTag = '#';
+
 class AccountsPrivateDataRepositoryImpl
     implements IAccountsPrivateDataRepository {
   final PrivateKeyRepository _privateKeyRepository;
@@ -54,13 +57,12 @@ class AccountsPrivateDataRepositoryImpl
       final accountAddress = entry.key;
 
       final privateKey =
-          await Aes256Gcm.encrypt(entry.value.privateKey, cryptographicKey);
+          await _encrypt(entry.value.privateKey, cryptographicKey);
       addressesAndPrivateKeys.add((accountAddress, privateKey));
 
       final rawSeedPhrase = entry.value.seedPhrase;
       if (rawSeedPhrase != null) {
-        final seedPhrase =
-            await Aes256Gcm.encrypt(rawSeedPhrase, cryptographicKey);
+        final seedPhrase = await _encrypt(rawSeedPhrase, cryptographicKey);
         addressesAndSeedPhrases.add((accountAddress, seedPhrase));
       }
     }
@@ -76,21 +78,20 @@ class AccountsPrivateDataRepositoryImpl
   @override
   Future<void> loadData(
     String address, {
-    required bool encryptionEnabled,
-    String? cryptographicKey,
+    required String cryptographicKey,
   }) async {
     var privateKey = await _privateKeyRepository.getWalletPrivateKey(address);
+    var privateKeyIsEncrypted = true;
+    var seedPhraseIsEncrypted = true;
     if (privateKey != null) {
-      if (encryptionEnabled) {
-        privateKey = addHexPrefix(
-            await Aes256Gcm.decrypt(privateKey, cryptographicKey!));
-      }
+      (privateKey, privateKeyIsEncrypted) =
+          await _decrypt(privateKey, cryptographicKey);
+      privateKey = addHexPrefix(privateKey);
 
       var seedPhrase = await _seedPhraseRepository.getWalletSeedPhrase(address);
       if (seedPhrase != null) {
-        if (encryptionEnabled) {
-          seedPhrase = await Aes256Gcm.decrypt(seedPhrase, cryptographicKey!);
-        }
+        (seedPhrase, seedPhraseIsEncrypted) =
+            await _decrypt(seedPhrase, cryptographicKey);
       }
 
       final data = AccountPrivateData(
@@ -100,12 +101,12 @@ class AccountsPrivateDataRepositoryImpl
 
       _updateData(address, data);
 
-      if (!encryptionEnabled) {
+      if (!privateKeyIsEncrypted || !seedPhraseIsEncrypted) {
         _encryptPrivateData(
           address: address,
           privateKey: privateKey,
           seedPhrase: seedPhrase,
-          cryptographicKey: cryptographicKey!,
+          cryptographicKey: cryptographicKey,
         );
       }
     }
@@ -166,13 +167,11 @@ class AccountsPrivateDataRepositoryImpl
     required String? seedPhrase,
     required String cryptographicKey,
   }) async {
-    final encryptedPrivateKey =
-        await Aes256Gcm.encrypt(privateKey, cryptographicKey);
+    final encryptedPrivateKey = await _encrypt(privateKey, cryptographicKey);
 
     String? encryptedSeedPhrase;
     if (seedPhrase != null) {
-      encryptedSeedPhrase =
-          await Aes256Gcm.encrypt(seedPhrase, cryptographicKey);
+      encryptedSeedPhrase = await _encrypt(seedPhrase, cryptographicKey);
     }
 
     await _privateKeyRepository.saveWalletPrivateKey(
@@ -183,5 +182,21 @@ class AccountsPrivateDataRepositoryImpl
       address: address,
       seedPhrase: encryptedSeedPhrase,
     );
+  }
+
+  /// Decrypts the [encrypted] string using the [cryptographicKey] if it was encrypted.
+  /// Returns a tuple of decrypted string and a flag indicating whether the string was encrypted.
+  Future<(String, bool)> _decrypt(
+      String encrypted, String cryptographicKey) async {
+    if (encrypted.startsWith(_encryptionTag)) {
+      encrypted = encrypted.substring(_encryptionTag.length);
+      return (await Aes256Gcm.decrypt(encrypted, cryptographicKey), true);
+    }
+    return (encrypted, false);
+  }
+
+  Future<String> _encrypt(String toEncrypt, String cryptographicKey) async {
+    final encrypted = await Aes256Gcm.encrypt(toEncrypt, cryptographicKey);
+    return '$_encryptionTag$encrypted';
   }
 }

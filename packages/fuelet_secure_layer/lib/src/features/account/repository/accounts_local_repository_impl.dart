@@ -38,22 +38,14 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
 
   @override
   Future<List<Account>> loadAccounts({
-    required bool encryptionEnabled,
-    String? cryptographicKey,
+    required String cryptographicKey,
   }) async {
-    assert(
-      (encryptionEnabled == true && cryptographicKey != null) ||
-          encryptionEnabled == false,
-      'cryptographicKey must not be null if encryption is enabled',
-    );
-
     final accountsBox = Hive.box<Account>(SecureLayerConstants.kAccountsBox);
     final accounts = accountsBox.values.toList();
 
     for (Account account in accounts) {
       await _privateDataRepository.loadData(
         account.fuelAddress.bech32Address,
-        encryptionEnabled: encryptionEnabled,
         cryptographicKey: cryptographicKey,
       );
       account.privateKeyExists = _privateDataRepository
