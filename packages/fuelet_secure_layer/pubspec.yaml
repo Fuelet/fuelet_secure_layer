@@ -1,6 +1,6 @@
 name: fuelet_secure_layer
 description: "Fuelet wallet secure layer features"
-version: 1.0.18
+version: 1.0.19
 
 publish_to: none
 
@@ -18,7 +18,7 @@ dependencies:
   fuelet_uikit:
     git:
       url: https://github.com/Fuelet/fuelet_uikit.git
-      tag: v1.0.3
+      tag: v1.0.8
   flutter_fuels: 0.0.59
   flutter_fuelet_smart_contract_wallet: 0.0.13+1
 
