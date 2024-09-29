@@ -37,18 +37,17 @@ class ShowSensitiveDataScreen extends StatelessWidget {
 
     return FLTScaffold(
       backgroundColor: theme.colorScheme.backgroundColor,
-      appBar: FLTAppBar(
-        title: Text(
-          isPrivateKey ? l10n.exportPrivateKey : l10n.showSeedPhrase,
-          style: TextStyle(
-            color: theme.colorScheme.mainTextColor,
-          ),
-        ),
-      ),
+      addSafeArea: true,
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.only(left: 16, top: 8, right: 16),
         child: Column(
           children: [
+            BackNavigation(
+              title: isPrivateKey ? l10n.exportPrivateKey : l10n.showSeedPhrase,
+            ),
+            const SizedBox(
+              height: 32,
+            ),
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
