@@ -7,15 +7,10 @@ abstract class IAccountsLocalRepository {
   String? get selectedAccount;
 
   /// Loads [Account]s from the localStorage.
-  Future<List<Account>> loadAccounts({
-    required String cryptographicKey,
-  });
+  Future<List<Account>> loadAccounts();
 
   /// Saves given [Account]s to the local storage.
-  Future<void> saveAccounts(
-    List<Account> accounts, {
-    required cryptographicKey,
-  });
+  Future<void> saveAccounts(List<Account> accounts);
 
   /// Updates certain account in local storage
   Future<Account> updateAccount(Account updatedAccount);

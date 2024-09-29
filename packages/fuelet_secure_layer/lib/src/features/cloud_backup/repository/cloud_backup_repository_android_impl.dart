@@ -22,10 +22,10 @@ class CloudBackupRepositoryAndroidImpl implements ICloudBackupRepository {
   }) async {
     Map<String, String> backups = {};
 
-    for (var account in accounts) {
+    for (final account in accounts) {
       if (account.isOwner) {
-        final data = _accountsPrivateDataRepository
-            .data[account.fuelAddress.bech32Address];
+        final data = await _accountsPrivateDataRepository
+            .getAccountPrivateData(account.fuelAddress.bech32Address);
         backups = {
           ...backups,
           account.fuelAddress.bech32Address:

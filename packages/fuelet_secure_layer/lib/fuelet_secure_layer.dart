@@ -59,6 +59,8 @@ export 'src/features/network/manager/network_manager.dart';
 export 'src/features/network/repository/blockchain_network_repository.dart';
 export 'src/features/network/repository/network_provider_repository.dart';
 export 'src/features/network/utils/blockchain_network_utils.dart';
+export 'src/features/password/password_management_exception.dart';
+export 'src/features/password/password_manager.dart';
 export 'src/features/private_data/private_key/repository/private_key_repository.dart';
 export 'src/features/private_data/seed_phrase/presentation/seed_phrase_column.dart';
 export 'src/features/private_data/seed_phrase/presentation/seed_phrase_widget.dart';

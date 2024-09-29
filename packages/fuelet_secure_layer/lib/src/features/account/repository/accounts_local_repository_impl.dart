@@ -37,20 +37,15 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
   String? get selectedAccount => _selectedAccount;
 
   @override
-  Future<List<Account>> loadAccounts({
-    required String cryptographicKey,
-  }) async {
+  Future<List<Account>> loadAccounts() async {
     final accountsBox = Hive.box<Account>(SecureLayerConstants.kAccountsBox);
     final accounts = accountsBox.values.toList();
 
-    for (Account account in accounts) {
-      await _privateDataRepository.loadData(
-        account.fuelAddress.bech32Address,
-        cryptographicKey: cryptographicKey,
-      );
-      account.privateKeyExists = _privateDataRepository
+    for (var account in accounts) {
+      await _privateDataRepository.loadData(account.fuelAddress.bech32Address);
+      account.privateKeyExists = await _privateDataRepository
           .privateKeyExists(account.fuelAddress.bech32Address);
-      account.seedPhraseExists = _privateDataRepository
+      account.seedPhraseExists = await _privateDataRepository
           .seedPhraseExists(account.fuelAddress.bech32Address);
       account = _replaceForbiddenSymbolsIfNeeded(account);
     }
@@ -59,15 +54,12 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
   }
 
   @override
-  Future<void> saveAccounts(
-    List<Account> accounts, {
-    required cryptographicKey,
-  }) async {
+  Future<void> saveAccounts(List<Account> accounts) async {
     final accountsBox = Hive.box<Account>(SecureLayerConstants.kAccountsBox);
     final List<Future<void>> futures = [];
 
     final accountAddressesToFlush = <String>{};
-    for (Account account in accounts) {
+    for (var account in accounts) {
       account = _replaceForbiddenSymbolsIfNeeded(account);
       if (account.isOwner) {
         accountAddressesToFlush.add(account.fuelAddress.bech32Address);
@@ -75,10 +67,7 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
       futures.add(accountsBox.put(account.fuelAddress.bech32Address, account));
     }
     await Future.wait(futures);
-    await _privateDataRepository.flushData(
-      accountAddressesToFlush,
-      cryptographicKey: cryptographicKey,
-    );
+    await _privateDataRepository.flushData(accountAddressesToFlush);
   }
 
   @override
