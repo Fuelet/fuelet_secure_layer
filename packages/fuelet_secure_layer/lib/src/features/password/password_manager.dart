@@ -11,7 +11,8 @@ const _secretToEncrypt = 'fuelet_secure_layer_secret_kmr_wpu0XFM4uaq3kym';
 const _legacyPasscodeKey = 'flt_password';
 const _passwordKey = 'fuelet_secure_layer_password';
 
-final _passwordValidator = RegExp(r'^[A-Za-z\d@$!%*?&]+$');
+final _passwordValidator =
+    RegExp(r"""^[\w\s!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$""");
 
 enum AuthorizationResponse {
   success,
@@ -21,7 +22,7 @@ enum AuthorizationResponse {
   wrongLegacyPasscode,
 }
 
-void _validatePassword(String password) {
+void validatePassword(String password) {
   if (password.length < 8) {
     throw PasswordLengthException(
         "Password must be at least 8 characters long.");
@@ -77,7 +78,7 @@ class PasswordManager {
   }
 
   Future<void> setPassword(String password) async {
-    _validatePassword(password);
+    validatePassword(password);
     final secretToStore = await _createPasswordSecret(password);
     await _secureStorage.write(key: _passwordKey, value: secretToStore);
     await _secureStorage.delete(key: _legacyPasscodeKey);
