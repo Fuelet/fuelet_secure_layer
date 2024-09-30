@@ -13,8 +13,9 @@ class WalletUnlockedService {
     required String? selectedAccount,
     required String currentNetwork,
   }) async {
-    final privateKey =
-        _accountsPrivateDataRepository.data[checkAddress]?.privateKey;
+    final privateData = await _accountsPrivateDataRepository
+        .getAccountPrivateData(checkAddress);
+    final privateKey = privateData?.privateKey;
 
     if (privateKey == null || selectedAccount != checkAddress) {
       return null;

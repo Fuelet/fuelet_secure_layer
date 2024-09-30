@@ -1,34 +1,28 @@
 import 'dart:async';
 
-import 'package:aes256gcm/aes256gcm.dart';
 import 'package:fuelet_secure_layer/src/features/account/entity/account_address_bech32.dart';
 import 'package:fuelet_secure_layer/src/features/account/entity/account_private_data.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
+import 'package:fuelet_secure_layer/src/features/encryption/encryption_manager.dart';
 import 'package:fuelet_secure_layer/src/features/private_data/private_key/repository/private_key_repository.dart';
 import 'package:fuelet_secure_layer/src/features/private_data/seed_phrase/repository/seed_phrase_repository.dart';
 import 'package:fuelet_secure_layer/src/utils/hex_helper.dart';
-
-// The encryption tag is used to easily distinguish between encrypted and non-encrypted data
-String _encryptionTag = '#';
 
 class AccountsPrivateDataRepositoryImpl
     implements IAccountsPrivateDataRepository {
   final PrivateKeyRepository _privateKeyRepository;
   final SeedPhraseRepository _seedPhraseRepository;
+  final EncryptionManager _encryptionManager;
 
   AccountsPrivateDataRepositoryImpl(
     this._privateKeyRepository,
     this._seedPhraseRepository,
+    this._encryptionManager,
   );
-
-  final Map<AccountAddressBech32, AccountPrivateData> _data = {};
 
   /// Data that is about to be flushed to secure storage, but not accessible
   /// for reading yet
   final Map<AccountAddressBech32, AccountPrivateData> _ephemeralData = {};
-
-  @override
-  Map<AccountAddressBech32, AccountPrivateData> get data => _data;
 
   @override
   void addPrivateData(AccountAddressBech32 address, AccountPrivateData data) {
@@ -36,33 +30,55 @@ class AccountsPrivateDataRepositoryImpl
   }
 
   @override
-  bool privateKeyExists(AccountAddressBech32 address) =>
-      data[address]?.privateKey != null;
+  Future<bool> privateKeyExists(AccountAddressBech32 address) async {
+    final value = await _privateKeyRepository.getWalletPrivateKey(address);
+
+    return value != null;
+  }
 
   @override
-  bool seedPhraseExists(AccountAddressBech32 address) =>
-      data[address]?.seedPhrase != null;
+  Future<bool> seedPhraseExists(AccountAddressBech32 address) async {
+    final value = await _seedPhraseRepository.getWalletSeedPhrase(address);
+
+    return value != null;
+  }
 
   @override
-  Future<void> flushData(
-    Set<String> ephemeralAddressesToSave, {
-    required cryptographicKey,
-  }) async {
-    _propagateAndClearEphemeralData(ephemeralAddressesToSave);
+  Future<AccountPrivateData?> getAccountPrivateData(String address) async {
+    final encryptedPrivateKey =
+        await _privateKeyRepository.getWalletPrivateKey(address);
+    if (encryptedPrivateKey == null) {
+      return null;
+    }
 
+    final encryptedSeedPhrase =
+        await _seedPhraseRepository.getWalletSeedPhrase(address);
+
+    final privateKey =
+        (await _encryptionManager.decryptWithPassword(encryptedPrivateKey)).$1;
+    final seedPhrase = encryptedSeedPhrase != null
+        ? (await _encryptionManager.decryptWithPassword(encryptedSeedPhrase)).$1
+        : null;
+
+    return AccountPrivateData(privateKey: privateKey, seedPhrase: seedPhrase);
+  }
+
+  @override
+  Future<void> flushData(Set<String> ephemeralAddressesToSave) async {
     final addressesAndPrivateKeys = <(String, String?)>[];
     final addressesAndSeedPhrases = <(String, String?)>[];
 
-    for (final entry in _data.entries) {
+    for (final entry in _ephemeralData.entries) {
       final accountAddress = entry.key;
 
       final privateKey =
-          await _encrypt(entry.value.privateKey, cryptographicKey);
+          await _encryptionManager.encryptWithPassword(entry.value.privateKey);
       addressesAndPrivateKeys.add((accountAddress, privateKey));
 
       final rawSeedPhrase = entry.value.seedPhrase;
       if (rawSeedPhrase != null) {
-        final seedPhrase = await _encrypt(rawSeedPhrase, cryptographicKey);
+        final seedPhrase =
+            await _encryptionManager.encryptWithPassword(rawSeedPhrase);
         addressesAndSeedPhrases.add((accountAddress, seedPhrase));
       }
     }
@@ -73,40 +89,36 @@ class AccountsPrivateDataRepositoryImpl
     await _seedPhraseRepository.saveWalletsSeedPhrases(
       addressesAndSeedPhrases: addressesAndSeedPhrases,
     );
+
+    _ephemeralData.clear();
   }
 
   @override
-  Future<void> loadData(
-    String address, {
-    required String cryptographicKey,
-  }) async {
+  Future<void> loadData(String address) async {
     var privateKey = await _privateKeyRepository.getWalletPrivateKey(address);
     var privateKeyIsEncrypted = true;
     var seedPhraseIsEncrypted = true;
     if (privateKey != null) {
       (privateKey, privateKeyIsEncrypted) =
-          await _decrypt(privateKey, cryptographicKey);
+          await _encryptionManager.decryptWithPassword(privateKey);
       privateKey = addHexPrefix(privateKey);
 
       var seedPhrase = await _seedPhraseRepository.getWalletSeedPhrase(address);
       if (seedPhrase != null) {
         (seedPhrase, seedPhraseIsEncrypted) =
-            await _decrypt(seedPhrase, cryptographicKey);
+            await _encryptionManager.decryptWithPassword(seedPhrase);
       }
 
-      final data = AccountPrivateData(
-        privateKey: privateKey,
-        seedPhrase: seedPhrase,
-      );
-
-      _updateData(address, data);
-
       if (!privateKeyIsEncrypted || !seedPhraseIsEncrypted) {
-        _encryptPrivateData(
+        final result = await _encryptPrivateData(
           address: address,
           privateKey: privateKey,
           seedPhrase: seedPhrase,
-          cryptographicKey: cryptographicKey,
+        );
+        await _persistPrivateData(
+          address: address,
+          privateKey: result.$1,
+          seedPhrase: result.$2,
         );
       }
     }
@@ -114,7 +126,6 @@ class AccountsPrivateDataRepositoryImpl
 
   @override
   Future<void> removeData(AccountAddressBech32 address) async {
-    _updateData(address, null);
     _updateEphemeralData(address, null);
 
     await _privateKeyRepository.deleteWalletPrivateKey(address);
@@ -123,19 +134,10 @@ class AccountsPrivateDataRepositoryImpl
 
   @override
   Future<void> clearData() async {
-    _data.clear();
     _ephemeralData.clear();
 
     await _privateKeyRepository.deletePrivateKeys();
     await _seedPhraseRepository.deleteSeedPhrases();
-  }
-
-  void _updateData(AccountAddressBech32 address, AccountPrivateData? data) {
-    if (data == null) {
-      _data.remove(address);
-    } else {
-      _data[address] = data;
-    }
   }
 
   void _updateEphemeralData(
@@ -147,56 +149,35 @@ class AccountsPrivateDataRepositoryImpl
     }
   }
 
-  void _propagateAndClearEphemeralData(Set<String> ephemeralAddressesToSave) {
-    // normalization, just in case
-    ephemeralAddressesToSave =
-        ephemeralAddressesToSave.map((e) => e.toLowerCase()).toSet();
-
-    for (final entry in _ephemeralData.entries) {
-      final accountAddress = entry.key;
-      if (ephemeralAddressesToSave.contains(accountAddress.toLowerCase())) {
-        _data[accountAddress] = entry.value;
-      }
-    }
-    _ephemeralData.clear();
-  }
-
-  Future<void> _encryptPrivateData({
+  Future<(String, String?)> _encryptPrivateData({
     required String address,
     required String privateKey,
     required String? seedPhrase,
-    required String cryptographicKey,
   }) async {
-    final encryptedPrivateKey = await _encrypt(privateKey, cryptographicKey);
+    final encryptedPrivateKey =
+        await _encryptionManager.encryptWithPassword(privateKey);
 
     String? encryptedSeedPhrase;
     if (seedPhrase != null) {
-      encryptedSeedPhrase = await _encrypt(seedPhrase, cryptographicKey);
+      encryptedSeedPhrase =
+          await _encryptionManager.encryptWithPassword(seedPhrase);
     }
 
+    return (encryptedPrivateKey, encryptedSeedPhrase);
+  }
+
+  Future<void> _persistPrivateData({
+    required String address,
+    required String privateKey,
+    required String? seedPhrase,
+  }) async {
     await _privateKeyRepository.saveWalletPrivateKey(
       address: address,
-      privateKey: encryptedPrivateKey,
+      privateKey: privateKey,
     );
     await _seedPhraseRepository.saveWalletSeedPhrase(
       address: address,
-      seedPhrase: encryptedSeedPhrase,
+      seedPhrase: seedPhrase,
     );
-  }
-
-  /// Decrypts the [encrypted] string using the [cryptographicKey] if it was encrypted.
-  /// Returns a tuple of decrypted string and a flag indicating whether the string was encrypted.
-  Future<(String, bool)> _decrypt(
-      String encrypted, String cryptographicKey) async {
-    if (encrypted.startsWith(_encryptionTag)) {
-      encrypted = encrypted.substring(_encryptionTag.length);
-      return (await Aes256Gcm.decrypt(encrypted, cryptographicKey), true);
-    }
-    return (encrypted, false);
-  }
-
-  Future<String> _encrypt(String toEncrypt, String cryptographicKey) async {
-    final encrypted = await Aes256Gcm.encrypt(toEncrypt, cryptographicKey);
-    return '$_encryptionTag$encrypted';
   }
 }

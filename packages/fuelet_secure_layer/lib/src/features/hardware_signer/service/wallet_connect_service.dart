@@ -21,7 +21,9 @@ class WalletConnectService {
     if (bech32 == null) {
       return null;
     }
-    final privateKey = _accountsPrivateDataRepository.data[bech32]?.privateKey;
+    final privateData =
+        await _accountsPrivateDataRepository.getAccountPrivateData(bech32);
+    final privateKey = privateData?.privateKey;
     final r1PublicKey =
         (await _hardwareSignerRepository.getPublicKey(bech32)).asRight();
     if (r1PublicKey == null || privateKey == null) {

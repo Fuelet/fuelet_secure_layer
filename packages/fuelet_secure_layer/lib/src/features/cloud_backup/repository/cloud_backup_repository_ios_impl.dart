@@ -105,8 +105,8 @@ class CloudBackupRepositoryIOSImpl implements ICloudBackupRepository {
 
     for (var account in accounts) {
       if (account.isOwner) {
-        final data = _accountsPrivateDataRepository
-            .data[account.fuelAddress.bech32Address];
+        final data = await _accountsPrivateDataRepository
+            .getAccountPrivateData(account.fuelAddress.bech32Address);
         backups = {
           ...backups,
           account.fuelAddress.bech32Address:
