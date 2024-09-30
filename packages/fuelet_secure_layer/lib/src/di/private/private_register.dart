@@ -21,8 +21,7 @@ class PrivateSecureLayerRegister {
       )
       ..registerFactory(
         () => EncryptionManager(
-          _privateSecureLayerLocator<SessionStorage>(),
-          sessionsStorageAesPassword,
+          _privateSecureLayerLocator<SessionStoragePasswordManager>(),
         ),
       )
       ..registerSingleton<IAccountsPrivateDataRepository>(
