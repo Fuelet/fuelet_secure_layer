@@ -65,11 +65,17 @@ class AccountsPrivateDataRepositoryImpl
 
   @override
   Future<void> flushData(Set<String> ephemeralAddressesToSave) async {
+    // normalization, just in case
+    ephemeralAddressesToSave =
+        ephemeralAddressesToSave.map((e) => e.toLowerCase()).toSet();
     final addressesAndPrivateKeys = <(String, String?)>[];
     final addressesAndSeedPhrases = <(String, String?)>[];
 
     for (final entry in _ephemeralData.entries) {
       final accountAddress = entry.key;
+      if (!ephemeralAddressesToSave.contains(accountAddress.toLowerCase())) {
+        continue;
+      }
 
       final privateKey =
           await _encryptionManager.encryptWithPassword(entry.value.privateKey);
@@ -175,9 +181,11 @@ class AccountsPrivateDataRepositoryImpl
       address: address,
       privateKey: privateKey,
     );
-    await _seedPhraseRepository.saveWalletSeedPhrase(
-      address: address,
-      seedPhrase: seedPhrase,
-    );
+    if (seedPhrase != null) {
+      await _seedPhraseRepository.saveWalletSeedPhrase(
+        address: address,
+        seedPhrase: seedPhrase,
+      );
+    }
   }
 }
