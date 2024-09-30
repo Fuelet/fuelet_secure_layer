@@ -4,7 +4,7 @@ part of 'package:fuelet_secure_layer/src/di/public/public_register.dart';
 final _privateSecureLayerLocator = GetIt.asNewInstance();
 
 class PrivateSecureLayerRegister {
-  static Future<void> init() async {
+  static Future<void> init(String sessionsStorageAesPassword) async {
     await commonSecureLayerLocator.allReady();
 
     final secureStorage = commonSecureLayerLocator.get<FlutterSecureStorage>();
@@ -12,10 +12,24 @@ class PrivateSecureLayerRegister {
     _privateSecureLayerLocator
       ..registerFactory(() => PrivateKeyRepository(secureStorage))
       ..registerFactory(() => SeedPhraseRepository(secureStorage))
+      ..registerSingleton(SessionStorage())
+      ..registerFactory(
+        () => SessionStoragePasswordManager(
+          _privateSecureLayerLocator<SessionStorage>(),
+          sessionsStorageAesPassword,
+        ),
+      )
+      ..registerFactory(
+        () => EncryptionManager(
+          _privateSecureLayerLocator<SessionStorage>(),
+          sessionsStorageAesPassword,
+        ),
+      )
       ..registerSingleton<IAccountsPrivateDataRepository>(
         AccountsPrivateDataRepositoryImpl(
           _privateSecureLayerLocator<PrivateKeyRepository>(),
           _privateSecureLayerLocator<SeedPhraseRepository>(),
+          _privateSecureLayerLocator<EncryptionManager>(),
         ),
       )
       ..registerFactory(

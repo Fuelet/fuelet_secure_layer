@@ -191,8 +191,9 @@ class WalletCreateRepositoryImpl implements IWalletCreateRepository {
     required String currentNetworkUrl,
     required BlockchainNetwork network,
   }) async {
-    final recoveryPrivateKey = _accountsPrivateDataRepository
-        .data[_accountsRepository.selectedAccount]?.privateKey;
+    final existingAccountPrivateData = await _accountsPrivateDataRepository
+        .getAccountPrivateData(_accountsRepository.selectedAccount!);
+    final recoveryPrivateKey = existingAccountPrivateData?.privateKey;
     if (recoveryPrivateKey == null) {
       throw Exception('Failed to get private key');
     }

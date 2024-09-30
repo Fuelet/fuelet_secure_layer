@@ -4,6 +4,7 @@ import 'package:flutter_cloud_kit/flutter_cloud_kit.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fuelet_secure_layer/src/di/common/common_locator.dart';
 import 'package:fuelet_secure_layer/src/di/public/public_locator.dart';
+import 'package:fuelet_secure_layer/src/features/account/entity/account_private_data.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_local_repository.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_local_repository_impl.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
@@ -11,6 +12,7 @@ import 'package:fuelet_secure_layer/src/features/account/repository/accounts_pri
 import 'package:fuelet_secure_layer/src/features/cloud_backup/repository/cloud_backup_repository_android_impl.dart';
 import 'package:fuelet_secure_layer/src/features/cloud_backup/repository/cloud_backup_repository_ios_impl.dart';
 import 'package:fuelet_secure_layer/src/features/cloud_backup/repository/cloud_backup_repository_web_impl.dart';
+import 'package:fuelet_secure_layer/src/features/encryption/encryption_manager.dart';
 import 'package:fuelet_secure_layer/src/features/google_api/manager/google_api_manager.dart';
 import 'package:fuelet_secure_layer/src/features/hardware_signer/presentation/ui/check_tile.dart';
 import 'package:fuelet_secure_layer/src/features/hardware_signer/presentation/ui/l10n_save_sensitive_data_screen.dart';
@@ -22,9 +24,11 @@ import 'package:fuelet_secure_layer/src/features/hardware_signer/service/wallet_
 import 'package:fuelet_secure_layer/src/features/network/manager/fuel_network_manager.dart';
 import 'package:fuelet_secure_layer/src/features/network/manager/fuel_network_manager_impl.dart';
 import 'package:fuelet_secure_layer/src/features/network/manager/network_manager.dart';
+import 'package:fuelet_secure_layer/src/features/password/password_manager.dart';
 import 'package:fuelet_secure_layer/src/features/private_data/private_key/repository/private_key_repository.dart';
 import 'package:fuelet_secure_layer/src/features/private_data/seed_phrase/presentation/seed_phrase_widget.dart';
 import 'package:fuelet_secure_layer/src/features/private_data/seed_phrase/repository/seed_phrase_repository.dart';
+import 'package:fuelet_secure_layer/src/features/session_storage/session_storage_password_manager.dart';
 import 'package:fuelet_secure_layer/src/features/shared_prefs/raw_manager.dart';
 import 'package:fuelet_secure_layer/src/features/shared_prefs/secure_layer_shared_prefs_manager.dart';
 import 'package:fuelet_secure_layer/src/features/tpm_service/tpm_service.dart';
@@ -40,6 +44,7 @@ import 'package:fuelet_secure_layer/src/utils/clipboard.dart';
 import 'package:fuelet_uikit/fuelet_uikit.dart';
 import 'package:get_it/get_it.dart';
 import 'package:secure_enclave/secure_enclave.dart';
+import 'package:session_storage/session_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../features/account/entity/address.dart';
@@ -143,6 +148,13 @@ class PublicSecureLayerRegister {
           await secureLayerLocator.getAsync<FuelNetworkManager>(),
           _privateSecureLayerLocator<WalletUnlockedService>(),
           secureLayerLocator<IAccountsLocalRepository>(),
+        ),
+      )
+      ..registerFactory(
+        () => PasswordManager(
+          _privateSecureLayerLocator<IAccountsPrivateDataRepository>(),
+          commonSecureLayerLocator<FlutterSecureStorage>(),
+          _privateSecureLayerLocator<SessionStoragePasswordManager>(),
         ),
       );
   }

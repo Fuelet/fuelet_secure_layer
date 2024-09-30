@@ -32,9 +32,9 @@ class HardwareSignerRepository {
 
   bool get isServiceAvailable => _tpmService.isServiceAvailable();
 
-  bool canTransferViaHS(String bech32) =>
+  Future<bool> canTransferViaHS(String bech32) async =>
       !_supportedHardwareSigners.values.contains(bech32) ||
-      !_accountsPrivateDataRepository.privateKeyExists(bech32);
+      !(await _accountsPrivateDataRepository.privateKeyExists(bech32));
 
   Future<void> loadCachedHardwareSigners(
     List<(String, String)> tagsAndBech32,
@@ -121,8 +121,9 @@ class HardwareSignerRepository {
     String currentNetworkUrl,
   ) async {
     try {
-      final recoveryWalletPrivateKey = _accountsPrivateDataRepository
-          .data[_accountsRepository.selectedAccount]?.privateKey;
+      final privateData = await _accountsPrivateDataRepository
+          .getAccountPrivateData(_accountsRepository.selectedAccount!);
+      final recoveryWalletPrivateKey = privateData?.privateKey;
 
       if (recoveryWalletPrivateKey == null) {
         throw (Exception(RecoveryWalletPrivateKeyIsNullException()));
