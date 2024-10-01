@@ -54,6 +54,11 @@ Future<String> _decryptPasswordSecret(String encryptedSecret, String password) {
   return Aes256Gcm.decrypt(encryptedSecret, passwordHash);
 }
 
+Future<bool> _validatePassword(String passwordString, String password) async {
+  final decrypted = await _decryptPasswordSecret(passwordString, password);
+  return decrypted == _secretToEncrypt;
+}
+
 class PasswordManager {
   final IAccountsPrivateDataRepository _privateDataRepository;
   final FlutterSecureStorage _secureStorage;
@@ -101,10 +106,8 @@ class PasswordManager {
       return AuthorizationResponse.wrongLegacyPasscode;
     }
 
-    final decrypted = await _decryptPasswordSecret(passwordString, input);
-    if (decrypted == _secretToEncrypt) {
+    if (await _validatePassword(passwordString, input)) {
       await _sessionStoragePasswordManager.storeSessionStoragePassword(input);
-
       return AuthorizationResponse.success;
     }
 
@@ -115,5 +118,19 @@ class PasswordManager {
     await _privateDataRepository.clearData();
     await _secureStorage.delete(key: _legacyPasscodeKey);
     await _secureStorage.delete(key: _passwordKey);
+  }
+
+  Future<bool> hasSessionPassword() async {
+    try {
+      final password =
+          await _sessionStoragePasswordManager.getSessionStoragePassword();
+      final passwordString = await _secureStorage.read(key: _passwordKey);
+      if (passwordString == null) {
+        return false;
+      }
+      return await _validatePassword(passwordString, password);
+    } catch (e) {
+      return false;
+    }
   }
 }
