@@ -133,4 +133,8 @@ class PasswordManager {
       return false;
     }
   }
+
+  Future<void> resetSessionStoragePassword() {
+    return _sessionStoragePasswordManager.resetSessionStoragePassword();
+  }
 }

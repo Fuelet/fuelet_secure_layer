@@ -28,4 +28,8 @@ class SessionStoragePasswordManager {
     return await Aes256Gcm.decrypt(
         encryptedPassword, _sessionsStorageAesPassword);
   }
+
+  Future<void> resetSessionStoragePassword() async {
+    _sessionStorage.remove(SessionStorageConstants.sessionStoragePasswordKey);
+  }
 }
