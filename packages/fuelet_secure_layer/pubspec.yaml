@@ -40,7 +40,7 @@ dependencies:
   flutter_bloc: ^8.1.1 # MIT (LICENSE)
   rxdart: ^0.27.7 # Apache-2.0 (LICENSE)
   logger: ^2.4.0 # MIT (LICENSE)
-  session_storage: ^0.0.1 # MIT (LICENSE)
+  chrome_extension: ^0.3.1 # BSD-2-Clause (LICENSE)
   crypto: ^3.0.3 # BSD-3-Clause (LICENSE)
 
   graphql: # TODO: replace with a version from pubspec once https://github.com/zino-hofmann/graphql-flutter/pull/1393 is added to a release

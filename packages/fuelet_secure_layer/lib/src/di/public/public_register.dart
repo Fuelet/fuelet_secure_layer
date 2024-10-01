@@ -28,6 +28,7 @@ import 'package:fuelet_secure_layer/src/features/password/password_manager.dart'
 import 'package:fuelet_secure_layer/src/features/private_data/private_key/repository/private_key_repository.dart';
 import 'package:fuelet_secure_layer/src/features/private_data/seed_phrase/presentation/seed_phrase_widget.dart';
 import 'package:fuelet_secure_layer/src/features/private_data/seed_phrase/repository/seed_phrase_repository.dart';
+import 'package:fuelet_secure_layer/src/features/session_storage/session_storage.dart';
 import 'package:fuelet_secure_layer/src/features/session_storage/session_storage_password_manager.dart';
 import 'package:fuelet_secure_layer/src/features/shared_prefs/raw_manager.dart';
 import 'package:fuelet_secure_layer/src/features/shared_prefs/secure_layer_shared_prefs_manager.dart';
@@ -44,7 +45,6 @@ import 'package:fuelet_secure_layer/src/utils/clipboard.dart';
 import 'package:fuelet_uikit/fuelet_uikit.dart';
 import 'package:get_it/get_it.dart';
 import 'package:secure_enclave/secure_enclave.dart';
-import 'package:session_storage/session_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../features/account/entity/address.dart';
