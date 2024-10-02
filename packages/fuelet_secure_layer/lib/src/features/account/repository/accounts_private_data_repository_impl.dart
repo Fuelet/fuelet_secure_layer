@@ -77,15 +77,14 @@ class AccountsPrivateDataRepositoryImpl
         continue;
       }
 
-      final privateKey =
-          await _encryptionManager.encryptWithPassword(entry.value.privateKey);
-      addressesAndPrivateKeys.add((accountAddress, privateKey));
-
-      final rawSeedPhrase = entry.value.seedPhrase;
-      if (rawSeedPhrase != null) {
-        final seedPhrase =
-            await _encryptionManager.encryptWithPassword(rawSeedPhrase);
-        addressesAndSeedPhrases.add((accountAddress, seedPhrase));
+      final (encryptedPrivateKey, encryptedSeedPhrase) =
+          await _encryptPrivateData(
+        privateKey: entry.value.privateKey,
+        seedPhrase: entry.value.seedPhrase,
+      );
+      addressesAndPrivateKeys.add((accountAddress, encryptedPrivateKey));
+      if (encryptedSeedPhrase != null) {
+        addressesAndSeedPhrases.add((accountAddress, encryptedSeedPhrase));
       }
     }
 
@@ -117,14 +116,13 @@ class AccountsPrivateDataRepositoryImpl
 
       if (!privateKeyIsEncrypted || !seedPhraseIsEncrypted) {
         final result = await _encryptPrivateData(
-          address: address,
           privateKey: privateKey,
           seedPhrase: seedPhrase,
         );
         await _persistPrivateData(
           address: address,
-          privateKey: result.$1,
-          seedPhrase: result.$2,
+          encryptedPrivateKey: result.$1,
+          encryptedSeedPhrase: result.$2,
         );
       }
     }
@@ -156,7 +154,6 @@ class AccountsPrivateDataRepositoryImpl
   }
 
   Future<(String, String?)> _encryptPrivateData({
-    required String address,
     required String privateKey,
     required String? seedPhrase,
   }) async {
@@ -174,17 +171,17 @@ class AccountsPrivateDataRepositoryImpl
 
   Future<void> _persistPrivateData({
     required String address,
-    required String privateKey,
-    required String? seedPhrase,
+    required String encryptedPrivateKey,
+    required String? encryptedSeedPhrase,
   }) async {
     await _privateKeyRepository.saveWalletPrivateKey(
       address: address,
-      privateKey: privateKey,
+      privateKey: encryptedPrivateKey,
     );
-    if (seedPhrase != null) {
+    if (encryptedSeedPhrase != null) {
       await _seedPhraseRepository.saveWalletSeedPhrase(
         address: address,
-        seedPhrase: seedPhrase,
+        seedPhrase: encryptedSeedPhrase,
       );
     }
   }
