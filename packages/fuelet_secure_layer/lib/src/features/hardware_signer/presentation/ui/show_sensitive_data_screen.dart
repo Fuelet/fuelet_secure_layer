@@ -60,16 +60,7 @@ class _ShowSensitiveDataScreenState extends State<ShowSensitiveDataScreen> {
 
           return FLTScaffold(
             backgroundColor: theme.colorScheme.backgroundColor,
-            appBar: FLTAppBar(
-              title: Text(
-                isPrivateKey
-                    ? widget.l10n.exportPrivateKey
-                    : widget.l10n.showSeedPhrase,
-                style: TextStyle(
-                  color: theme.colorScheme.mainTextColor,
-                ),
-              ),
-            ),
+            addSafeArea: true,
             body: data == null
                 ? Center(
                     child: CircularProgressIndicator(
@@ -79,9 +70,17 @@ class _ShowSensitiveDataScreenState extends State<ShowSensitiveDataScreen> {
                     ),
                   )
                 : Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.only(left: 16, top: 8, right: 16),
                     child: Column(
                       children: [
+                        BackNavigation(
+                          title: isPrivateKey
+                              ? widget.l10n.exportPrivateKey
+                              : widget.l10n.showSeedPhrase,
+                        ),
+                        const SizedBox(
+                          height: 32,
+                        ),
                         Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
