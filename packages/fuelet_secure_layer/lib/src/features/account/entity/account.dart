@@ -31,6 +31,9 @@ class Account with EquatableMixin {
   @HiveField(6)
   String? hardwareSignerTag;
 
+  /// Indicates whether the `privateKeyExists` and `seedPhraseExists` fields are initialized
+  bool isInitialized = false;
+
   late final bool privateKeyExists;
 
   late final bool seedPhraseExists;
@@ -48,6 +51,19 @@ class Account with EquatableMixin {
   @override
   List<Object?> get props => [fuelAddress.bech32Address, name, addingMethod];
 
+  void setPrivateDataInfo({
+    required bool privateKeyExists,
+    required bool seedPhraseExists,
+  }) {
+    if (isInitialized) {
+      // already set
+      return;
+    }
+    this.privateKeyExists = privateKeyExists;
+    this.seedPhraseExists = seedPhraseExists;
+    isInitialized = true;
+  }
+
   Account copyWith({
     String? name,
     WalletGroup? walletGroup,
@@ -64,8 +80,8 @@ class Account with EquatableMixin {
       name: name ?? this.name,
     );
 
-    account.privateKeyExists = privateKeyExists;
-    account.seedPhraseExists = seedPhraseExists;
+    account.setPrivateDataInfo(
+        privateKeyExists: privateKeyExists, seedPhraseExists: seedPhraseExists);
 
     return account;
   }

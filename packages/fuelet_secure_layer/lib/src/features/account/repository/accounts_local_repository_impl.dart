@@ -44,10 +44,11 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
         await _privateDataRepository
             .loadData(account.fuelAddress.bech32Address);
       }
-      account.privateKeyExists = await _privateDataRepository
-          .privateKeyExists(account.fuelAddress.bech32Address);
-      account.seedPhraseExists = await _privateDataRepository
-          .seedPhraseExists(account.fuelAddress.bech32Address);
+      account.setPrivateDataInfo(
+          privateKeyExists: await _privateDataRepository
+              .privateKeyExists(account.fuelAddress.bech32Address),
+          seedPhraseExists: await _privateDataRepository
+              .seedPhraseExists(account.fuelAddress.bech32Address));
       account = _replaceForbiddenSymbolsIfNeeded(account);
     }
 
