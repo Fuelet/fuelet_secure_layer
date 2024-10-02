@@ -55,8 +55,12 @@ Future<String> _decryptPasswordSecret(String encryptedSecret, String password) {
 }
 
 Future<bool> _validatePassword(String passwordString, String password) async {
-  final decrypted = await _decryptPasswordSecret(passwordString, password);
-  return decrypted == _secretToEncrypt;
+  try {
+    final decrypted = await _decryptPasswordSecret(passwordString, password);
+    return decrypted == _secretToEncrypt;
+  } catch (_) {
+    return false;
+  }
 }
 
 class PasswordManager {
