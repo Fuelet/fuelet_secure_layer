@@ -87,7 +87,6 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
   @override
   Future<void> setSelectedAccount(String address) async {
     _selectedAccount = address;
-    await HiveAccountManager.openAccountBox(address);
     await _sharedPreferences.setString(_selectedAccountPrefKey, address);
   }
 
