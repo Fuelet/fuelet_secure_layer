@@ -1,12 +1,7 @@
 import 'dart:async';
 
-import 'package:fuelet_secure_layer/src/features/account/entity/account.dart';
-import 'package:fuelet_secure_layer/src/features/account/entity/account_x.dart';
-import 'package:fuelet_secure_layer/src/features/account/manager/hive_account_manager.dart';
-import 'package:fuelet_secure_layer/src/features/account/repository/accounts_local_repository.dart';
+import 'package:fuelet_secure_layer/fuelet_secure_layer.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
-import 'package:fuelet_secure_layer/src/features/private_data/utils/constants.dart';
-import 'package:fuelet_secure_layer/src/utils/string_utils.dart';
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,10 +10,12 @@ const _selectedAccountPrefKey = 'selectedAccountAddress';
 class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
   final SharedPreferences _sharedPreferences;
   final IAccountsPrivateDataRepository _privateDataRepository;
+  final PasswordManager _passwordManager;
 
   AccountsLocalRepositoryImpl(
     this._sharedPreferences,
     this._privateDataRepository,
+    this._passwordManager,
   );
 
   void init() async {
@@ -42,7 +39,11 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
     final accounts = accountsBox.values.toList();
 
     for (var account in accounts) {
-      await _privateDataRepository.loadData(account.fuelAddress.bech32Address);
+      // TODO: move this check and action to a proper place
+      if (await _passwordManager.hasSessionPassword()) {
+        await _privateDataRepository
+            .loadData(account.fuelAddress.bech32Address);
+      }
       account.privateKeyExists = await _privateDataRepository
           .privateKeyExists(account.fuelAddress.bech32Address);
       account.seedPhraseExists = await _privateDataRepository

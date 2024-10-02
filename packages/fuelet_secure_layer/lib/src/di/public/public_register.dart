@@ -51,8 +51,10 @@ import '../../features/account/entity/address.dart';
 
 // In order to access _privateSecureLayerLocator
 part 'package:fuelet_secure_layer/src/di/private/private_register.dart';
+
 // In order to let SaveSensitiveDataScreen use _privateSecureLayerLocator
 part 'package:fuelet_secure_layer/src/features/hardware_signer/presentation/ui/save_sensitive_data_screen.dart';
+
 // In order to let ShowSensitiveDataScreen use _privateSecureLayerLocator
 part 'package:fuelet_secure_layer/src/features/hardware_signer/presentation/ui/show_sensitive_data_screen.dart';
 
@@ -76,10 +78,18 @@ class PublicSecureLayerRegister {
 
         return secureLayerLocator<TPMServiceWebImpl>();
       })
+      ..registerSingleton<PasswordManager>(
+        PasswordManager(
+          _privateSecureLayerLocator<IAccountsPrivateDataRepository>(),
+          commonSecureLayerLocator<FlutterSecureStorage>(),
+          _privateSecureLayerLocator<SessionStoragePasswordManager>(),
+        ),
+      )
       ..registerSingleton<IAccountsLocalRepository>(
         AccountsLocalRepositoryImpl(
           commonSecureLayerLocator.get<SharedPreferences>(),
           _privateSecureLayerLocator<IAccountsPrivateDataRepository>(),
+          secureLayerLocator<PasswordManager>(),
         )..init(),
       )
       ..registerSingleton(
@@ -148,13 +158,6 @@ class PublicSecureLayerRegister {
           await secureLayerLocator.getAsync<FuelNetworkManager>(),
           _privateSecureLayerLocator<WalletUnlockedService>(),
           secureLayerLocator<IAccountsLocalRepository>(),
-        ),
-      )
-      ..registerFactory(
-        () => PasswordManager(
-          _privateSecureLayerLocator<IAccountsPrivateDataRepository>(),
-          commonSecureLayerLocator<FlutterSecureStorage>(),
-          _privateSecureLayerLocator<SessionStoragePasswordManager>(),
         ),
       );
   }
