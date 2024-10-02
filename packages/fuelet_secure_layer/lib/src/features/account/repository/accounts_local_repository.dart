@@ -6,8 +6,6 @@ abstract class IAccountsLocalRepository {
   // bech32
   String? get selectedAccount;
 
-  Stream<String?> get selectedAccountStream;
-
   /// Loads [Account]s from the localStorage.
   Future<List<Account>> loadAccounts();
 

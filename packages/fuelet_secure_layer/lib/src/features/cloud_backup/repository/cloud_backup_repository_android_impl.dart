@@ -1,5 +1,4 @@
 import 'package:fuelet_secure_layer/src/features/account/entity/account.dart';
-import 'package:fuelet_secure_layer/src/features/account/entity/account_x.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
 import 'package:fuelet_secure_layer/src/features/cloud_backup/entity/backup_accouts_dto.dart';
 import 'package:fuelet_secure_layer/src/features/cloud_backup/repository/cloud_backup_repository.dart';
@@ -17,20 +16,17 @@ class CloudBackupRepositoryAndroidImpl implements ICloudBackupRepository {
   );
 
   @override
-  Future<Map<String, String>> createBackups({
+  Future<List<String>> createBackups({
     required List<Account> accounts,
   }) async {
     Map<String, String> backups = {};
 
-    for (var account in accounts) {
-      if (account.isOwner) {
-        final data = _accountsPrivateDataRepository
-            .data[account.fuelAddress.bech32Address];
-        backups = {
-          ...backups,
-          account.fuelAddress.bech32Address:
-              data?.seedPhrase ?? data!.privateKey,
-        };
+    for (final account in accounts) {
+      final data = await _accountsPrivateDataRepository
+          .getAccountPrivateData(account.fuelAddress.bech32Address);
+      if (data != null) {
+        backups[account.fuelAddress.bech32Address] =
+            data.seedPhrase ?? data.privateKey;
       }
     }
 
@@ -57,12 +53,12 @@ class CloudBackupRepositoryAndroidImpl implements ICloudBackupRepository {
       final savedSuccessfully = await googleApiManager.saveBackups(
           backupsToSave, _cloudBackupAesPassword);
       if (savedSuccessfully) {
-        return backups;
+        return backups.keys.toList();
       } else {
-        return {};
+        return [];
       }
     } catch (e) {
-      return {};
+      return [];
     }
   }
 

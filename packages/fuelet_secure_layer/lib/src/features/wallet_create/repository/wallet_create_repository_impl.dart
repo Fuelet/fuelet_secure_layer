@@ -21,8 +21,10 @@ class WalletCreateRepositoryImpl implements IWalletCreateRepository {
       Account account, AccountPrivateData privateData) {
     _accountsPrivateDataRepository.addPrivateData(
         account.fuelAddress.bech32Address, privateData);
-    account.privateKeyExists = true;
-    account.seedPhraseExists = privateData.seedPhrase != null;
+    account.setPrivateDataInfo(
+      privateKeyExists: true,
+      seedPhraseExists: privateData.seedPhrase != null,
+    );
   }
 
   Account _accountFromWallet(FuelWallet wallet, DateTime createdAt,
@@ -175,8 +177,8 @@ class WalletCreateRepositoryImpl implements IWalletCreateRepository {
         name: name,
       );
 
-      account.privateKeyExists = false;
-      account.seedPhraseExists = false;
+      account.setPrivateDataInfo(
+          privateKeyExists: false, seedPhraseExists: false);
 
       return Right(account);
     } catch (err) {
@@ -191,8 +193,9 @@ class WalletCreateRepositoryImpl implements IWalletCreateRepository {
     required String currentNetworkUrl,
     required BlockchainNetwork network,
   }) async {
-    final recoveryPrivateKey = _accountsPrivateDataRepository
-        .data[_accountsRepository.selectedAccount]?.privateKey;
+    final existingAccountPrivateData = await _accountsPrivateDataRepository
+        .getAccountPrivateData(_accountsRepository.selectedAccount!);
+    final recoveryPrivateKey = existingAccountPrivateData?.privateKey;
     if (recoveryPrivateKey == null) {
       throw Exception('Failed to get private key');
     }

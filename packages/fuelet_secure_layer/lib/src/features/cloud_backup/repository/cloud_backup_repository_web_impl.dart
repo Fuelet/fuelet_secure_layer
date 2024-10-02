@@ -3,8 +3,8 @@ import 'package:fuelet_secure_layer/src/features/cloud_backup/repository/cloud_b
 
 class CloudBackupRepositoryWebImpl implements ICloudBackupRepository {
   @override
-  Future<Map<String, String>> createBackups({required List<Account> accounts}) {
-    return Future.value({});
+  Future<List<String>> createBackups({required List<Account> accounts}) {
+    return Future.value([]);
   }
 
   @override

@@ -94,19 +94,19 @@ class CloudBackupRepositoryIOSImpl implements ICloudBackupRepository {
   }
 
   @override
-  Future<Map<String, String>> createBackups({
+  Future<List<String>> createBackups({
     required List<Account> accounts,
   }) async {
     if (!await _checkCloudKitAvailable()) {
-      return {};
+      return [];
     }
 
     Map<String, String> backups = {};
 
     for (var account in accounts) {
       if (account.isOwner) {
-        final data = _accountsPrivateDataRepository
-            .data[account.fuelAddress.bech32Address];
+        final data = await _accountsPrivateDataRepository
+            .getAccountPrivateData(account.fuelAddress.bech32Address);
         backups = {
           ...backups,
           account.fuelAddress.bech32Address:
@@ -115,16 +115,16 @@ class CloudBackupRepositoryIOSImpl implements ICloudBackupRepository {
       }
     }
 
-    Map<String, String> successfullySavedBackups = {};
+    List<String> successfullySaved = [];
 
     for (var entry in backups.entries) {
       if (await _upsertAccount(
           entry.key, entry.value, _cloudBackupAesPassword)) {
-        successfullySavedBackups[entry.key] = entry.value;
+        successfullySaved.add(entry.key);
       }
     }
 
-    return successfullySavedBackups;
+    return successfullySaved;
   }
 
   @override

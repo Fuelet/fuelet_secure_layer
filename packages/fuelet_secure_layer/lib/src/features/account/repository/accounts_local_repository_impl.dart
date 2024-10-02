@@ -1,12 +1,7 @@
 import 'dart:async';
 
-import 'package:fuelet_secure_layer/src/features/account/entity/account.dart';
-import 'package:fuelet_secure_layer/src/features/account/entity/account_x.dart';
-import 'package:fuelet_secure_layer/src/features/account/manager/hive_account_manager.dart';
-import 'package:fuelet_secure_layer/src/features/account/repository/accounts_local_repository.dart';
+import 'package:fuelet_secure_layer/fuelet_secure_layer.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
-import 'package:fuelet_secure_layer/src/features/private_data/utils/constants.dart';
-import 'package:fuelet_secure_layer/src/utils/string_utils.dart';
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,18 +10,17 @@ const _selectedAccountPrefKey = 'selectedAccountAddress';
 class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
   final SharedPreferences _sharedPreferences;
   final IAccountsPrivateDataRepository _privateDataRepository;
-
-  final _selectedAccountStreamController = StreamController<String?>();
+  final PasswordManager _passwordManager;
 
   AccountsLocalRepositoryImpl(
     this._sharedPreferences,
     this._privateDataRepository,
+    this._passwordManager,
   );
 
   void init() async {
     final address = _sharedPreferences.getString(_selectedAccountPrefKey);
     _selectedAccount = address;
-    _selectedAccountStreamController.add(_selectedAccount);
   }
 
   @override
@@ -40,20 +34,21 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
   String? get selectedAccount => _selectedAccount;
 
   @override
-  Stream<String?> get selectedAccountStream =>
-      _selectedAccountStreamController.stream;
-
-  @override
   Future<List<Account>> loadAccounts() async {
     final accountsBox = Hive.box<Account>(SecureLayerConstants.kAccountsBox);
     final accounts = accountsBox.values.toList();
 
-    for (Account account in accounts) {
-      await _privateDataRepository.loadData(account.fuelAddress.bech32Address);
-      account.privateKeyExists = _privateDataRepository
-          .privateKeyExists(account.fuelAddress.bech32Address);
-      account.seedPhraseExists = _privateDataRepository
-          .seedPhraseExists(account.fuelAddress.bech32Address);
+    for (var account in accounts) {
+      // TODO: move this check and action to a proper place
+      if (await _passwordManager.hasSessionPassword()) {
+        await _privateDataRepository
+            .loadData(account.fuelAddress.bech32Address);
+      }
+      account.setPrivateDataInfo(
+          privateKeyExists: await _privateDataRepository
+              .privateKeyExists(account.fuelAddress.bech32Address),
+          seedPhraseExists: await _privateDataRepository
+              .seedPhraseExists(account.fuelAddress.bech32Address));
       account = _replaceForbiddenSymbolsIfNeeded(account);
     }
 
@@ -66,7 +61,7 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
     final List<Future<void>> futures = [];
 
     final accountAddressesToFlush = <String>{};
-    for (Account account in accounts) {
+    for (var account in accounts) {
       account = _replaceForbiddenSymbolsIfNeeded(account);
       if (account.isOwner) {
         accountAddressesToFlush.add(account.fuelAddress.bech32Address);
@@ -92,7 +87,6 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
   @override
   Future<void> setSelectedAccount(String address) async {
     _selectedAccount = address;
-    _selectedAccountStreamController.sink.add(_selectedAccount);
     await HiveAccountManager.openAccountBox(address);
     await _sharedPreferences.setString(_selectedAccountPrefKey, address);
   }
@@ -100,7 +94,6 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
   @override
   Future<void> resetSelectedAccount() {
     _selectedAccount = null;
-    _selectedAccountStreamController.sink.add(_selectedAccount);
 
     return _sharedPreferences.remove(_selectedAccountPrefKey);
   }

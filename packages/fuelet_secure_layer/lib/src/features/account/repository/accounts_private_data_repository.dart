@@ -2,15 +2,13 @@ import 'package:fuelet_secure_layer/src/features/account/entity/account_address_
 import 'package:fuelet_secure_layer/src/features/account/entity/account_private_data.dart';
 
 abstract interface class IAccountsPrivateDataRepository {
-  Map<AccountAddressBech32, AccountPrivateData?> get data;
-
-  Stream<Map<AccountAddressBech32, AccountPrivateData?>> get dataStream;
-
   void addPrivateData(AccountAddressBech32 address, AccountPrivateData data);
 
-  bool privateKeyExists(AccountAddressBech32 address);
+  Future<bool> privateKeyExists(AccountAddressBech32 address);
 
-  bool seedPhraseExists(AccountAddressBech32 address);
+  Future<bool> seedPhraseExists(AccountAddressBech32 address);
+
+  Future<AccountPrivateData?> getAccountPrivateData(String address);
 
   /// Flushes private data to the underlying secure storage.
   /// `ephemeralAddressesToSave` are used to filter out ephemeral data that should be saved.
@@ -21,6 +19,4 @@ abstract interface class IAccountsPrivateDataRepository {
   Future<void> removeData(AccountAddressBech32 address);
 
   Future<void> clearData();
-
-  Future<void> dispose();
 }

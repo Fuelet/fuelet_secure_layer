@@ -20,11 +20,11 @@ class SeedPhraseRepository {
 
   Future<void> saveWalletSeedPhrase({
     ///bech32
-    required walletAddress,
+    required address,
     required seedPhrase,
   }) async {
     final keys = await _getSeedPhrasesMap();
-    keys[walletAddress] = seedPhrase;
+    keys[address] = seedPhrase;
 
     await _secureStorage.write(
       key: _storageKey,

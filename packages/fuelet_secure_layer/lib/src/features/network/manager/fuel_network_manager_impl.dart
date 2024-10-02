@@ -19,7 +19,6 @@ class FuelNetworkManagerImpl implements FuelNetworkManager {
     if (currentNetwork != null) {
       await setNetworkProvider(currentNetwork);
     } else {
-      // TODO: change later!!
       await setNetworkProvider(BlockchainNetworkUtils.defaultNetwork);
     }
 
