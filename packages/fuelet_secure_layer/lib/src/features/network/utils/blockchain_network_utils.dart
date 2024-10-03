@@ -8,7 +8,7 @@ class BlockchainNetworkIds {
 abstract class BlockchainNetworkUtils {
   static const mainnetNetwork = BlockchainNetwork(
     host: 'https://mainnet.fuel.network',
-    indexerUrl: 'https://node-beta-2.fuel.network/graphql',
+    indexerUrl: 'https://mainnet.fuel.network/v1/graphql',
     faucetUrl: null,
     networkName: 'mainnet',
     isCustom: false,
@@ -26,7 +26,7 @@ abstract class BlockchainNetworkUtils {
 
   static const builtInNetworks = [mainnetNetwork, testnetNetwork];
 
-  static const defaultNetwork = testnetNetwork;
+  static const defaultNetwork = mainnetNetwork;
 
   static const networksWithFaucet = [testnetNetwork];
 }
