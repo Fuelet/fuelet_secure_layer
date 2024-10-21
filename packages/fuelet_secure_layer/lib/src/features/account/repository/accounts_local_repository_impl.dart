@@ -50,6 +50,7 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
           seedPhraseExists: await _privateDataRepository
               .seedPhraseExists(account.fuelAddress.bech32Address));
       account = _replaceForbiddenSymbolsIfNeeded(account);
+      account = _changeWalletGroupIfNeeded(account);
     }
 
     return accounts;
@@ -121,6 +122,15 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
           name: StringUtils.cutForbiddenSymbols(account.name ?? ""));
     }
 
+    return updatedAccount;
+  }
+
+  Account _changeWalletGroupIfNeeded(Account account) {
+    var updatedAccount = account;
+    if (account.walletGroup == WalletGroup.watchlist) {
+      updatedAccount = account.copyWith(walletGroup: WalletGroup.myWallets);
+      updateAccount(account);
+    }
     return updatedAccount;
   }
 }
