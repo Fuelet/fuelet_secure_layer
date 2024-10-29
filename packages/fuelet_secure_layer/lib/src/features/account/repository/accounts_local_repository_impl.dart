@@ -127,8 +127,8 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
 
   Account _changeWalletGroupIfNeeded(Account account) {
     var updatedAccount = account;
-    if (account.walletGroup == WalletGroup.watchlist) {
-      updatedAccount = account.copyWith(walletGroup: WalletGroup.myWallets);
+    if (account.walletGroup == WalletGroup.myWallets && !account.isOwner) {
+      updatedAccount = account.copyWith(walletGroup: WalletGroup.watchlist);
       updateAccount(account);
     }
     return updatedAccount;
