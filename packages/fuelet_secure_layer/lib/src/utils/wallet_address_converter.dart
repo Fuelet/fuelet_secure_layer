@@ -30,11 +30,10 @@ class FuelWalletAddressConverter {
 
   static Future<AccountAddress> accountAddressFromB256String(
       String b256Address) async {
-    final withHexPrefix = addHexPrefix(b256Address);
-    final bech32Address = await bech32StringFromB256String(withHexPrefix);
+    final fuelAddress = FuelAddress.fromString(b256Address);
     return AccountAddress(
-      b256Address: withHexPrefix,
-      bech32Address: bech32Address,
+      b256Address: fuelAddress.b256Address,
+      bech32Address: fuelAddress.bech32Address,
     );
   }
 }
