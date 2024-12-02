@@ -4,6 +4,8 @@ import 'package:flutter_cloud_kit/flutter_cloud_kit.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fuelet_secure_layer/src/di/common/common_locator.dart';
 import 'package:fuelet_secure_layer/src/di/public/public_locator.dart';
+import 'package:fuelet_secure_layer/src/features/account/accounts_manager/accounts_manager.dart';
+import 'package:fuelet_secure_layer/src/features/account/accounts_manager/accounts_manager_impl.dart';
 import 'package:fuelet_secure_layer/src/features/account/entity/account_private_data.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_local_repository.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_local_repository_impl.dart';
@@ -159,6 +161,11 @@ class PublicSecureLayerRegister {
           _privateSecureLayerLocator<WalletUnlockedService>(),
           secureLayerLocator<IAccountsLocalRepository>(),
         ),
-      );
+      )
+      ..registerFactoryAsync<AccountsManager>(() async => AccountsManagerImpl(
+          secureLayerLocator<IAccountsLocalRepository>(),
+          _privateSecureLayerLocator<IAccountsPrivateDataRepository>(),
+          secureLayerLocator<IWalletCreateRepository>(),
+          await secureLayerLocator.getAsync<FuelNetworkManager>()));
   }
 }
