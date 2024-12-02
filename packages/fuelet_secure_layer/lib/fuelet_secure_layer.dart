@@ -42,6 +42,7 @@ export 'src/di/public/public_locator.dart';
 export 'src/features/account/entity/account_x.dart';
 export 'src/features/account/entity/export.dart';
 export 'src/features/account/repository/accounts_local_repository.dart';
+export 'src/features/account/accounts_manager/accounts_manager.dart';
 export 'src/features/balance/entity/export.dart';
 export 'src/features/cloud_backup/repository/cloud_backup_repository.dart';
 export 'src/features/graph_ql/repository/graph_ql_repository.dart';
