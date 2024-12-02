@@ -9,7 +9,7 @@ import 'package:fuelet_secure_layer/src/features/wallet_create/repository/wallet
 import 'package:fuelet_secure_layer/src/features/wallet_import/entity/wallet_import_typedef.dart';
 
 class AccountsManagerImpl extends AccountsManager {
-  final int _loadingDerevativeAccountCount = 20;
+  final int _loadingDerivativeAccountCount = 20;
 
   final IAccountsLocalRepository _accountsLocalRepository;
   final IAccountsPrivateDataRepository _privateDataRepository;
@@ -82,7 +82,7 @@ class AccountsManagerImpl extends AccountsManager {
       response =
           await _walletCreateRepository.importDerivativeAccountsWithMnemonic(
         seedPhrase,
-        count: _loadingDerevativeAccountCount,
+        count: _loadingDerivativeAccountCount,
         fromIndex: 0,
         currentNetworkUrl: _fuelNetworkProviderRepository.currentNetwork,
       );
