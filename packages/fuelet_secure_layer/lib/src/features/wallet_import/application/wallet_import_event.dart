@@ -23,6 +23,11 @@ class WalletImportEvent with _$WalletImportEvent {
     required List<Account> existingAccounts,
   }) = _ImportWalletsFromSeed;
 
+  const factory WalletImportEvent.deriveWalletsFromSameSeed({
+    required AccountAddress deriveFrom,
+    required List<Account> existingAccounts,
+  }) = _DeriveWalletsFromSameSeed;
+
   const factory WalletImportEvent.importMultipleWallets(
     List<String> values, {
     required List<Account> existingAccounts,

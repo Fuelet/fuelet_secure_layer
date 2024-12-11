@@ -12,7 +12,7 @@ part of 'wallet_import_failure.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 /// @nodoc
 mixin _$WalletImportFailure {
@@ -114,25 +114,25 @@ class _$WalletImportFailureCopyWithImpl<$Res, $Val extends WalletImportFailure>
 }
 
 /// @nodoc
-abstract class _$$ValidationFailedImplCopyWith<$Res> {
-  factory _$$ValidationFailedImplCopyWith(_$ValidationFailedImpl value,
-          $Res Function(_$ValidationFailedImpl) then) =
-      __$$ValidationFailedImplCopyWithImpl<$Res>;
+abstract class _$$_ValidationFailedCopyWith<$Res> {
+  factory _$$_ValidationFailedCopyWith(
+          _$_ValidationFailed value, $Res Function(_$_ValidationFailed) then) =
+      __$$_ValidationFailedCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$ValidationFailedImplCopyWithImpl<$Res>
-    extends _$WalletImportFailureCopyWithImpl<$Res, _$ValidationFailedImpl>
-    implements _$$ValidationFailedImplCopyWith<$Res> {
-  __$$ValidationFailedImplCopyWithImpl(_$ValidationFailedImpl _value,
-      $Res Function(_$ValidationFailedImpl) _then)
+class __$$_ValidationFailedCopyWithImpl<$Res>
+    extends _$WalletImportFailureCopyWithImpl<$Res, _$_ValidationFailed>
+    implements _$$_ValidationFailedCopyWith<$Res> {
+  __$$_ValidationFailedCopyWithImpl(
+      _$_ValidationFailed _value, $Res Function(_$_ValidationFailed) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$ValidationFailedImpl implements _ValidationFailed {
-  const _$ValidationFailedImpl();
+class _$_ValidationFailed implements _ValidationFailed {
+  const _$_ValidationFailed();
 
   @override
   String toString() {
@@ -140,9 +140,9 @@ class _$ValidationFailedImpl implements _ValidationFailed {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$ValidationFailedImpl);
+        (other.runtimeType == runtimeType && other is _$_ValidationFailed);
   }
 
   @override
@@ -251,32 +251,32 @@ class _$ValidationFailedImpl implements _ValidationFailed {
 }
 
 abstract class _ValidationFailed implements WalletImportFailure {
-  const factory _ValidationFailed() = _$ValidationFailedImpl;
+  const factory _ValidationFailed() = _$_ValidationFailed;
 }
 
 /// @nodoc
-abstract class _$$PrivateKeyValidationFailedImplCopyWith<$Res> {
-  factory _$$PrivateKeyValidationFailedImplCopyWith(
-          _$PrivateKeyValidationFailedImpl value,
-          $Res Function(_$PrivateKeyValidationFailedImpl) then) =
-      __$$PrivateKeyValidationFailedImplCopyWithImpl<$Res>;
+abstract class _$$_PrivateKeyValidationFailedCopyWith<$Res> {
+  factory _$$_PrivateKeyValidationFailedCopyWith(
+          _$_PrivateKeyValidationFailed value,
+          $Res Function(_$_PrivateKeyValidationFailed) then) =
+      __$$_PrivateKeyValidationFailedCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$PrivateKeyValidationFailedImplCopyWithImpl<$Res>
+class __$$_PrivateKeyValidationFailedCopyWithImpl<$Res>
     extends _$WalletImportFailureCopyWithImpl<$Res,
-        _$PrivateKeyValidationFailedImpl>
-    implements _$$PrivateKeyValidationFailedImplCopyWith<$Res> {
-  __$$PrivateKeyValidationFailedImplCopyWithImpl(
-      _$PrivateKeyValidationFailedImpl _value,
-      $Res Function(_$PrivateKeyValidationFailedImpl) _then)
+        _$_PrivateKeyValidationFailed>
+    implements _$$_PrivateKeyValidationFailedCopyWith<$Res> {
+  __$$_PrivateKeyValidationFailedCopyWithImpl(
+      _$_PrivateKeyValidationFailed _value,
+      $Res Function(_$_PrivateKeyValidationFailed) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$PrivateKeyValidationFailedImpl implements _PrivateKeyValidationFailed {
-  const _$PrivateKeyValidationFailedImpl();
+class _$_PrivateKeyValidationFailed implements _PrivateKeyValidationFailed {
+  const _$_PrivateKeyValidationFailed();
 
   @override
   String toString() {
@@ -284,10 +284,10 @@ class _$PrivateKeyValidationFailedImpl implements _PrivateKeyValidationFailed {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$PrivateKeyValidationFailedImpl);
+            other is _$_PrivateKeyValidationFailed);
   }
 
   @override
@@ -396,30 +396,29 @@ class _$PrivateKeyValidationFailedImpl implements _PrivateKeyValidationFailed {
 }
 
 abstract class _PrivateKeyValidationFailed implements WalletImportFailure {
-  const factory _PrivateKeyValidationFailed() =
-      _$PrivateKeyValidationFailedImpl;
+  const factory _PrivateKeyValidationFailed() = _$_PrivateKeyValidationFailed;
 }
 
 /// @nodoc
-abstract class _$$InvalidPrivateKeyImplCopyWith<$Res> {
-  factory _$$InvalidPrivateKeyImplCopyWith(_$InvalidPrivateKeyImpl value,
-          $Res Function(_$InvalidPrivateKeyImpl) then) =
-      __$$InvalidPrivateKeyImplCopyWithImpl<$Res>;
+abstract class _$$_InvalidPrivateKeyCopyWith<$Res> {
+  factory _$$_InvalidPrivateKeyCopyWith(_$_InvalidPrivateKey value,
+          $Res Function(_$_InvalidPrivateKey) then) =
+      __$$_InvalidPrivateKeyCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$InvalidPrivateKeyImplCopyWithImpl<$Res>
-    extends _$WalletImportFailureCopyWithImpl<$Res, _$InvalidPrivateKeyImpl>
-    implements _$$InvalidPrivateKeyImplCopyWith<$Res> {
-  __$$InvalidPrivateKeyImplCopyWithImpl(_$InvalidPrivateKeyImpl _value,
-      $Res Function(_$InvalidPrivateKeyImpl) _then)
+class __$$_InvalidPrivateKeyCopyWithImpl<$Res>
+    extends _$WalletImportFailureCopyWithImpl<$Res, _$_InvalidPrivateKey>
+    implements _$$_InvalidPrivateKeyCopyWith<$Res> {
+  __$$_InvalidPrivateKeyCopyWithImpl(
+      _$_InvalidPrivateKey _value, $Res Function(_$_InvalidPrivateKey) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$InvalidPrivateKeyImpl implements _InvalidPrivateKey {
-  const _$InvalidPrivateKeyImpl();
+class _$_InvalidPrivateKey implements _InvalidPrivateKey {
+  const _$_InvalidPrivateKey();
 
   @override
   String toString() {
@@ -427,9 +426,9 @@ class _$InvalidPrivateKeyImpl implements _InvalidPrivateKey {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$InvalidPrivateKeyImpl);
+        (other.runtimeType == runtimeType && other is _$_InvalidPrivateKey);
   }
 
   @override
@@ -538,29 +537,29 @@ class _$InvalidPrivateKeyImpl implements _InvalidPrivateKey {
 }
 
 abstract class _InvalidPrivateKey implements WalletImportFailure {
-  const factory _InvalidPrivateKey() = _$InvalidPrivateKeyImpl;
+  const factory _InvalidPrivateKey() = _$_InvalidPrivateKey;
 }
 
 /// @nodoc
-abstract class _$$InvalidSeedPhraseImplCopyWith<$Res> {
-  factory _$$InvalidSeedPhraseImplCopyWith(_$InvalidSeedPhraseImpl value,
-          $Res Function(_$InvalidSeedPhraseImpl) then) =
-      __$$InvalidSeedPhraseImplCopyWithImpl<$Res>;
+abstract class _$$_InvalidSeedPhraseCopyWith<$Res> {
+  factory _$$_InvalidSeedPhraseCopyWith(_$_InvalidSeedPhrase value,
+          $Res Function(_$_InvalidSeedPhrase) then) =
+      __$$_InvalidSeedPhraseCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$InvalidSeedPhraseImplCopyWithImpl<$Res>
-    extends _$WalletImportFailureCopyWithImpl<$Res, _$InvalidSeedPhraseImpl>
-    implements _$$InvalidSeedPhraseImplCopyWith<$Res> {
-  __$$InvalidSeedPhraseImplCopyWithImpl(_$InvalidSeedPhraseImpl _value,
-      $Res Function(_$InvalidSeedPhraseImpl) _then)
+class __$$_InvalidSeedPhraseCopyWithImpl<$Res>
+    extends _$WalletImportFailureCopyWithImpl<$Res, _$_InvalidSeedPhrase>
+    implements _$$_InvalidSeedPhraseCopyWith<$Res> {
+  __$$_InvalidSeedPhraseCopyWithImpl(
+      _$_InvalidSeedPhrase _value, $Res Function(_$_InvalidSeedPhrase) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$InvalidSeedPhraseImpl implements _InvalidSeedPhrase {
-  const _$InvalidSeedPhraseImpl();
+class _$_InvalidSeedPhrase implements _InvalidSeedPhrase {
+  const _$_InvalidSeedPhrase();
 
   @override
   String toString() {
@@ -568,9 +567,9 @@ class _$InvalidSeedPhraseImpl implements _InvalidSeedPhrase {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$InvalidSeedPhraseImpl);
+        (other.runtimeType == runtimeType && other is _$_InvalidSeedPhrase);
   }
 
   @override
@@ -679,29 +678,29 @@ class _$InvalidSeedPhraseImpl implements _InvalidSeedPhrase {
 }
 
 abstract class _InvalidSeedPhrase implements WalletImportFailure {
-  const factory _InvalidSeedPhrase() = _$InvalidSeedPhraseImpl;
+  const factory _InvalidSeedPhrase() = _$_InvalidSeedPhrase;
 }
 
 /// @nodoc
-abstract class _$$InvalidMnemonicImplCopyWith<$Res> {
-  factory _$$InvalidMnemonicImplCopyWith(_$InvalidMnemonicImpl value,
-          $Res Function(_$InvalidMnemonicImpl) then) =
-      __$$InvalidMnemonicImplCopyWithImpl<$Res>;
+abstract class _$$_InvalidMnemonicCopyWith<$Res> {
+  factory _$$_InvalidMnemonicCopyWith(
+          _$_InvalidMnemonic value, $Res Function(_$_InvalidMnemonic) then) =
+      __$$_InvalidMnemonicCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$InvalidMnemonicImplCopyWithImpl<$Res>
-    extends _$WalletImportFailureCopyWithImpl<$Res, _$InvalidMnemonicImpl>
-    implements _$$InvalidMnemonicImplCopyWith<$Res> {
-  __$$InvalidMnemonicImplCopyWithImpl(
-      _$InvalidMnemonicImpl _value, $Res Function(_$InvalidMnemonicImpl) _then)
+class __$$_InvalidMnemonicCopyWithImpl<$Res>
+    extends _$WalletImportFailureCopyWithImpl<$Res, _$_InvalidMnemonic>
+    implements _$$_InvalidMnemonicCopyWith<$Res> {
+  __$$_InvalidMnemonicCopyWithImpl(
+      _$_InvalidMnemonic _value, $Res Function(_$_InvalidMnemonic) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$InvalidMnemonicImpl implements _InvalidMnemonic {
-  const _$InvalidMnemonicImpl();
+class _$_InvalidMnemonic implements _InvalidMnemonic {
+  const _$_InvalidMnemonic();
 
   @override
   String toString() {
@@ -709,9 +708,9 @@ class _$InvalidMnemonicImpl implements _InvalidMnemonic {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$InvalidMnemonicImpl);
+        (other.runtimeType == runtimeType && other is _$_InvalidMnemonic);
   }
 
   @override
@@ -820,29 +819,29 @@ class _$InvalidMnemonicImpl implements _InvalidMnemonic {
 }
 
 abstract class _InvalidMnemonic implements WalletImportFailure {
-  const factory _InvalidMnemonic() = _$InvalidMnemonicImpl;
+  const factory _InvalidMnemonic() = _$_InvalidMnemonic;
 }
 
 /// @nodoc
-abstract class _$$InvalidAddressImplCopyWith<$Res> {
-  factory _$$InvalidAddressImplCopyWith(_$InvalidAddressImpl value,
-          $Res Function(_$InvalidAddressImpl) then) =
-      __$$InvalidAddressImplCopyWithImpl<$Res>;
+abstract class _$$_InvalidAddressCopyWith<$Res> {
+  factory _$$_InvalidAddressCopyWith(
+          _$_InvalidAddress value, $Res Function(_$_InvalidAddress) then) =
+      __$$_InvalidAddressCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$InvalidAddressImplCopyWithImpl<$Res>
-    extends _$WalletImportFailureCopyWithImpl<$Res, _$InvalidAddressImpl>
-    implements _$$InvalidAddressImplCopyWith<$Res> {
-  __$$InvalidAddressImplCopyWithImpl(
-      _$InvalidAddressImpl _value, $Res Function(_$InvalidAddressImpl) _then)
+class __$$_InvalidAddressCopyWithImpl<$Res>
+    extends _$WalletImportFailureCopyWithImpl<$Res, _$_InvalidAddress>
+    implements _$$_InvalidAddressCopyWith<$Res> {
+  __$$_InvalidAddressCopyWithImpl(
+      _$_InvalidAddress _value, $Res Function(_$_InvalidAddress) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$InvalidAddressImpl implements _InvalidAddress {
-  const _$InvalidAddressImpl();
+class _$_InvalidAddress implements _InvalidAddress {
+  const _$_InvalidAddress();
 
   @override
   String toString() {
@@ -850,9 +849,9 @@ class _$InvalidAddressImpl implements _InvalidAddress {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$InvalidAddressImpl);
+        (other.runtimeType == runtimeType && other is _$_InvalidAddress);
   }
 
   @override
@@ -961,29 +960,29 @@ class _$InvalidAddressImpl implements _InvalidAddress {
 }
 
 abstract class _InvalidAddress implements WalletImportFailure {
-  const factory _InvalidAddress() = _$InvalidAddressImpl;
+  const factory _InvalidAddress() = _$_InvalidAddress;
 }
 
 /// @nodoc
-abstract class _$$AccountAlreadyAddedImplCopyWith<$Res> {
-  factory _$$AccountAlreadyAddedImplCopyWith(_$AccountAlreadyAddedImpl value,
-          $Res Function(_$AccountAlreadyAddedImpl) then) =
-      __$$AccountAlreadyAddedImplCopyWithImpl<$Res>;
+abstract class _$$_AccountAlreadyAddedCopyWith<$Res> {
+  factory _$$_AccountAlreadyAddedCopyWith(_$_AccountAlreadyAdded value,
+          $Res Function(_$_AccountAlreadyAdded) then) =
+      __$$_AccountAlreadyAddedCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$AccountAlreadyAddedImplCopyWithImpl<$Res>
-    extends _$WalletImportFailureCopyWithImpl<$Res, _$AccountAlreadyAddedImpl>
-    implements _$$AccountAlreadyAddedImplCopyWith<$Res> {
-  __$$AccountAlreadyAddedImplCopyWithImpl(_$AccountAlreadyAddedImpl _value,
-      $Res Function(_$AccountAlreadyAddedImpl) _then)
+class __$$_AccountAlreadyAddedCopyWithImpl<$Res>
+    extends _$WalletImportFailureCopyWithImpl<$Res, _$_AccountAlreadyAdded>
+    implements _$$_AccountAlreadyAddedCopyWith<$Res> {
+  __$$_AccountAlreadyAddedCopyWithImpl(_$_AccountAlreadyAdded _value,
+      $Res Function(_$_AccountAlreadyAdded) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$AccountAlreadyAddedImpl implements _AccountAlreadyAdded {
-  const _$AccountAlreadyAddedImpl();
+class _$_AccountAlreadyAdded implements _AccountAlreadyAdded {
+  const _$_AccountAlreadyAdded();
 
   @override
   String toString() {
@@ -991,10 +990,9 @@ class _$AccountAlreadyAddedImpl implements _AccountAlreadyAdded {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$AccountAlreadyAddedImpl);
+        (other.runtimeType == runtimeType && other is _$_AccountAlreadyAdded);
   }
 
   @override
@@ -1103,29 +1101,29 @@ class _$AccountAlreadyAddedImpl implements _AccountAlreadyAdded {
 }
 
 abstract class _AccountAlreadyAdded implements WalletImportFailure {
-  const factory _AccountAlreadyAdded() = _$AccountAlreadyAddedImpl;
+  const factory _AccountAlreadyAdded() = _$_AccountAlreadyAdded;
 }
 
 /// @nodoc
-abstract class _$$UnexpectedImplCopyWith<$Res> {
-  factory _$$UnexpectedImplCopyWith(
-          _$UnexpectedImpl value, $Res Function(_$UnexpectedImpl) then) =
-      __$$UnexpectedImplCopyWithImpl<$Res>;
+abstract class _$$_UnexpectedCopyWith<$Res> {
+  factory _$$_UnexpectedCopyWith(
+          _$_Unexpected value, $Res Function(_$_Unexpected) then) =
+      __$$_UnexpectedCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$UnexpectedImplCopyWithImpl<$Res>
-    extends _$WalletImportFailureCopyWithImpl<$Res, _$UnexpectedImpl>
-    implements _$$UnexpectedImplCopyWith<$Res> {
-  __$$UnexpectedImplCopyWithImpl(
-      _$UnexpectedImpl _value, $Res Function(_$UnexpectedImpl) _then)
+class __$$_UnexpectedCopyWithImpl<$Res>
+    extends _$WalletImportFailureCopyWithImpl<$Res, _$_Unexpected>
+    implements _$$_UnexpectedCopyWith<$Res> {
+  __$$_UnexpectedCopyWithImpl(
+      _$_Unexpected _value, $Res Function(_$_Unexpected) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$UnexpectedImpl implements _Unexpected {
-  const _$UnexpectedImpl();
+class _$_Unexpected implements _Unexpected {
+  const _$_Unexpected();
 
   @override
   String toString() {
@@ -1133,9 +1131,9 @@ class _$UnexpectedImpl implements _Unexpected {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$UnexpectedImpl);
+        (other.runtimeType == runtimeType && other is _$_Unexpected);
   }
 
   @override
@@ -1244,5 +1242,5 @@ class _$UnexpectedImpl implements _Unexpected {
 }
 
 abstract class _Unexpected implements WalletImportFailure {
-  const factory _Unexpected() = _$UnexpectedImpl;
+  const factory _Unexpected() = _$_Unexpected;
 }
