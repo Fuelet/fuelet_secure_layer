@@ -12,7 +12,7 @@ part of 'wallet_import_bloc.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 /// @nodoc
 mixin _$WalletImportEvent {
@@ -27,6 +27,9 @@ mixin _$WalletImportEvent {
         loadMoreDerivative,
     required TResult Function(String seedPhrase, List<Account> existingAccounts)
         importWalletsFromSeed,
+    required TResult Function(
+            AccountAddress deriveFrom, List<Account> existingAccounts)
+        deriveWalletsFromSameSeed,
     required TResult Function(List<String> values,
             List<Account> existingAccounts, bool creatingAfterSettingPasscode)
         importMultipleWallets,
@@ -47,6 +50,9 @@ mixin _$WalletImportEvent {
         loadMoreDerivative,
     TResult? Function(String seedPhrase, List<Account> existingAccounts)?
         importWalletsFromSeed,
+    TResult? Function(
+            AccountAddress deriveFrom, List<Account> existingAccounts)?
+        deriveWalletsFromSameSeed,
     TResult? Function(List<String> values, List<Account> existingAccounts,
             bool creatingAfterSettingPasscode)?
         importMultipleWallets,
@@ -67,6 +73,8 @@ mixin _$WalletImportEvent {
         loadMoreDerivative,
     TResult Function(String seedPhrase, List<Account> existingAccounts)?
         importWalletsFromSeed,
+    TResult Function(AccountAddress deriveFrom, List<Account> existingAccounts)?
+        deriveWalletsFromSameSeed,
     TResult Function(List<String> values, List<Account> existingAccounts,
             bool creatingAfterSettingPasscode)?
         importMultipleWallets,
@@ -84,6 +92,8 @@ mixin _$WalletImportEvent {
     required TResult Function(_LoadMoreDerivative value) loadMoreDerivative,
     required TResult Function(_ImportWalletsFromSeed value)
         importWalletsFromSeed,
+    required TResult Function(_DeriveWalletsFromSameSeed value)
+        deriveWalletsFromSameSeed,
     required TResult Function(_ImportMultipleWallets value)
         importMultipleWallets,
     required TResult Function(_WatchWallet value) watchWallet,
@@ -96,6 +106,8 @@ mixin _$WalletImportEvent {
     TResult? Function(_SaveAccountsToImport value)? readyToImport,
     TResult? Function(_LoadMoreDerivative value)? loadMoreDerivative,
     TResult? Function(_ImportWalletsFromSeed value)? importWalletsFromSeed,
+    TResult? Function(_DeriveWalletsFromSameSeed value)?
+        deriveWalletsFromSameSeed,
     TResult? Function(_ImportMultipleWallets value)? importMultipleWallets,
     TResult? Function(_WatchWallet value)? watchWallet,
     TResult? Function(_Reset value)? reset,
@@ -107,6 +119,8 @@ mixin _$WalletImportEvent {
     TResult Function(_SaveAccountsToImport value)? readyToImport,
     TResult Function(_LoadMoreDerivative value)? loadMoreDerivative,
     TResult Function(_ImportWalletsFromSeed value)? importWalletsFromSeed,
+    TResult Function(_DeriveWalletsFromSameSeed value)?
+        deriveWalletsFromSameSeed,
     TResult Function(_ImportMultipleWallets value)? importMultipleWallets,
     TResult Function(_WatchWallet value)? watchWallet,
     TResult Function(_Reset value)? reset,
@@ -134,10 +148,10 @@ class _$WalletImportEventCopyWithImpl<$Res, $Val extends WalletImportEvent>
 }
 
 /// @nodoc
-abstract class _$$ImportWalletImplCopyWith<$Res> {
-  factory _$$ImportWalletImplCopyWith(
-          _$ImportWalletImpl value, $Res Function(_$ImportWalletImpl) then) =
-      __$$ImportWalletImplCopyWithImpl<$Res>;
+abstract class _$$_ImportWalletCopyWith<$Res> {
+  factory _$$_ImportWalletCopyWith(
+          _$_ImportWallet value, $Res Function(_$_ImportWallet) then) =
+      __$$_ImportWalletCopyWithImpl<$Res>;
   @useResult
   $Res call(
       {String privateKey,
@@ -146,11 +160,11 @@ abstract class _$$ImportWalletImplCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$ImportWalletImplCopyWithImpl<$Res>
-    extends _$WalletImportEventCopyWithImpl<$Res, _$ImportWalletImpl>
-    implements _$$ImportWalletImplCopyWith<$Res> {
-  __$$ImportWalletImplCopyWithImpl(
-      _$ImportWalletImpl _value, $Res Function(_$ImportWalletImpl) _then)
+class __$$_ImportWalletCopyWithImpl<$Res>
+    extends _$WalletImportEventCopyWithImpl<$Res, _$_ImportWallet>
+    implements _$$_ImportWalletCopyWith<$Res> {
+  __$$_ImportWalletCopyWithImpl(
+      _$_ImportWallet _value, $Res Function(_$_ImportWallet) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -160,7 +174,7 @@ class __$$ImportWalletImplCopyWithImpl<$Res>
     Object? existingAccounts = null,
     Object? creatingAfterSettingPasscode = null,
   }) {
-    return _then(_$ImportWalletImpl(
+    return _then(_$_ImportWallet(
       null == privateKey
           ? _value.privateKey
           : privateKey // ignore: cast_nullable_to_non_nullable
@@ -179,8 +193,8 @@ class __$$ImportWalletImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ImportWalletImpl implements _ImportWallet {
-  const _$ImportWalletImpl(this.privateKey,
+class _$_ImportWallet implements _ImportWallet {
+  const _$_ImportWallet(this.privateKey,
       {required final List<Account> existingAccounts,
       required this.creatingAfterSettingPasscode})
       : _existingAccounts = existingAccounts;
@@ -205,10 +219,10 @@ class _$ImportWalletImpl implements _ImportWallet {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ImportWalletImpl &&
+            other is _$_ImportWallet &&
             (identical(other.privateKey, privateKey) ||
                 other.privateKey == privateKey) &&
             const DeepCollectionEquality()
@@ -229,8 +243,8 @@ class _$ImportWalletImpl implements _ImportWallet {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ImportWalletImplCopyWith<_$ImportWalletImpl> get copyWith =>
-      __$$ImportWalletImplCopyWithImpl<_$ImportWalletImpl>(this, _$identity);
+  _$$_ImportWalletCopyWith<_$_ImportWallet> get copyWith =>
+      __$$_ImportWalletCopyWithImpl<_$_ImportWallet>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -244,6 +258,9 @@ class _$ImportWalletImpl implements _ImportWallet {
         loadMoreDerivative,
     required TResult Function(String seedPhrase, List<Account> existingAccounts)
         importWalletsFromSeed,
+    required TResult Function(
+            AccountAddress deriveFrom, List<Account> existingAccounts)
+        deriveWalletsFromSameSeed,
     required TResult Function(List<String> values,
             List<Account> existingAccounts, bool creatingAfterSettingPasscode)
         importMultipleWallets,
@@ -268,6 +285,9 @@ class _$ImportWalletImpl implements _ImportWallet {
         loadMoreDerivative,
     TResult? Function(String seedPhrase, List<Account> existingAccounts)?
         importWalletsFromSeed,
+    TResult? Function(
+            AccountAddress deriveFrom, List<Account> existingAccounts)?
+        deriveWalletsFromSameSeed,
     TResult? Function(List<String> values, List<Account> existingAccounts,
             bool creatingAfterSettingPasscode)?
         importMultipleWallets,
@@ -292,6 +312,8 @@ class _$ImportWalletImpl implements _ImportWallet {
         loadMoreDerivative,
     TResult Function(String seedPhrase, List<Account> existingAccounts)?
         importWalletsFromSeed,
+    TResult Function(AccountAddress deriveFrom, List<Account> existingAccounts)?
+        deriveWalletsFromSameSeed,
     TResult Function(List<String> values, List<Account> existingAccounts,
             bool creatingAfterSettingPasscode)?
         importMultipleWallets,
@@ -316,6 +338,8 @@ class _$ImportWalletImpl implements _ImportWallet {
     required TResult Function(_LoadMoreDerivative value) loadMoreDerivative,
     required TResult Function(_ImportWalletsFromSeed value)
         importWalletsFromSeed,
+    required TResult Function(_DeriveWalletsFromSameSeed value)
+        deriveWalletsFromSameSeed,
     required TResult Function(_ImportMultipleWallets value)
         importMultipleWallets,
     required TResult Function(_WatchWallet value) watchWallet,
@@ -331,6 +355,8 @@ class _$ImportWalletImpl implements _ImportWallet {
     TResult? Function(_SaveAccountsToImport value)? readyToImport,
     TResult? Function(_LoadMoreDerivative value)? loadMoreDerivative,
     TResult? Function(_ImportWalletsFromSeed value)? importWalletsFromSeed,
+    TResult? Function(_DeriveWalletsFromSameSeed value)?
+        deriveWalletsFromSameSeed,
     TResult? Function(_ImportMultipleWallets value)? importMultipleWallets,
     TResult? Function(_WatchWallet value)? watchWallet,
     TResult? Function(_Reset value)? reset,
@@ -345,6 +371,8 @@ class _$ImportWalletImpl implements _ImportWallet {
     TResult Function(_SaveAccountsToImport value)? readyToImport,
     TResult Function(_LoadMoreDerivative value)? loadMoreDerivative,
     TResult Function(_ImportWalletsFromSeed value)? importWalletsFromSeed,
+    TResult Function(_DeriveWalletsFromSameSeed value)?
+        deriveWalletsFromSameSeed,
     TResult Function(_ImportMultipleWallets value)? importMultipleWallets,
     TResult Function(_WatchWallet value)? watchWallet,
     TResult Function(_Reset value)? reset,
@@ -360,31 +388,31 @@ class _$ImportWalletImpl implements _ImportWallet {
 abstract class _ImportWallet implements WalletImportEvent {
   const factory _ImportWallet(final String privateKey,
       {required final List<Account> existingAccounts,
-      required final bool creatingAfterSettingPasscode}) = _$ImportWalletImpl;
+      required final bool creatingAfterSettingPasscode}) = _$_ImportWallet;
 
   String get privateKey;
   List<Account> get existingAccounts;
   bool get creatingAfterSettingPasscode;
   @JsonKey(ignore: true)
-  _$$ImportWalletImplCopyWith<_$ImportWalletImpl> get copyWith =>
+  _$$_ImportWalletCopyWith<_$_ImportWallet> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$SaveAccountsToImportImplCopyWith<$Res> {
-  factory _$$SaveAccountsToImportImplCopyWith(_$SaveAccountsToImportImpl value,
-          $Res Function(_$SaveAccountsToImportImpl) then) =
-      __$$SaveAccountsToImportImplCopyWithImpl<$Res>;
+abstract class _$$_SaveAccountsToImportCopyWith<$Res> {
+  factory _$$_SaveAccountsToImportCopyWith(_$_SaveAccountsToImport value,
+          $Res Function(_$_SaveAccountsToImport) then) =
+      __$$_SaveAccountsToImportCopyWithImpl<$Res>;
   @useResult
   $Res call({List<Account> accounts});
 }
 
 /// @nodoc
-class __$$SaveAccountsToImportImplCopyWithImpl<$Res>
-    extends _$WalletImportEventCopyWithImpl<$Res, _$SaveAccountsToImportImpl>
-    implements _$$SaveAccountsToImportImplCopyWith<$Res> {
-  __$$SaveAccountsToImportImplCopyWithImpl(_$SaveAccountsToImportImpl _value,
-      $Res Function(_$SaveAccountsToImportImpl) _then)
+class __$$_SaveAccountsToImportCopyWithImpl<$Res>
+    extends _$WalletImportEventCopyWithImpl<$Res, _$_SaveAccountsToImport>
+    implements _$$_SaveAccountsToImportCopyWith<$Res> {
+  __$$_SaveAccountsToImportCopyWithImpl(_$_SaveAccountsToImport _value,
+      $Res Function(_$_SaveAccountsToImport) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -392,7 +420,7 @@ class __$$SaveAccountsToImportImplCopyWithImpl<$Res>
   $Res call({
     Object? accounts = null,
   }) {
-    return _then(_$SaveAccountsToImportImpl(
+    return _then(_$_SaveAccountsToImport(
       accounts: null == accounts
           ? _value._accounts
           : accounts // ignore: cast_nullable_to_non_nullable
@@ -403,8 +431,8 @@ class __$$SaveAccountsToImportImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$SaveAccountsToImportImpl implements _SaveAccountsToImport {
-  const _$SaveAccountsToImportImpl({required final List<Account> accounts})
+class _$_SaveAccountsToImport implements _SaveAccountsToImport {
+  const _$_SaveAccountsToImport({required final List<Account> accounts})
       : _accounts = accounts;
 
   final List<Account> _accounts;
@@ -421,10 +449,10 @@ class _$SaveAccountsToImportImpl implements _SaveAccountsToImport {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$SaveAccountsToImportImpl &&
+            other is _$_SaveAccountsToImport &&
             const DeepCollectionEquality().equals(other._accounts, _accounts));
   }
 
@@ -435,10 +463,9 @@ class _$SaveAccountsToImportImpl implements _SaveAccountsToImport {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$SaveAccountsToImportImplCopyWith<_$SaveAccountsToImportImpl>
-      get copyWith =>
-          __$$SaveAccountsToImportImplCopyWithImpl<_$SaveAccountsToImportImpl>(
-              this, _$identity);
+  _$$_SaveAccountsToImportCopyWith<_$_SaveAccountsToImport> get copyWith =>
+      __$$_SaveAccountsToImportCopyWithImpl<_$_SaveAccountsToImport>(
+          this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -452,6 +479,9 @@ class _$SaveAccountsToImportImpl implements _SaveAccountsToImport {
         loadMoreDerivative,
     required TResult Function(String seedPhrase, List<Account> existingAccounts)
         importWalletsFromSeed,
+    required TResult Function(
+            AccountAddress deriveFrom, List<Account> existingAccounts)
+        deriveWalletsFromSameSeed,
     required TResult Function(List<String> values,
             List<Account> existingAccounts, bool creatingAfterSettingPasscode)
         importMultipleWallets,
@@ -475,6 +505,9 @@ class _$SaveAccountsToImportImpl implements _SaveAccountsToImport {
         loadMoreDerivative,
     TResult? Function(String seedPhrase, List<Account> existingAccounts)?
         importWalletsFromSeed,
+    TResult? Function(
+            AccountAddress deriveFrom, List<Account> existingAccounts)?
+        deriveWalletsFromSameSeed,
     TResult? Function(List<String> values, List<Account> existingAccounts,
             bool creatingAfterSettingPasscode)?
         importMultipleWallets,
@@ -498,6 +531,8 @@ class _$SaveAccountsToImportImpl implements _SaveAccountsToImport {
         loadMoreDerivative,
     TResult Function(String seedPhrase, List<Account> existingAccounts)?
         importWalletsFromSeed,
+    TResult Function(AccountAddress deriveFrom, List<Account> existingAccounts)?
+        deriveWalletsFromSameSeed,
     TResult Function(List<String> values, List<Account> existingAccounts,
             bool creatingAfterSettingPasscode)?
         importMultipleWallets,
@@ -521,6 +556,8 @@ class _$SaveAccountsToImportImpl implements _SaveAccountsToImport {
     required TResult Function(_LoadMoreDerivative value) loadMoreDerivative,
     required TResult Function(_ImportWalletsFromSeed value)
         importWalletsFromSeed,
+    required TResult Function(_DeriveWalletsFromSameSeed value)
+        deriveWalletsFromSameSeed,
     required TResult Function(_ImportMultipleWallets value)
         importMultipleWallets,
     required TResult Function(_WatchWallet value) watchWallet,
@@ -536,6 +573,8 @@ class _$SaveAccountsToImportImpl implements _SaveAccountsToImport {
     TResult? Function(_SaveAccountsToImport value)? readyToImport,
     TResult? Function(_LoadMoreDerivative value)? loadMoreDerivative,
     TResult? Function(_ImportWalletsFromSeed value)? importWalletsFromSeed,
+    TResult? Function(_DeriveWalletsFromSameSeed value)?
+        deriveWalletsFromSameSeed,
     TResult? Function(_ImportMultipleWallets value)? importMultipleWallets,
     TResult? Function(_WatchWallet value)? watchWallet,
     TResult? Function(_Reset value)? reset,
@@ -550,6 +589,8 @@ class _$SaveAccountsToImportImpl implements _SaveAccountsToImport {
     TResult Function(_SaveAccountsToImport value)? readyToImport,
     TResult Function(_LoadMoreDerivative value)? loadMoreDerivative,
     TResult Function(_ImportWalletsFromSeed value)? importWalletsFromSeed,
+    TResult Function(_DeriveWalletsFromSameSeed value)?
+        deriveWalletsFromSameSeed,
     TResult Function(_ImportMultipleWallets value)? importMultipleWallets,
     TResult Function(_WatchWallet value)? watchWallet,
     TResult Function(_Reset value)? reset,
@@ -564,19 +605,19 @@ class _$SaveAccountsToImportImpl implements _SaveAccountsToImport {
 
 abstract class _SaveAccountsToImport implements WalletImportEvent {
   const factory _SaveAccountsToImport({required final List<Account> accounts}) =
-      _$SaveAccountsToImportImpl;
+      _$_SaveAccountsToImport;
 
   List<Account> get accounts;
   @JsonKey(ignore: true)
-  _$$SaveAccountsToImportImplCopyWith<_$SaveAccountsToImportImpl>
-      get copyWith => throw _privateConstructorUsedError;
+  _$$_SaveAccountsToImportCopyWith<_$_SaveAccountsToImport> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$LoadMoreDerivativeImplCopyWith<$Res> {
-  factory _$$LoadMoreDerivativeImplCopyWith(_$LoadMoreDerivativeImpl value,
-          $Res Function(_$LoadMoreDerivativeImpl) then) =
-      __$$LoadMoreDerivativeImplCopyWithImpl<$Res>;
+abstract class _$$_LoadMoreDerivativeCopyWith<$Res> {
+  factory _$$_LoadMoreDerivativeCopyWith(_$_LoadMoreDerivative value,
+          $Res Function(_$_LoadMoreDerivative) then) =
+      __$$_LoadMoreDerivativeCopyWithImpl<$Res>;
   @useResult
   $Res call(
       {Set<int> selected,
@@ -585,11 +626,11 @@ abstract class _$$LoadMoreDerivativeImplCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$LoadMoreDerivativeImplCopyWithImpl<$Res>
-    extends _$WalletImportEventCopyWithImpl<$Res, _$LoadMoreDerivativeImpl>
-    implements _$$LoadMoreDerivativeImplCopyWith<$Res> {
-  __$$LoadMoreDerivativeImplCopyWithImpl(_$LoadMoreDerivativeImpl _value,
-      $Res Function(_$LoadMoreDerivativeImpl) _then)
+class __$$_LoadMoreDerivativeCopyWithImpl<$Res>
+    extends _$WalletImportEventCopyWithImpl<$Res, _$_LoadMoreDerivative>
+    implements _$$_LoadMoreDerivativeCopyWith<$Res> {
+  __$$_LoadMoreDerivativeCopyWithImpl(
+      _$_LoadMoreDerivative _value, $Res Function(_$_LoadMoreDerivative) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -599,7 +640,7 @@ class __$$LoadMoreDerivativeImplCopyWithImpl<$Res>
     Object? balances = null,
     Object? seedPhrase = null,
   }) {
-    return _then(_$LoadMoreDerivativeImpl(
+    return _then(_$_LoadMoreDerivative(
       selected: null == selected
           ? _value._selected
           : selected // ignore: cast_nullable_to_non_nullable
@@ -618,8 +659,8 @@ class __$$LoadMoreDerivativeImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$LoadMoreDerivativeImpl implements _LoadMoreDerivative {
-  const _$LoadMoreDerivativeImpl(
+class _$_LoadMoreDerivative implements _LoadMoreDerivative {
+  const _$_LoadMoreDerivative(
       {required final Set<int> selected,
       required final Map<String, List<TokenBalance>> balances,
       required this.seedPhrase})
@@ -651,10 +692,10 @@ class _$LoadMoreDerivativeImpl implements _LoadMoreDerivative {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$LoadMoreDerivativeImpl &&
+            other is _$_LoadMoreDerivative &&
             const DeepCollectionEquality().equals(other._selected, _selected) &&
             const DeepCollectionEquality().equals(other._balances, _balances) &&
             (identical(other.seedPhrase, seedPhrase) ||
@@ -671,8 +712,8 @@ class _$LoadMoreDerivativeImpl implements _LoadMoreDerivative {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$LoadMoreDerivativeImplCopyWith<_$LoadMoreDerivativeImpl> get copyWith =>
-      __$$LoadMoreDerivativeImplCopyWithImpl<_$LoadMoreDerivativeImpl>(
+  _$$_LoadMoreDerivativeCopyWith<_$_LoadMoreDerivative> get copyWith =>
+      __$$_LoadMoreDerivativeCopyWithImpl<_$_LoadMoreDerivative>(
           this, _$identity);
 
   @override
@@ -687,6 +728,9 @@ class _$LoadMoreDerivativeImpl implements _LoadMoreDerivative {
         loadMoreDerivative,
     required TResult Function(String seedPhrase, List<Account> existingAccounts)
         importWalletsFromSeed,
+    required TResult Function(
+            AccountAddress deriveFrom, List<Account> existingAccounts)
+        deriveWalletsFromSameSeed,
     required TResult Function(List<String> values,
             List<Account> existingAccounts, bool creatingAfterSettingPasscode)
         importMultipleWallets,
@@ -710,6 +754,9 @@ class _$LoadMoreDerivativeImpl implements _LoadMoreDerivative {
         loadMoreDerivative,
     TResult? Function(String seedPhrase, List<Account> existingAccounts)?
         importWalletsFromSeed,
+    TResult? Function(
+            AccountAddress deriveFrom, List<Account> existingAccounts)?
+        deriveWalletsFromSameSeed,
     TResult? Function(List<String> values, List<Account> existingAccounts,
             bool creatingAfterSettingPasscode)?
         importMultipleWallets,
@@ -733,6 +780,8 @@ class _$LoadMoreDerivativeImpl implements _LoadMoreDerivative {
         loadMoreDerivative,
     TResult Function(String seedPhrase, List<Account> existingAccounts)?
         importWalletsFromSeed,
+    TResult Function(AccountAddress deriveFrom, List<Account> existingAccounts)?
+        deriveWalletsFromSameSeed,
     TResult Function(List<String> values, List<Account> existingAccounts,
             bool creatingAfterSettingPasscode)?
         importMultipleWallets,
@@ -756,6 +805,8 @@ class _$LoadMoreDerivativeImpl implements _LoadMoreDerivative {
     required TResult Function(_LoadMoreDerivative value) loadMoreDerivative,
     required TResult Function(_ImportWalletsFromSeed value)
         importWalletsFromSeed,
+    required TResult Function(_DeriveWalletsFromSameSeed value)
+        deriveWalletsFromSameSeed,
     required TResult Function(_ImportMultipleWallets value)
         importMultipleWallets,
     required TResult Function(_WatchWallet value) watchWallet,
@@ -771,6 +822,8 @@ class _$LoadMoreDerivativeImpl implements _LoadMoreDerivative {
     TResult? Function(_SaveAccountsToImport value)? readyToImport,
     TResult? Function(_LoadMoreDerivative value)? loadMoreDerivative,
     TResult? Function(_ImportWalletsFromSeed value)? importWalletsFromSeed,
+    TResult? Function(_DeriveWalletsFromSameSeed value)?
+        deriveWalletsFromSameSeed,
     TResult? Function(_ImportMultipleWallets value)? importMultipleWallets,
     TResult? Function(_WatchWallet value)? watchWallet,
     TResult? Function(_Reset value)? reset,
@@ -785,6 +838,8 @@ class _$LoadMoreDerivativeImpl implements _LoadMoreDerivative {
     TResult Function(_SaveAccountsToImport value)? readyToImport,
     TResult Function(_LoadMoreDerivative value)? loadMoreDerivative,
     TResult Function(_ImportWalletsFromSeed value)? importWalletsFromSeed,
+    TResult Function(_DeriveWalletsFromSameSeed value)?
+        deriveWalletsFromSameSeed,
     TResult Function(_ImportMultipleWallets value)? importMultipleWallets,
     TResult Function(_WatchWallet value)? watchWallet,
     TResult Function(_Reset value)? reset,
@@ -801,32 +856,31 @@ abstract class _LoadMoreDerivative implements WalletImportEvent {
   const factory _LoadMoreDerivative(
       {required final Set<int> selected,
       required final Map<String, List<TokenBalance>> balances,
-      required final String seedPhrase}) = _$LoadMoreDerivativeImpl;
+      required final String seedPhrase}) = _$_LoadMoreDerivative;
 
   Set<int> get selected;
   Map<String, List<TokenBalance>> get balances;
   String get seedPhrase;
   @JsonKey(ignore: true)
-  _$$LoadMoreDerivativeImplCopyWith<_$LoadMoreDerivativeImpl> get copyWith =>
+  _$$_LoadMoreDerivativeCopyWith<_$_LoadMoreDerivative> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$ImportWalletsFromSeedImplCopyWith<$Res> {
-  factory _$$ImportWalletsFromSeedImplCopyWith(
-          _$ImportWalletsFromSeedImpl value,
-          $Res Function(_$ImportWalletsFromSeedImpl) then) =
-      __$$ImportWalletsFromSeedImplCopyWithImpl<$Res>;
+abstract class _$$_ImportWalletsFromSeedCopyWith<$Res> {
+  factory _$$_ImportWalletsFromSeedCopyWith(_$_ImportWalletsFromSeed value,
+          $Res Function(_$_ImportWalletsFromSeed) then) =
+      __$$_ImportWalletsFromSeedCopyWithImpl<$Res>;
   @useResult
   $Res call({String seedPhrase, List<Account> existingAccounts});
 }
 
 /// @nodoc
-class __$$ImportWalletsFromSeedImplCopyWithImpl<$Res>
-    extends _$WalletImportEventCopyWithImpl<$Res, _$ImportWalletsFromSeedImpl>
-    implements _$$ImportWalletsFromSeedImplCopyWith<$Res> {
-  __$$ImportWalletsFromSeedImplCopyWithImpl(_$ImportWalletsFromSeedImpl _value,
-      $Res Function(_$ImportWalletsFromSeedImpl) _then)
+class __$$_ImportWalletsFromSeedCopyWithImpl<$Res>
+    extends _$WalletImportEventCopyWithImpl<$Res, _$_ImportWalletsFromSeed>
+    implements _$$_ImportWalletsFromSeedCopyWith<$Res> {
+  __$$_ImportWalletsFromSeedCopyWithImpl(_$_ImportWalletsFromSeed _value,
+      $Res Function(_$_ImportWalletsFromSeed) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -835,7 +889,7 @@ class __$$ImportWalletsFromSeedImplCopyWithImpl<$Res>
     Object? seedPhrase = null,
     Object? existingAccounts = null,
   }) {
-    return _then(_$ImportWalletsFromSeedImpl(
+    return _then(_$_ImportWalletsFromSeed(
       null == seedPhrase
           ? _value.seedPhrase
           : seedPhrase // ignore: cast_nullable_to_non_nullable
@@ -850,8 +904,8 @@ class __$$ImportWalletsFromSeedImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ImportWalletsFromSeedImpl implements _ImportWalletsFromSeed {
-  const _$ImportWalletsFromSeedImpl(this.seedPhrase,
+class _$_ImportWalletsFromSeed implements _ImportWalletsFromSeed {
+  const _$_ImportWalletsFromSeed(this.seedPhrase,
       {required final List<Account> existingAccounts})
       : _existingAccounts = existingAccounts;
 
@@ -872,10 +926,10 @@ class _$ImportWalletsFromSeedImpl implements _ImportWalletsFromSeed {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ImportWalletsFromSeedImpl &&
+            other is _$_ImportWalletsFromSeed &&
             (identical(other.seedPhrase, seedPhrase) ||
                 other.seedPhrase == seedPhrase) &&
             const DeepCollectionEquality()
@@ -889,9 +943,9 @@ class _$ImportWalletsFromSeedImpl implements _ImportWalletsFromSeed {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ImportWalletsFromSeedImplCopyWith<_$ImportWalletsFromSeedImpl>
-      get copyWith => __$$ImportWalletsFromSeedImplCopyWithImpl<
-          _$ImportWalletsFromSeedImpl>(this, _$identity);
+  _$$_ImportWalletsFromSeedCopyWith<_$_ImportWalletsFromSeed> get copyWith =>
+      __$$_ImportWalletsFromSeedCopyWithImpl<_$_ImportWalletsFromSeed>(
+          this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -905,6 +959,9 @@ class _$ImportWalletsFromSeedImpl implements _ImportWalletsFromSeed {
         loadMoreDerivative,
     required TResult Function(String seedPhrase, List<Account> existingAccounts)
         importWalletsFromSeed,
+    required TResult Function(
+            AccountAddress deriveFrom, List<Account> existingAccounts)
+        deriveWalletsFromSameSeed,
     required TResult Function(List<String> values,
             List<Account> existingAccounts, bool creatingAfterSettingPasscode)
         importMultipleWallets,
@@ -928,6 +985,9 @@ class _$ImportWalletsFromSeedImpl implements _ImportWalletsFromSeed {
         loadMoreDerivative,
     TResult? Function(String seedPhrase, List<Account> existingAccounts)?
         importWalletsFromSeed,
+    TResult? Function(
+            AccountAddress deriveFrom, List<Account> existingAccounts)?
+        deriveWalletsFromSameSeed,
     TResult? Function(List<String> values, List<Account> existingAccounts,
             bool creatingAfterSettingPasscode)?
         importMultipleWallets,
@@ -951,6 +1011,8 @@ class _$ImportWalletsFromSeedImpl implements _ImportWalletsFromSeed {
         loadMoreDerivative,
     TResult Function(String seedPhrase, List<Account> existingAccounts)?
         importWalletsFromSeed,
+    TResult Function(AccountAddress deriveFrom, List<Account> existingAccounts)?
+        deriveWalletsFromSameSeed,
     TResult Function(List<String> values, List<Account> existingAccounts,
             bool creatingAfterSettingPasscode)?
         importMultipleWallets,
@@ -974,6 +1036,8 @@ class _$ImportWalletsFromSeedImpl implements _ImportWalletsFromSeed {
     required TResult Function(_LoadMoreDerivative value) loadMoreDerivative,
     required TResult Function(_ImportWalletsFromSeed value)
         importWalletsFromSeed,
+    required TResult Function(_DeriveWalletsFromSameSeed value)
+        deriveWalletsFromSameSeed,
     required TResult Function(_ImportMultipleWallets value)
         importMultipleWallets,
     required TResult Function(_WatchWallet value) watchWallet,
@@ -989,6 +1053,8 @@ class _$ImportWalletsFromSeedImpl implements _ImportWalletsFromSeed {
     TResult? Function(_SaveAccountsToImport value)? readyToImport,
     TResult? Function(_LoadMoreDerivative value)? loadMoreDerivative,
     TResult? Function(_ImportWalletsFromSeed value)? importWalletsFromSeed,
+    TResult? Function(_DeriveWalletsFromSameSeed value)?
+        deriveWalletsFromSameSeed,
     TResult? Function(_ImportMultipleWallets value)? importMultipleWallets,
     TResult? Function(_WatchWallet value)? watchWallet,
     TResult? Function(_Reset value)? reset,
@@ -1003,6 +1069,8 @@ class _$ImportWalletsFromSeedImpl implements _ImportWalletsFromSeed {
     TResult Function(_SaveAccountsToImport value)? readyToImport,
     TResult Function(_LoadMoreDerivative value)? loadMoreDerivative,
     TResult Function(_ImportWalletsFromSeed value)? importWalletsFromSeed,
+    TResult Function(_DeriveWalletsFromSameSeed value)?
+        deriveWalletsFromSameSeed,
     TResult Function(_ImportMultipleWallets value)? importMultipleWallets,
     TResult Function(_WatchWallet value)? watchWallet,
     TResult Function(_Reset value)? reset,
@@ -1018,21 +1086,252 @@ class _$ImportWalletsFromSeedImpl implements _ImportWalletsFromSeed {
 abstract class _ImportWalletsFromSeed implements WalletImportEvent {
   const factory _ImportWalletsFromSeed(final String seedPhrase,
           {required final List<Account> existingAccounts}) =
-      _$ImportWalletsFromSeedImpl;
+      _$_ImportWalletsFromSeed;
 
   String get seedPhrase;
   List<Account> get existingAccounts;
   @JsonKey(ignore: true)
-  _$$ImportWalletsFromSeedImplCopyWith<_$ImportWalletsFromSeedImpl>
+  _$$_ImportWalletsFromSeedCopyWith<_$_ImportWalletsFromSeed> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$_DeriveWalletsFromSameSeedCopyWith<$Res> {
+  factory _$$_DeriveWalletsFromSameSeedCopyWith(
+          _$_DeriveWalletsFromSameSeed value,
+          $Res Function(_$_DeriveWalletsFromSameSeed) then) =
+      __$$_DeriveWalletsFromSameSeedCopyWithImpl<$Res>;
+  @useResult
+  $Res call({AccountAddress deriveFrom, List<Account> existingAccounts});
+}
+
+/// @nodoc
+class __$$_DeriveWalletsFromSameSeedCopyWithImpl<$Res>
+    extends _$WalletImportEventCopyWithImpl<$Res, _$_DeriveWalletsFromSameSeed>
+    implements _$$_DeriveWalletsFromSameSeedCopyWith<$Res> {
+  __$$_DeriveWalletsFromSameSeedCopyWithImpl(
+      _$_DeriveWalletsFromSameSeed _value,
+      $Res Function(_$_DeriveWalletsFromSameSeed) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? deriveFrom = null,
+    Object? existingAccounts = null,
+  }) {
+    return _then(_$_DeriveWalletsFromSameSeed(
+      deriveFrom: null == deriveFrom
+          ? _value.deriveFrom
+          : deriveFrom // ignore: cast_nullable_to_non_nullable
+              as AccountAddress,
+      existingAccounts: null == existingAccounts
+          ? _value._existingAccounts
+          : existingAccounts // ignore: cast_nullable_to_non_nullable
+              as List<Account>,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$_DeriveWalletsFromSameSeed implements _DeriveWalletsFromSameSeed {
+  const _$_DeriveWalletsFromSameSeed(
+      {required this.deriveFrom, required final List<Account> existingAccounts})
+      : _existingAccounts = existingAccounts;
+
+  @override
+  final AccountAddress deriveFrom;
+  final List<Account> _existingAccounts;
+  @override
+  List<Account> get existingAccounts {
+    if (_existingAccounts is EqualUnmodifiableListView)
+      return _existingAccounts;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_existingAccounts);
+  }
+
+  @override
+  String toString() {
+    return 'WalletImportEvent.deriveWalletsFromSameSeed(deriveFrom: $deriveFrom, existingAccounts: $existingAccounts)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$_DeriveWalletsFromSameSeed &&
+            (identical(other.deriveFrom, deriveFrom) ||
+                other.deriveFrom == deriveFrom) &&
+            const DeepCollectionEquality()
+                .equals(other._existingAccounts, _existingAccounts));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, deriveFrom,
+      const DeepCollectionEquality().hash(_existingAccounts));
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$_DeriveWalletsFromSameSeedCopyWith<_$_DeriveWalletsFromSameSeed>
+      get copyWith => __$$_DeriveWalletsFromSameSeedCopyWithImpl<
+          _$_DeriveWalletsFromSameSeed>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(String privateKey, List<Account> existingAccounts,
+            bool creatingAfterSettingPasscode)
+        importWalletByPrivateKey,
+    required TResult Function(List<Account> accounts) readyToImport,
+    required TResult Function(Set<int> selected,
+            Map<String, List<TokenBalance>> balances, String seedPhrase)
+        loadMoreDerivative,
+    required TResult Function(String seedPhrase, List<Account> existingAccounts)
+        importWalletsFromSeed,
+    required TResult Function(
+            AccountAddress deriveFrom, List<Account> existingAccounts)
+        deriveWalletsFromSameSeed,
+    required TResult Function(List<String> values,
+            List<Account> existingAccounts, bool creatingAfterSettingPasscode)
+        importMultipleWallets,
+    required TResult Function(String name, String address,
+            WalletGroup walletGroup, List<Account> existingAccounts)
+        watchWallet,
+    required TResult Function() reset,
+  }) {
+    return deriveWalletsFromSameSeed(deriveFrom, existingAccounts);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(String privateKey, List<Account> existingAccounts,
+            bool creatingAfterSettingPasscode)?
+        importWalletByPrivateKey,
+    TResult? Function(List<Account> accounts)? readyToImport,
+    TResult? Function(Set<int> selected,
+            Map<String, List<TokenBalance>> balances, String seedPhrase)?
+        loadMoreDerivative,
+    TResult? Function(String seedPhrase, List<Account> existingAccounts)?
+        importWalletsFromSeed,
+    TResult? Function(
+            AccountAddress deriveFrom, List<Account> existingAccounts)?
+        deriveWalletsFromSameSeed,
+    TResult? Function(List<String> values, List<Account> existingAccounts,
+            bool creatingAfterSettingPasscode)?
+        importMultipleWallets,
+    TResult? Function(String name, String address, WalletGroup walletGroup,
+            List<Account> existingAccounts)?
+        watchWallet,
+    TResult? Function()? reset,
+  }) {
+    return deriveWalletsFromSameSeed?.call(deriveFrom, existingAccounts);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(String privateKey, List<Account> existingAccounts,
+            bool creatingAfterSettingPasscode)?
+        importWalletByPrivateKey,
+    TResult Function(List<Account> accounts)? readyToImport,
+    TResult Function(Set<int> selected,
+            Map<String, List<TokenBalance>> balances, String seedPhrase)?
+        loadMoreDerivative,
+    TResult Function(String seedPhrase, List<Account> existingAccounts)?
+        importWalletsFromSeed,
+    TResult Function(AccountAddress deriveFrom, List<Account> existingAccounts)?
+        deriveWalletsFromSameSeed,
+    TResult Function(List<String> values, List<Account> existingAccounts,
+            bool creatingAfterSettingPasscode)?
+        importMultipleWallets,
+    TResult Function(String name, String address, WalletGroup walletGroup,
+            List<Account> existingAccounts)?
+        watchWallet,
+    TResult Function()? reset,
+    required TResult orElse(),
+  }) {
+    if (deriveWalletsFromSameSeed != null) {
+      return deriveWalletsFromSameSeed(deriveFrom, existingAccounts);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_ImportWallet value) importWalletByPrivateKey,
+    required TResult Function(_SaveAccountsToImport value) readyToImport,
+    required TResult Function(_LoadMoreDerivative value) loadMoreDerivative,
+    required TResult Function(_ImportWalletsFromSeed value)
+        importWalletsFromSeed,
+    required TResult Function(_DeriveWalletsFromSameSeed value)
+        deriveWalletsFromSameSeed,
+    required TResult Function(_ImportMultipleWallets value)
+        importMultipleWallets,
+    required TResult Function(_WatchWallet value) watchWallet,
+    required TResult Function(_Reset value) reset,
+  }) {
+    return deriveWalletsFromSameSeed(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_ImportWallet value)? importWalletByPrivateKey,
+    TResult? Function(_SaveAccountsToImport value)? readyToImport,
+    TResult? Function(_LoadMoreDerivative value)? loadMoreDerivative,
+    TResult? Function(_ImportWalletsFromSeed value)? importWalletsFromSeed,
+    TResult? Function(_DeriveWalletsFromSameSeed value)?
+        deriveWalletsFromSameSeed,
+    TResult? Function(_ImportMultipleWallets value)? importMultipleWallets,
+    TResult? Function(_WatchWallet value)? watchWallet,
+    TResult? Function(_Reset value)? reset,
+  }) {
+    return deriveWalletsFromSameSeed?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_ImportWallet value)? importWalletByPrivateKey,
+    TResult Function(_SaveAccountsToImport value)? readyToImport,
+    TResult Function(_LoadMoreDerivative value)? loadMoreDerivative,
+    TResult Function(_ImportWalletsFromSeed value)? importWalletsFromSeed,
+    TResult Function(_DeriveWalletsFromSameSeed value)?
+        deriveWalletsFromSameSeed,
+    TResult Function(_ImportMultipleWallets value)? importMultipleWallets,
+    TResult Function(_WatchWallet value)? watchWallet,
+    TResult Function(_Reset value)? reset,
+    required TResult orElse(),
+  }) {
+    if (deriveWalletsFromSameSeed != null) {
+      return deriveWalletsFromSameSeed(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _DeriveWalletsFromSameSeed implements WalletImportEvent {
+  const factory _DeriveWalletsFromSameSeed(
+          {required final AccountAddress deriveFrom,
+          required final List<Account> existingAccounts}) =
+      _$_DeriveWalletsFromSameSeed;
+
+  AccountAddress get deriveFrom;
+  List<Account> get existingAccounts;
+  @JsonKey(ignore: true)
+  _$$_DeriveWalletsFromSameSeedCopyWith<_$_DeriveWalletsFromSameSeed>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$ImportMultipleWalletsImplCopyWith<$Res> {
-  factory _$$ImportMultipleWalletsImplCopyWith(
-          _$ImportMultipleWalletsImpl value,
-          $Res Function(_$ImportMultipleWalletsImpl) then) =
-      __$$ImportMultipleWalletsImplCopyWithImpl<$Res>;
+abstract class _$$_ImportMultipleWalletsCopyWith<$Res> {
+  factory _$$_ImportMultipleWalletsCopyWith(_$_ImportMultipleWallets value,
+          $Res Function(_$_ImportMultipleWallets) then) =
+      __$$_ImportMultipleWalletsCopyWithImpl<$Res>;
   @useResult
   $Res call(
       {List<String> values,
@@ -1041,11 +1340,11 @@ abstract class _$$ImportMultipleWalletsImplCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$ImportMultipleWalletsImplCopyWithImpl<$Res>
-    extends _$WalletImportEventCopyWithImpl<$Res, _$ImportMultipleWalletsImpl>
-    implements _$$ImportMultipleWalletsImplCopyWith<$Res> {
-  __$$ImportMultipleWalletsImplCopyWithImpl(_$ImportMultipleWalletsImpl _value,
-      $Res Function(_$ImportMultipleWalletsImpl) _then)
+class __$$_ImportMultipleWalletsCopyWithImpl<$Res>
+    extends _$WalletImportEventCopyWithImpl<$Res, _$_ImportMultipleWallets>
+    implements _$$_ImportMultipleWalletsCopyWith<$Res> {
+  __$$_ImportMultipleWalletsCopyWithImpl(_$_ImportMultipleWallets _value,
+      $Res Function(_$_ImportMultipleWallets) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1055,7 +1354,7 @@ class __$$ImportMultipleWalletsImplCopyWithImpl<$Res>
     Object? existingAccounts = null,
     Object? creatingAfterSettingPasscode = null,
   }) {
-    return _then(_$ImportMultipleWalletsImpl(
+    return _then(_$_ImportMultipleWallets(
       null == values
           ? _value._values
           : values // ignore: cast_nullable_to_non_nullable
@@ -1074,8 +1373,8 @@ class __$$ImportMultipleWalletsImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ImportMultipleWalletsImpl implements _ImportMultipleWallets {
-  const _$ImportMultipleWalletsImpl(final List<String> values,
+class _$_ImportMultipleWallets implements _ImportMultipleWallets {
+  const _$_ImportMultipleWallets(final List<String> values,
       {required final List<Account> existingAccounts,
       required this.creatingAfterSettingPasscode})
       : _values = values,
@@ -1107,10 +1406,10 @@ class _$ImportMultipleWalletsImpl implements _ImportMultipleWallets {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ImportMultipleWalletsImpl &&
+            other is _$_ImportMultipleWallets &&
             const DeepCollectionEquality().equals(other._values, _values) &&
             const DeepCollectionEquality()
                 .equals(other._existingAccounts, _existingAccounts) &&
@@ -1130,9 +1429,9 @@ class _$ImportMultipleWalletsImpl implements _ImportMultipleWallets {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ImportMultipleWalletsImplCopyWith<_$ImportMultipleWalletsImpl>
-      get copyWith => __$$ImportMultipleWalletsImplCopyWithImpl<
-          _$ImportMultipleWalletsImpl>(this, _$identity);
+  _$$_ImportMultipleWalletsCopyWith<_$_ImportMultipleWallets> get copyWith =>
+      __$$_ImportMultipleWalletsCopyWithImpl<_$_ImportMultipleWallets>(
+          this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -1146,6 +1445,9 @@ class _$ImportMultipleWalletsImpl implements _ImportMultipleWallets {
         loadMoreDerivative,
     required TResult Function(String seedPhrase, List<Account> existingAccounts)
         importWalletsFromSeed,
+    required TResult Function(
+            AccountAddress deriveFrom, List<Account> existingAccounts)
+        deriveWalletsFromSameSeed,
     required TResult Function(List<String> values,
             List<Account> existingAccounts, bool creatingAfterSettingPasscode)
         importMultipleWallets,
@@ -1170,6 +1472,9 @@ class _$ImportMultipleWalletsImpl implements _ImportMultipleWallets {
         loadMoreDerivative,
     TResult? Function(String seedPhrase, List<Account> existingAccounts)?
         importWalletsFromSeed,
+    TResult? Function(
+            AccountAddress deriveFrom, List<Account> existingAccounts)?
+        deriveWalletsFromSameSeed,
     TResult? Function(List<String> values, List<Account> existingAccounts,
             bool creatingAfterSettingPasscode)?
         importMultipleWallets,
@@ -1194,6 +1499,8 @@ class _$ImportMultipleWalletsImpl implements _ImportMultipleWallets {
         loadMoreDerivative,
     TResult Function(String seedPhrase, List<Account> existingAccounts)?
         importWalletsFromSeed,
+    TResult Function(AccountAddress deriveFrom, List<Account> existingAccounts)?
+        deriveWalletsFromSameSeed,
     TResult Function(List<String> values, List<Account> existingAccounts,
             bool creatingAfterSettingPasscode)?
         importMultipleWallets,
@@ -1218,6 +1525,8 @@ class _$ImportMultipleWalletsImpl implements _ImportMultipleWallets {
     required TResult Function(_LoadMoreDerivative value) loadMoreDerivative,
     required TResult Function(_ImportWalletsFromSeed value)
         importWalletsFromSeed,
+    required TResult Function(_DeriveWalletsFromSameSeed value)
+        deriveWalletsFromSameSeed,
     required TResult Function(_ImportMultipleWallets value)
         importMultipleWallets,
     required TResult Function(_WatchWallet value) watchWallet,
@@ -1233,6 +1542,8 @@ class _$ImportMultipleWalletsImpl implements _ImportMultipleWallets {
     TResult? Function(_SaveAccountsToImport value)? readyToImport,
     TResult? Function(_LoadMoreDerivative value)? loadMoreDerivative,
     TResult? Function(_ImportWalletsFromSeed value)? importWalletsFromSeed,
+    TResult? Function(_DeriveWalletsFromSameSeed value)?
+        deriveWalletsFromSameSeed,
     TResult? Function(_ImportMultipleWallets value)? importMultipleWallets,
     TResult? Function(_WatchWallet value)? watchWallet,
     TResult? Function(_Reset value)? reset,
@@ -1247,6 +1558,8 @@ class _$ImportMultipleWalletsImpl implements _ImportMultipleWallets {
     TResult Function(_SaveAccountsToImport value)? readyToImport,
     TResult Function(_LoadMoreDerivative value)? loadMoreDerivative,
     TResult Function(_ImportWalletsFromSeed value)? importWalletsFromSeed,
+    TResult Function(_DeriveWalletsFromSameSeed value)?
+        deriveWalletsFromSameSeed,
     TResult Function(_ImportMultipleWallets value)? importMultipleWallets,
     TResult Function(_WatchWallet value)? watchWallet,
     TResult Function(_Reset value)? reset,
@@ -1263,21 +1576,21 @@ abstract class _ImportMultipleWallets implements WalletImportEvent {
   const factory _ImportMultipleWallets(final List<String> values,
           {required final List<Account> existingAccounts,
           required final bool creatingAfterSettingPasscode}) =
-      _$ImportMultipleWalletsImpl;
+      _$_ImportMultipleWallets;
 
   List<String> get values;
   List<Account> get existingAccounts;
   bool get creatingAfterSettingPasscode;
   @JsonKey(ignore: true)
-  _$$ImportMultipleWalletsImplCopyWith<_$ImportMultipleWalletsImpl>
-      get copyWith => throw _privateConstructorUsedError;
+  _$$_ImportMultipleWalletsCopyWith<_$_ImportMultipleWallets> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$WatchWalletImplCopyWith<$Res> {
-  factory _$$WatchWalletImplCopyWith(
-          _$WatchWalletImpl value, $Res Function(_$WatchWalletImpl) then) =
-      __$$WatchWalletImplCopyWithImpl<$Res>;
+abstract class _$$_WatchWalletCopyWith<$Res> {
+  factory _$$_WatchWalletCopyWith(
+          _$_WatchWallet value, $Res Function(_$_WatchWallet) then) =
+      __$$_WatchWalletCopyWithImpl<$Res>;
   @useResult
   $Res call(
       {String name,
@@ -1287,11 +1600,11 @@ abstract class _$$WatchWalletImplCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$WatchWalletImplCopyWithImpl<$Res>
-    extends _$WalletImportEventCopyWithImpl<$Res, _$WatchWalletImpl>
-    implements _$$WatchWalletImplCopyWith<$Res> {
-  __$$WatchWalletImplCopyWithImpl(
-      _$WatchWalletImpl _value, $Res Function(_$WatchWalletImpl) _then)
+class __$$_WatchWalletCopyWithImpl<$Res>
+    extends _$WalletImportEventCopyWithImpl<$Res, _$_WatchWallet>
+    implements _$$_WatchWalletCopyWith<$Res> {
+  __$$_WatchWalletCopyWithImpl(
+      _$_WatchWallet _value, $Res Function(_$_WatchWallet) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1302,7 +1615,7 @@ class __$$WatchWalletImplCopyWithImpl<$Res>
     Object? walletGroup = null,
     Object? existingAccounts = null,
   }) {
-    return _then(_$WatchWalletImpl(
+    return _then(_$_WatchWallet(
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -1325,8 +1638,8 @@ class __$$WatchWalletImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$WatchWalletImpl implements _WatchWallet {
-  const _$WatchWalletImpl(
+class _$_WatchWallet implements _WatchWallet {
+  const _$_WatchWallet(
       {required this.name,
       required this.address,
       required this.walletGroup,
@@ -1354,10 +1667,10 @@ class _$WatchWalletImpl implements _WatchWallet {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$WatchWalletImpl &&
+            other is _$_WatchWallet &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.address, address) || other.address == address) &&
             (identical(other.walletGroup, walletGroup) ||
@@ -1373,8 +1686,8 @@ class _$WatchWalletImpl implements _WatchWallet {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$WatchWalletImplCopyWith<_$WatchWalletImpl> get copyWith =>
-      __$$WatchWalletImplCopyWithImpl<_$WatchWalletImpl>(this, _$identity);
+  _$$_WatchWalletCopyWith<_$_WatchWallet> get copyWith =>
+      __$$_WatchWalletCopyWithImpl<_$_WatchWallet>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -1388,6 +1701,9 @@ class _$WatchWalletImpl implements _WatchWallet {
         loadMoreDerivative,
     required TResult Function(String seedPhrase, List<Account> existingAccounts)
         importWalletsFromSeed,
+    required TResult Function(
+            AccountAddress deriveFrom, List<Account> existingAccounts)
+        deriveWalletsFromSameSeed,
     required TResult Function(List<String> values,
             List<Account> existingAccounts, bool creatingAfterSettingPasscode)
         importMultipleWallets,
@@ -1411,6 +1727,9 @@ class _$WatchWalletImpl implements _WatchWallet {
         loadMoreDerivative,
     TResult? Function(String seedPhrase, List<Account> existingAccounts)?
         importWalletsFromSeed,
+    TResult? Function(
+            AccountAddress deriveFrom, List<Account> existingAccounts)?
+        deriveWalletsFromSameSeed,
     TResult? Function(List<String> values, List<Account> existingAccounts,
             bool creatingAfterSettingPasscode)?
         importMultipleWallets,
@@ -1434,6 +1753,8 @@ class _$WatchWalletImpl implements _WatchWallet {
         loadMoreDerivative,
     TResult Function(String seedPhrase, List<Account> existingAccounts)?
         importWalletsFromSeed,
+    TResult Function(AccountAddress deriveFrom, List<Account> existingAccounts)?
+        deriveWalletsFromSameSeed,
     TResult Function(List<String> values, List<Account> existingAccounts,
             bool creatingAfterSettingPasscode)?
         importMultipleWallets,
@@ -1457,6 +1778,8 @@ class _$WatchWalletImpl implements _WatchWallet {
     required TResult Function(_LoadMoreDerivative value) loadMoreDerivative,
     required TResult Function(_ImportWalletsFromSeed value)
         importWalletsFromSeed,
+    required TResult Function(_DeriveWalletsFromSameSeed value)
+        deriveWalletsFromSameSeed,
     required TResult Function(_ImportMultipleWallets value)
         importMultipleWallets,
     required TResult Function(_WatchWallet value) watchWallet,
@@ -1472,6 +1795,8 @@ class _$WatchWalletImpl implements _WatchWallet {
     TResult? Function(_SaveAccountsToImport value)? readyToImport,
     TResult? Function(_LoadMoreDerivative value)? loadMoreDerivative,
     TResult? Function(_ImportWalletsFromSeed value)? importWalletsFromSeed,
+    TResult? Function(_DeriveWalletsFromSameSeed value)?
+        deriveWalletsFromSameSeed,
     TResult? Function(_ImportMultipleWallets value)? importMultipleWallets,
     TResult? Function(_WatchWallet value)? watchWallet,
     TResult? Function(_Reset value)? reset,
@@ -1486,6 +1811,8 @@ class _$WatchWalletImpl implements _WatchWallet {
     TResult Function(_SaveAccountsToImport value)? readyToImport,
     TResult Function(_LoadMoreDerivative value)? loadMoreDerivative,
     TResult Function(_ImportWalletsFromSeed value)? importWalletsFromSeed,
+    TResult Function(_DeriveWalletsFromSameSeed value)?
+        deriveWalletsFromSameSeed,
     TResult Function(_ImportMultipleWallets value)? importMultipleWallets,
     TResult Function(_WatchWallet value)? watchWallet,
     TResult Function(_Reset value)? reset,
@@ -1503,37 +1830,35 @@ abstract class _WatchWallet implements WalletImportEvent {
       {required final String name,
       required final String address,
       required final WalletGroup walletGroup,
-      required final List<Account> existingAccounts}) = _$WatchWalletImpl;
+      required final List<Account> existingAccounts}) = _$_WatchWallet;
 
   String get name;
   String get address;
   WalletGroup get walletGroup;
   List<Account> get existingAccounts;
   @JsonKey(ignore: true)
-  _$$WatchWalletImplCopyWith<_$WatchWalletImpl> get copyWith =>
+  _$$_WatchWalletCopyWith<_$_WatchWallet> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$ResetImplCopyWith<$Res> {
-  factory _$$ResetImplCopyWith(
-          _$ResetImpl value, $Res Function(_$ResetImpl) then) =
-      __$$ResetImplCopyWithImpl<$Res>;
+abstract class _$$_ResetCopyWith<$Res> {
+  factory _$$_ResetCopyWith(_$_Reset value, $Res Function(_$_Reset) then) =
+      __$$_ResetCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$ResetImplCopyWithImpl<$Res>
-    extends _$WalletImportEventCopyWithImpl<$Res, _$ResetImpl>
-    implements _$$ResetImplCopyWith<$Res> {
-  __$$ResetImplCopyWithImpl(
-      _$ResetImpl _value, $Res Function(_$ResetImpl) _then)
+class __$$_ResetCopyWithImpl<$Res>
+    extends _$WalletImportEventCopyWithImpl<$Res, _$_Reset>
+    implements _$$_ResetCopyWith<$Res> {
+  __$$_ResetCopyWithImpl(_$_Reset _value, $Res Function(_$_Reset) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$ResetImpl implements _Reset {
-  const _$ResetImpl();
+class _$_Reset implements _Reset {
+  const _$_Reset();
 
   @override
   String toString() {
@@ -1541,9 +1866,9 @@ class _$ResetImpl implements _Reset {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$ResetImpl);
+        (other.runtimeType == runtimeType && other is _$_Reset);
   }
 
   @override
@@ -1561,6 +1886,9 @@ class _$ResetImpl implements _Reset {
         loadMoreDerivative,
     required TResult Function(String seedPhrase, List<Account> existingAccounts)
         importWalletsFromSeed,
+    required TResult Function(
+            AccountAddress deriveFrom, List<Account> existingAccounts)
+        deriveWalletsFromSameSeed,
     required TResult Function(List<String> values,
             List<Account> existingAccounts, bool creatingAfterSettingPasscode)
         importMultipleWallets,
@@ -1584,6 +1912,9 @@ class _$ResetImpl implements _Reset {
         loadMoreDerivative,
     TResult? Function(String seedPhrase, List<Account> existingAccounts)?
         importWalletsFromSeed,
+    TResult? Function(
+            AccountAddress deriveFrom, List<Account> existingAccounts)?
+        deriveWalletsFromSameSeed,
     TResult? Function(List<String> values, List<Account> existingAccounts,
             bool creatingAfterSettingPasscode)?
         importMultipleWallets,
@@ -1607,6 +1938,8 @@ class _$ResetImpl implements _Reset {
         loadMoreDerivative,
     TResult Function(String seedPhrase, List<Account> existingAccounts)?
         importWalletsFromSeed,
+    TResult Function(AccountAddress deriveFrom, List<Account> existingAccounts)?
+        deriveWalletsFromSameSeed,
     TResult Function(List<String> values, List<Account> existingAccounts,
             bool creatingAfterSettingPasscode)?
         importMultipleWallets,
@@ -1630,6 +1963,8 @@ class _$ResetImpl implements _Reset {
     required TResult Function(_LoadMoreDerivative value) loadMoreDerivative,
     required TResult Function(_ImportWalletsFromSeed value)
         importWalletsFromSeed,
+    required TResult Function(_DeriveWalletsFromSameSeed value)
+        deriveWalletsFromSameSeed,
     required TResult Function(_ImportMultipleWallets value)
         importMultipleWallets,
     required TResult Function(_WatchWallet value) watchWallet,
@@ -1645,6 +1980,8 @@ class _$ResetImpl implements _Reset {
     TResult? Function(_SaveAccountsToImport value)? readyToImport,
     TResult? Function(_LoadMoreDerivative value)? loadMoreDerivative,
     TResult? Function(_ImportWalletsFromSeed value)? importWalletsFromSeed,
+    TResult? Function(_DeriveWalletsFromSameSeed value)?
+        deriveWalletsFromSameSeed,
     TResult? Function(_ImportMultipleWallets value)? importMultipleWallets,
     TResult? Function(_WatchWallet value)? watchWallet,
     TResult? Function(_Reset value)? reset,
@@ -1659,6 +1996,8 @@ class _$ResetImpl implements _Reset {
     TResult Function(_SaveAccountsToImport value)? readyToImport,
     TResult Function(_LoadMoreDerivative value)? loadMoreDerivative,
     TResult Function(_ImportWalletsFromSeed value)? importWalletsFromSeed,
+    TResult Function(_DeriveWalletsFromSameSeed value)?
+        deriveWalletsFromSameSeed,
     TResult Function(_ImportMultipleWallets value)? importMultipleWallets,
     TResult Function(_WatchWallet value)? watchWallet,
     TResult Function(_Reset value)? reset,
@@ -1672,7 +2011,7 @@ class _$ResetImpl implements _Reset {
 }
 
 abstract class _Reset implements WalletImportEvent {
-  const factory _Reset() = _$ResetImpl;
+  const factory _Reset() = _$_Reset;
 }
 
 /// @nodoc
@@ -1846,25 +2185,24 @@ class _$WalletImportStateCopyWithImpl<$Res, $Val extends WalletImportState>
 }
 
 /// @nodoc
-abstract class _$$InitialImplCopyWith<$Res> {
-  factory _$$InitialImplCopyWith(
-          _$InitialImpl value, $Res Function(_$InitialImpl) then) =
-      __$$InitialImplCopyWithImpl<$Res>;
+abstract class _$$_InitialCopyWith<$Res> {
+  factory _$$_InitialCopyWith(
+          _$_Initial value, $Res Function(_$_Initial) then) =
+      __$$_InitialCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$InitialImplCopyWithImpl<$Res>
-    extends _$WalletImportStateCopyWithImpl<$Res, _$InitialImpl>
-    implements _$$InitialImplCopyWith<$Res> {
-  __$$InitialImplCopyWithImpl(
-      _$InitialImpl _value, $Res Function(_$InitialImpl) _then)
+class __$$_InitialCopyWithImpl<$Res>
+    extends _$WalletImportStateCopyWithImpl<$Res, _$_Initial>
+    implements _$$_InitialCopyWith<$Res> {
+  __$$_InitialCopyWithImpl(_$_Initial _value, $Res Function(_$_Initial) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$InitialImpl extends _Initial {
-  const _$InitialImpl() : super._();
+class _$_Initial extends _Initial {
+  const _$_Initial() : super._();
 
   @override
   String toString() {
@@ -1872,9 +2210,9 @@ class _$InitialImpl extends _Initial {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$InitialImpl);
+        (other.runtimeType == runtimeType && other is _$_Initial);
   }
 
   @override
@@ -2054,25 +2392,25 @@ class _$InitialImpl extends _Initial {
 }
 
 abstract class _Initial extends WalletImportState {
-  const factory _Initial() = _$InitialImpl;
+  const factory _Initial() = _$_Initial;
   const _Initial._() : super._();
 }
 
 /// @nodoc
-abstract class _$$AccountsToImportImplCopyWith<$Res> {
-  factory _$$AccountsToImportImplCopyWith(_$AccountsToImportImpl value,
-          $Res Function(_$AccountsToImportImpl) then) =
-      __$$AccountsToImportImplCopyWithImpl<$Res>;
+abstract class _$$_AccountsToImportCopyWith<$Res> {
+  factory _$$_AccountsToImportCopyWith(
+          _$_AccountsToImport value, $Res Function(_$_AccountsToImport) then) =
+      __$$_AccountsToImportCopyWithImpl<$Res>;
   @useResult
   $Res call({List<Account> accounts});
 }
 
 /// @nodoc
-class __$$AccountsToImportImplCopyWithImpl<$Res>
-    extends _$WalletImportStateCopyWithImpl<$Res, _$AccountsToImportImpl>
-    implements _$$AccountsToImportImplCopyWith<$Res> {
-  __$$AccountsToImportImplCopyWithImpl(_$AccountsToImportImpl _value,
-      $Res Function(_$AccountsToImportImpl) _then)
+class __$$_AccountsToImportCopyWithImpl<$Res>
+    extends _$WalletImportStateCopyWithImpl<$Res, _$_AccountsToImport>
+    implements _$$_AccountsToImportCopyWith<$Res> {
+  __$$_AccountsToImportCopyWithImpl(
+      _$_AccountsToImport _value, $Res Function(_$_AccountsToImport) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -2080,7 +2418,7 @@ class __$$AccountsToImportImplCopyWithImpl<$Res>
   $Res call({
     Object? accounts = null,
   }) {
-    return _then(_$AccountsToImportImpl(
+    return _then(_$_AccountsToImport(
       null == accounts
           ? _value._accounts
           : accounts // ignore: cast_nullable_to_non_nullable
@@ -2091,8 +2429,8 @@ class __$$AccountsToImportImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$AccountsToImportImpl extends _AccountsToImport {
-  const _$AccountsToImportImpl(final List<Account> accounts)
+class _$_AccountsToImport extends _AccountsToImport {
+  const _$_AccountsToImport(final List<Account> accounts)
       : _accounts = accounts,
         super._();
 
@@ -2110,10 +2448,10 @@ class _$AccountsToImportImpl extends _AccountsToImport {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$AccountsToImportImpl &&
+            other is _$_AccountsToImport &&
             const DeepCollectionEquality().equals(other._accounts, _accounts));
   }
 
@@ -2124,9 +2462,8 @@ class _$AccountsToImportImpl extends _AccountsToImport {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$AccountsToImportImplCopyWith<_$AccountsToImportImpl> get copyWith =>
-      __$$AccountsToImportImplCopyWithImpl<_$AccountsToImportImpl>(
-          this, _$identity);
+  _$$_AccountsToImportCopyWith<_$_AccountsToImport> get copyWith =>
+      __$$_AccountsToImportCopyWithImpl<_$_AccountsToImport>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -2303,30 +2640,30 @@ class _$AccountsToImportImpl extends _AccountsToImport {
 
 abstract class _AccountsToImport extends WalletImportState {
   const factory _AccountsToImport(final List<Account> accounts) =
-      _$AccountsToImportImpl;
+      _$_AccountsToImport;
   const _AccountsToImport._() : super._();
 
   List<Account> get accounts;
   @JsonKey(ignore: true)
-  _$$AccountsToImportImplCopyWith<_$AccountsToImportImpl> get copyWith =>
+  _$$_AccountsToImportCopyWith<_$_AccountsToImport> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$ReadyToImportImplCopyWith<$Res> {
-  factory _$$ReadyToImportImplCopyWith(
-          _$ReadyToImportImpl value, $Res Function(_$ReadyToImportImpl) then) =
-      __$$ReadyToImportImplCopyWithImpl<$Res>;
+abstract class _$$_ReadyToImportCopyWith<$Res> {
+  factory _$$_ReadyToImportCopyWith(
+          _$_ReadyToImport value, $Res Function(_$_ReadyToImport) then) =
+      __$$_ReadyToImportCopyWithImpl<$Res>;
   @useResult
   $Res call({List<Account> accounts});
 }
 
 /// @nodoc
-class __$$ReadyToImportImplCopyWithImpl<$Res>
-    extends _$WalletImportStateCopyWithImpl<$Res, _$ReadyToImportImpl>
-    implements _$$ReadyToImportImplCopyWith<$Res> {
-  __$$ReadyToImportImplCopyWithImpl(
-      _$ReadyToImportImpl _value, $Res Function(_$ReadyToImportImpl) _then)
+class __$$_ReadyToImportCopyWithImpl<$Res>
+    extends _$WalletImportStateCopyWithImpl<$Res, _$_ReadyToImport>
+    implements _$$_ReadyToImportCopyWith<$Res> {
+  __$$_ReadyToImportCopyWithImpl(
+      _$_ReadyToImport _value, $Res Function(_$_ReadyToImport) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -2334,7 +2671,7 @@ class __$$ReadyToImportImplCopyWithImpl<$Res>
   $Res call({
     Object? accounts = null,
   }) {
-    return _then(_$ReadyToImportImpl(
+    return _then(_$_ReadyToImport(
       null == accounts
           ? _value._accounts
           : accounts // ignore: cast_nullable_to_non_nullable
@@ -2345,8 +2682,8 @@ class __$$ReadyToImportImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ReadyToImportImpl extends _ReadyToImport {
-  const _$ReadyToImportImpl(final List<Account> accounts)
+class _$_ReadyToImport extends _ReadyToImport {
+  const _$_ReadyToImport(final List<Account> accounts)
       : _accounts = accounts,
         super._();
 
@@ -2364,10 +2701,10 @@ class _$ReadyToImportImpl extends _ReadyToImport {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ReadyToImportImpl &&
+            other is _$_ReadyToImport &&
             const DeepCollectionEquality().equals(other._accounts, _accounts));
   }
 
@@ -2378,8 +2715,8 @@ class _$ReadyToImportImpl extends _ReadyToImport {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ReadyToImportImplCopyWith<_$ReadyToImportImpl> get copyWith =>
-      __$$ReadyToImportImplCopyWithImpl<_$ReadyToImportImpl>(this, _$identity);
+  _$$_ReadyToImportCopyWith<_$_ReadyToImport> get copyWith =>
+      __$$_ReadyToImportCopyWithImpl<_$_ReadyToImport>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -2555,36 +2892,35 @@ class _$ReadyToImportImpl extends _ReadyToImport {
 }
 
 abstract class _ReadyToImport extends WalletImportState {
-  const factory _ReadyToImport(final List<Account> accounts) =
-      _$ReadyToImportImpl;
+  const factory _ReadyToImport(final List<Account> accounts) = _$_ReadyToImport;
   const _ReadyToImport._() : super._();
 
   List<Account> get accounts;
   @JsonKey(ignore: true)
-  _$$ReadyToImportImplCopyWith<_$ReadyToImportImpl> get copyWith =>
+  _$$_ReadyToImportCopyWith<_$_ReadyToImport> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$InProcessImplCopyWith<$Res> {
-  factory _$$InProcessImplCopyWith(
-          _$InProcessImpl value, $Res Function(_$InProcessImpl) then) =
-      __$$InProcessImplCopyWithImpl<$Res>;
+abstract class _$$_InProcessCopyWith<$Res> {
+  factory _$$_InProcessCopyWith(
+          _$_InProcess value, $Res Function(_$_InProcess) then) =
+      __$$_InProcessCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$InProcessImplCopyWithImpl<$Res>
-    extends _$WalletImportStateCopyWithImpl<$Res, _$InProcessImpl>
-    implements _$$InProcessImplCopyWith<$Res> {
-  __$$InProcessImplCopyWithImpl(
-      _$InProcessImpl _value, $Res Function(_$InProcessImpl) _then)
+class __$$_InProcessCopyWithImpl<$Res>
+    extends _$WalletImportStateCopyWithImpl<$Res, _$_InProcess>
+    implements _$$_InProcessCopyWith<$Res> {
+  __$$_InProcessCopyWithImpl(
+      _$_InProcess _value, $Res Function(_$_InProcess) _then)
       : super(_value, _then);
 }
 
 /// @nodoc
 
-class _$InProcessImpl extends _InProcess {
-  const _$InProcessImpl() : super._();
+class _$_InProcess extends _InProcess {
+  const _$_InProcess() : super._();
 
   @override
   String toString() {
@@ -2592,9 +2928,9 @@ class _$InProcessImpl extends _InProcess {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$InProcessImpl);
+        (other.runtimeType == runtimeType && other is _$_InProcess);
   }
 
   @override
@@ -2774,15 +3110,15 @@ class _$InProcessImpl extends _InProcess {
 }
 
 abstract class _InProcess extends WalletImportState {
-  const factory _InProcess() = _$InProcessImpl;
+  const factory _InProcess() = _$_InProcess;
   const _InProcess._() : super._();
 }
 
 /// @nodoc
-abstract class _$$InDAImportProcessImplCopyWith<$Res> {
-  factory _$$InDAImportProcessImplCopyWith(_$InDAImportProcessImpl value,
-          $Res Function(_$InDAImportProcessImpl) then) =
-      __$$InDAImportProcessImplCopyWithImpl<$Res>;
+abstract class _$$_InDAImportProcessCopyWith<$Res> {
+  factory _$$_InDAImportProcessCopyWith(_$_InDAImportProcess value,
+          $Res Function(_$_InDAImportProcess) then) =
+      __$$_InDAImportProcessCopyWithImpl<$Res>;
   @useResult
   $Res call(
       {List<Account> accounts,
@@ -2791,11 +3127,11 @@ abstract class _$$InDAImportProcessImplCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$InDAImportProcessImplCopyWithImpl<$Res>
-    extends _$WalletImportStateCopyWithImpl<$Res, _$InDAImportProcessImpl>
-    implements _$$InDAImportProcessImplCopyWith<$Res> {
-  __$$InDAImportProcessImplCopyWithImpl(_$InDAImportProcessImpl _value,
-      $Res Function(_$InDAImportProcessImpl) _then)
+class __$$_InDAImportProcessCopyWithImpl<$Res>
+    extends _$WalletImportStateCopyWithImpl<$Res, _$_InDAImportProcess>
+    implements _$$_InDAImportProcessCopyWith<$Res> {
+  __$$_InDAImportProcessCopyWithImpl(
+      _$_InDAImportProcess _value, $Res Function(_$_InDAImportProcess) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -2805,7 +3141,7 @@ class __$$InDAImportProcessImplCopyWithImpl<$Res>
     Object? selected = null,
     Object? balances = null,
   }) {
-    return _then(_$InDAImportProcessImpl(
+    return _then(_$_InDAImportProcess(
       null == accounts
           ? _value._accounts
           : accounts // ignore: cast_nullable_to_non_nullable
@@ -2824,8 +3160,8 @@ class __$$InDAImportProcessImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$InDAImportProcessImpl extends _InDAImportProcess {
-  const _$InDAImportProcessImpl(final List<Account> accounts,
+class _$_InDAImportProcess extends _InDAImportProcess {
+  const _$_InDAImportProcess(final List<Account> accounts,
       final Set<int> selected, final Map<String, List<TokenBalance>> balances)
       : _accounts = accounts,
         _selected = selected,
@@ -2862,10 +3198,10 @@ class _$InDAImportProcessImpl extends _InDAImportProcess {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$InDAImportProcessImpl &&
+            other is _$_InDAImportProcess &&
             const DeepCollectionEquality().equals(other._accounts, _accounts) &&
             const DeepCollectionEquality().equals(other._selected, _selected) &&
             const DeepCollectionEquality().equals(other._balances, _balances));
@@ -2881,8 +3217,8 @@ class _$InDAImportProcessImpl extends _InDAImportProcess {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$InDAImportProcessImplCopyWith<_$InDAImportProcessImpl> get copyWith =>
-      __$$InDAImportProcessImplCopyWithImpl<_$InDAImportProcessImpl>(
+  _$$_InDAImportProcessCopyWith<_$_InDAImportProcess> get copyWith =>
+      __$$_InDAImportProcessCopyWithImpl<_$_InDAImportProcess>(
           this, _$identity);
 
   @override
@@ -3062,22 +3398,22 @@ abstract class _InDAImportProcess extends WalletImportState {
   const factory _InDAImportProcess(
       final List<Account> accounts,
       final Set<int> selected,
-      final Map<String, List<TokenBalance>> balances) = _$InDAImportProcessImpl;
+      final Map<String, List<TokenBalance>> balances) = _$_InDAImportProcess;
   const _InDAImportProcess._() : super._();
 
   List<Account> get accounts;
   Set<int> get selected;
   Map<String, List<TokenBalance>> get balances;
   @JsonKey(ignore: true)
-  _$$InDAImportProcessImplCopyWith<_$InDAImportProcessImpl> get copyWith =>
+  _$$_InDAImportProcessCopyWith<_$_InDAImportProcess> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$InLoadMoreProcessImplCopyWith<$Res> {
-  factory _$$InLoadMoreProcessImplCopyWith(_$InLoadMoreProcessImpl value,
-          $Res Function(_$InLoadMoreProcessImpl) then) =
-      __$$InLoadMoreProcessImplCopyWithImpl<$Res>;
+abstract class _$$_InLoadMoreProcessCopyWith<$Res> {
+  factory _$$_InLoadMoreProcessCopyWith(_$_InLoadMoreProcess value,
+          $Res Function(_$_InLoadMoreProcess) then) =
+      __$$_InLoadMoreProcessCopyWithImpl<$Res>;
   @useResult
   $Res call(
       {List<Account> accounts,
@@ -3087,11 +3423,11 @@ abstract class _$$InLoadMoreProcessImplCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$InLoadMoreProcessImplCopyWithImpl<$Res>
-    extends _$WalletImportStateCopyWithImpl<$Res, _$InLoadMoreProcessImpl>
-    implements _$$InLoadMoreProcessImplCopyWith<$Res> {
-  __$$InLoadMoreProcessImplCopyWithImpl(_$InLoadMoreProcessImpl _value,
-      $Res Function(_$InLoadMoreProcessImpl) _then)
+class __$$_InLoadMoreProcessCopyWithImpl<$Res>
+    extends _$WalletImportStateCopyWithImpl<$Res, _$_InLoadMoreProcess>
+    implements _$$_InLoadMoreProcessCopyWith<$Res> {
+  __$$_InLoadMoreProcessCopyWithImpl(
+      _$_InLoadMoreProcess _value, $Res Function(_$_InLoadMoreProcess) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -3102,7 +3438,7 @@ class __$$InLoadMoreProcessImplCopyWithImpl<$Res>
     Object? balances = null,
     Object? seedPhrase = null,
   }) {
-    return _then(_$InLoadMoreProcessImpl(
+    return _then(_$_InLoadMoreProcess(
       null == accounts
           ? _value._accounts
           : accounts // ignore: cast_nullable_to_non_nullable
@@ -3125,8 +3461,8 @@ class __$$InLoadMoreProcessImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$InLoadMoreProcessImpl extends _InLoadMoreProcess {
-  const _$InLoadMoreProcessImpl(
+class _$_InLoadMoreProcess extends _InLoadMoreProcess {
+  const _$_InLoadMoreProcess(
       final List<Account> accounts,
       final Set<int> selected,
       final Map<String, List<TokenBalance>> balances,
@@ -3169,10 +3505,10 @@ class _$InLoadMoreProcessImpl extends _InLoadMoreProcess {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$InLoadMoreProcessImpl &&
+            other is _$_InLoadMoreProcess &&
             const DeepCollectionEquality().equals(other._accounts, _accounts) &&
             const DeepCollectionEquality().equals(other._selected, _selected) &&
             const DeepCollectionEquality().equals(other._balances, _balances) &&
@@ -3191,8 +3527,8 @@ class _$InLoadMoreProcessImpl extends _InLoadMoreProcess {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$InLoadMoreProcessImplCopyWith<_$InLoadMoreProcessImpl> get copyWith =>
-      __$$InLoadMoreProcessImplCopyWithImpl<_$InLoadMoreProcessImpl>(
+  _$$_InLoadMoreProcessCopyWith<_$_InLoadMoreProcess> get copyWith =>
+      __$$_InLoadMoreProcessCopyWithImpl<_$_InLoadMoreProcess>(
           this, _$identity);
 
   @override
@@ -3373,7 +3709,7 @@ abstract class _InLoadMoreProcess extends WalletImportState {
       final List<Account> accounts,
       final Set<int> selected,
       final Map<String, List<TokenBalance>> balances,
-      final String seedPhrase) = _$InLoadMoreProcessImpl;
+      final String seedPhrase) = _$_InLoadMoreProcess;
   const _InLoadMoreProcess._() : super._();
 
   List<Account> get accounts;
@@ -3381,25 +3717,25 @@ abstract class _InLoadMoreProcess extends WalletImportState {
   Map<String, List<TokenBalance>> get balances;
   String get seedPhrase;
   @JsonKey(ignore: true)
-  _$$InLoadMoreProcessImplCopyWith<_$InLoadMoreProcessImpl> get copyWith =>
+  _$$_InLoadMoreProcessCopyWith<_$_InLoadMoreProcess> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$ImportedImplCopyWith<$Res> {
-  factory _$$ImportedImplCopyWith(
-          _$ImportedImpl value, $Res Function(_$ImportedImpl) then) =
-      __$$ImportedImplCopyWithImpl<$Res>;
+abstract class _$$_ImportedCopyWith<$Res> {
+  factory _$$_ImportedCopyWith(
+          _$_Imported value, $Res Function(_$_Imported) then) =
+      __$$_ImportedCopyWithImpl<$Res>;
   @useResult
   $Res call({Account account});
 }
 
 /// @nodoc
-class __$$ImportedImplCopyWithImpl<$Res>
-    extends _$WalletImportStateCopyWithImpl<$Res, _$ImportedImpl>
-    implements _$$ImportedImplCopyWith<$Res> {
-  __$$ImportedImplCopyWithImpl(
-      _$ImportedImpl _value, $Res Function(_$ImportedImpl) _then)
+class __$$_ImportedCopyWithImpl<$Res>
+    extends _$WalletImportStateCopyWithImpl<$Res, _$_Imported>
+    implements _$$_ImportedCopyWith<$Res> {
+  __$$_ImportedCopyWithImpl(
+      _$_Imported _value, $Res Function(_$_Imported) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -3407,7 +3743,7 @@ class __$$ImportedImplCopyWithImpl<$Res>
   $Res call({
     Object? account = null,
   }) {
-    return _then(_$ImportedImpl(
+    return _then(_$_Imported(
       null == account
           ? _value.account
           : account // ignore: cast_nullable_to_non_nullable
@@ -3418,8 +3754,8 @@ class __$$ImportedImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ImportedImpl extends _Imported {
-  const _$ImportedImpl(this.account) : super._();
+class _$_Imported extends _Imported {
+  const _$_Imported(this.account) : super._();
 
   @override
   final Account account;
@@ -3430,10 +3766,10 @@ class _$ImportedImpl extends _Imported {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ImportedImpl &&
+            other is _$_Imported &&
             (identical(other.account, account) || other.account == account));
   }
 
@@ -3443,8 +3779,8 @@ class _$ImportedImpl extends _Imported {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ImportedImplCopyWith<_$ImportedImpl> get copyWith =>
-      __$$ImportedImplCopyWithImpl<_$ImportedImpl>(this, _$identity);
+  _$$_ImportedCopyWith<_$_Imported> get copyWith =>
+      __$$_ImportedCopyWithImpl<_$_Imported>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -3620,32 +3956,30 @@ class _$ImportedImpl extends _Imported {
 }
 
 abstract class _Imported extends WalletImportState {
-  const factory _Imported(final Account account) = _$ImportedImpl;
+  const factory _Imported(final Account account) = _$_Imported;
   const _Imported._() : super._();
 
   Account get account;
   @JsonKey(ignore: true)
-  _$$ImportedImplCopyWith<_$ImportedImpl> get copyWith =>
+  _$$_ImportedCopyWith<_$_Imported> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$ImportedMultipleWalletsImplCopyWith<$Res> {
-  factory _$$ImportedMultipleWalletsImplCopyWith(
-          _$ImportedMultipleWalletsImpl value,
-          $Res Function(_$ImportedMultipleWalletsImpl) then) =
-      __$$ImportedMultipleWalletsImplCopyWithImpl<$Res>;
+abstract class _$$_ImportedMultipleWalletsCopyWith<$Res> {
+  factory _$$_ImportedMultipleWalletsCopyWith(_$_ImportedMultipleWallets value,
+          $Res Function(_$_ImportedMultipleWallets) then) =
+      __$$_ImportedMultipleWalletsCopyWithImpl<$Res>;
   @useResult
   $Res call({List<Account> accounts});
 }
 
 /// @nodoc
-class __$$ImportedMultipleWalletsImplCopyWithImpl<$Res>
-    extends _$WalletImportStateCopyWithImpl<$Res, _$ImportedMultipleWalletsImpl>
-    implements _$$ImportedMultipleWalletsImplCopyWith<$Res> {
-  __$$ImportedMultipleWalletsImplCopyWithImpl(
-      _$ImportedMultipleWalletsImpl _value,
-      $Res Function(_$ImportedMultipleWalletsImpl) _then)
+class __$$_ImportedMultipleWalletsCopyWithImpl<$Res>
+    extends _$WalletImportStateCopyWithImpl<$Res, _$_ImportedMultipleWallets>
+    implements _$$_ImportedMultipleWalletsCopyWith<$Res> {
+  __$$_ImportedMultipleWalletsCopyWithImpl(_$_ImportedMultipleWallets _value,
+      $Res Function(_$_ImportedMultipleWallets) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -3653,7 +3987,7 @@ class __$$ImportedMultipleWalletsImplCopyWithImpl<$Res>
   $Res call({
     Object? accounts = null,
   }) {
-    return _then(_$ImportedMultipleWalletsImpl(
+    return _then(_$_ImportedMultipleWallets(
       null == accounts
           ? _value._accounts
           : accounts // ignore: cast_nullable_to_non_nullable
@@ -3664,8 +3998,8 @@ class __$$ImportedMultipleWalletsImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ImportedMultipleWalletsImpl extends _ImportedMultipleWallets {
-  const _$ImportedMultipleWalletsImpl(final List<Account> accounts)
+class _$_ImportedMultipleWallets extends _ImportedMultipleWallets {
+  const _$_ImportedMultipleWallets(final List<Account> accounts)
       : _accounts = accounts,
         super._();
 
@@ -3683,10 +4017,10 @@ class _$ImportedMultipleWalletsImpl extends _ImportedMultipleWallets {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ImportedMultipleWalletsImpl &&
+            other is _$_ImportedMultipleWallets &&
             const DeepCollectionEquality().equals(other._accounts, _accounts));
   }
 
@@ -3697,9 +4031,10 @@ class _$ImportedMultipleWalletsImpl extends _ImportedMultipleWallets {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ImportedMultipleWalletsImplCopyWith<_$ImportedMultipleWalletsImpl>
-      get copyWith => __$$ImportedMultipleWalletsImplCopyWithImpl<
-          _$ImportedMultipleWalletsImpl>(this, _$identity);
+  _$$_ImportedMultipleWalletsCopyWith<_$_ImportedMultipleWallets>
+      get copyWith =>
+          __$$_ImportedMultipleWalletsCopyWithImpl<_$_ImportedMultipleWallets>(
+              this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -3876,21 +4211,21 @@ class _$ImportedMultipleWalletsImpl extends _ImportedMultipleWallets {
 
 abstract class _ImportedMultipleWallets extends WalletImportState {
   const factory _ImportedMultipleWallets(final List<Account> accounts) =
-      _$ImportedMultipleWalletsImpl;
+      _$_ImportedMultipleWallets;
   const _ImportedMultipleWallets._() : super._();
 
   List<Account> get accounts;
   @JsonKey(ignore: true)
-  _$$ImportedMultipleWalletsImplCopyWith<_$ImportedMultipleWalletsImpl>
+  _$$_ImportedMultipleWalletsCopyWith<_$_ImportedMultipleWallets>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$ImportedMultipleDerivativeWalletsImplCopyWith<$Res> {
-  factory _$$ImportedMultipleDerivativeWalletsImplCopyWith(
-          _$ImportedMultipleDerivativeWalletsImpl value,
-          $Res Function(_$ImportedMultipleDerivativeWalletsImpl) then) =
-      __$$ImportedMultipleDerivativeWalletsImplCopyWithImpl<$Res>;
+abstract class _$$_ImportedMultipleDerivativeWalletsCopyWith<$Res> {
+  factory _$$_ImportedMultipleDerivativeWalletsCopyWith(
+          _$_ImportedMultipleDerivativeWallets value,
+          $Res Function(_$_ImportedMultipleDerivativeWallets) then) =
+      __$$_ImportedMultipleDerivativeWalletsCopyWithImpl<$Res>;
   @useResult
   $Res call(
       {List<Account> accounts,
@@ -3900,13 +4235,13 @@ abstract class _$$ImportedMultipleDerivativeWalletsImplCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$ImportedMultipleDerivativeWalletsImplCopyWithImpl<$Res>
+class __$$_ImportedMultipleDerivativeWalletsCopyWithImpl<$Res>
     extends _$WalletImportStateCopyWithImpl<$Res,
-        _$ImportedMultipleDerivativeWalletsImpl>
-    implements _$$ImportedMultipleDerivativeWalletsImplCopyWith<$Res> {
-  __$$ImportedMultipleDerivativeWalletsImplCopyWithImpl(
-      _$ImportedMultipleDerivativeWalletsImpl _value,
-      $Res Function(_$ImportedMultipleDerivativeWalletsImpl) _then)
+        _$_ImportedMultipleDerivativeWallets>
+    implements _$$_ImportedMultipleDerivativeWalletsCopyWith<$Res> {
+  __$$_ImportedMultipleDerivativeWalletsCopyWithImpl(
+      _$_ImportedMultipleDerivativeWallets _value,
+      $Res Function(_$_ImportedMultipleDerivativeWallets) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -3917,7 +4252,7 @@ class __$$ImportedMultipleDerivativeWalletsImplCopyWithImpl<$Res>
     Object? balances = null,
     Object? seedPhrase = null,
   }) {
-    return _then(_$ImportedMultipleDerivativeWalletsImpl(
+    return _then(_$_ImportedMultipleDerivativeWallets(
       null == accounts
           ? _value._accounts
           : accounts // ignore: cast_nullable_to_non_nullable
@@ -3940,9 +4275,9 @@ class __$$ImportedMultipleDerivativeWalletsImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ImportedMultipleDerivativeWalletsImpl
+class _$_ImportedMultipleDerivativeWallets
     extends _ImportedMultipleDerivativeWallets {
-  const _$ImportedMultipleDerivativeWalletsImpl(
+  const _$_ImportedMultipleDerivativeWallets(
       final List<Account> accounts,
       final Set<int> selected,
       final Map<String, List<TokenBalance>> balances,
@@ -3985,10 +4320,10 @@ class _$ImportedMultipleDerivativeWalletsImpl
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ImportedMultipleDerivativeWalletsImpl &&
+            other is _$_ImportedMultipleDerivativeWallets &&
             const DeepCollectionEquality().equals(other._accounts, _accounts) &&
             const DeepCollectionEquality().equals(other._selected, _selected) &&
             const DeepCollectionEquality().equals(other._balances, _balances) &&
@@ -4007,10 +4342,10 @@ class _$ImportedMultipleDerivativeWalletsImpl
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ImportedMultipleDerivativeWalletsImplCopyWith<
-          _$ImportedMultipleDerivativeWalletsImpl>
-      get copyWith => __$$ImportedMultipleDerivativeWalletsImplCopyWithImpl<
-          _$ImportedMultipleDerivativeWalletsImpl>(this, _$identity);
+  _$$_ImportedMultipleDerivativeWalletsCopyWith<
+          _$_ImportedMultipleDerivativeWallets>
+      get copyWith => __$$_ImportedMultipleDerivativeWalletsCopyWithImpl<
+          _$_ImportedMultipleDerivativeWallets>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -4193,7 +4528,7 @@ abstract class _ImportedMultipleDerivativeWallets extends WalletImportState {
       final List<Account> accounts,
       final Set<int> selected,
       final Map<String, List<TokenBalance>> balances,
-      final String seedPhrase) = _$ImportedMultipleDerivativeWalletsImpl;
+      final String seedPhrase) = _$_ImportedMultipleDerivativeWallets;
   const _ImportedMultipleDerivativeWallets._() : super._();
 
   List<Account> get accounts;
@@ -4201,29 +4536,29 @@ abstract class _ImportedMultipleDerivativeWallets extends WalletImportState {
   Map<String, List<TokenBalance>> get balances;
   String get seedPhrase;
   @JsonKey(ignore: true)
-  _$$ImportedMultipleDerivativeWalletsImplCopyWith<
-          _$ImportedMultipleDerivativeWalletsImpl>
+  _$$_ImportedMultipleDerivativeWalletsCopyWith<
+          _$_ImportedMultipleDerivativeWallets>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$ImportedMultipleWalletsWithSetPasscodeImplCopyWith<$Res> {
-  factory _$$ImportedMultipleWalletsWithSetPasscodeImplCopyWith(
-          _$ImportedMultipleWalletsWithSetPasscodeImpl value,
-          $Res Function(_$ImportedMultipleWalletsWithSetPasscodeImpl) then) =
-      __$$ImportedMultipleWalletsWithSetPasscodeImplCopyWithImpl<$Res>;
+abstract class _$$_ImportedMultipleWalletsWithSetPasscodeCopyWith<$Res> {
+  factory _$$_ImportedMultipleWalletsWithSetPasscodeCopyWith(
+          _$_ImportedMultipleWalletsWithSetPasscode value,
+          $Res Function(_$_ImportedMultipleWalletsWithSetPasscode) then) =
+      __$$_ImportedMultipleWalletsWithSetPasscodeCopyWithImpl<$Res>;
   @useResult
   $Res call({List<Account> accounts});
 }
 
 /// @nodoc
-class __$$ImportedMultipleWalletsWithSetPasscodeImplCopyWithImpl<$Res>
+class __$$_ImportedMultipleWalletsWithSetPasscodeCopyWithImpl<$Res>
     extends _$WalletImportStateCopyWithImpl<$Res,
-        _$ImportedMultipleWalletsWithSetPasscodeImpl>
-    implements _$$ImportedMultipleWalletsWithSetPasscodeImplCopyWith<$Res> {
-  __$$ImportedMultipleWalletsWithSetPasscodeImplCopyWithImpl(
-      _$ImportedMultipleWalletsWithSetPasscodeImpl _value,
-      $Res Function(_$ImportedMultipleWalletsWithSetPasscodeImpl) _then)
+        _$_ImportedMultipleWalletsWithSetPasscode>
+    implements _$$_ImportedMultipleWalletsWithSetPasscodeCopyWith<$Res> {
+  __$$_ImportedMultipleWalletsWithSetPasscodeCopyWithImpl(
+      _$_ImportedMultipleWalletsWithSetPasscode _value,
+      $Res Function(_$_ImportedMultipleWalletsWithSetPasscode) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -4231,7 +4566,7 @@ class __$$ImportedMultipleWalletsWithSetPasscodeImplCopyWithImpl<$Res>
   $Res call({
     Object? accounts = null,
   }) {
-    return _then(_$ImportedMultipleWalletsWithSetPasscodeImpl(
+    return _then(_$_ImportedMultipleWalletsWithSetPasscode(
       null == accounts
           ? _value._accounts
           : accounts // ignore: cast_nullable_to_non_nullable
@@ -4242,10 +4577,9 @@ class __$$ImportedMultipleWalletsWithSetPasscodeImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ImportedMultipleWalletsWithSetPasscodeImpl
+class _$_ImportedMultipleWalletsWithSetPasscode
     extends _ImportedMultipleWalletsWithSetPasscode {
-  const _$ImportedMultipleWalletsWithSetPasscodeImpl(
-      final List<Account> accounts)
+  const _$_ImportedMultipleWalletsWithSetPasscode(final List<Account> accounts)
       : _accounts = accounts,
         super._();
 
@@ -4263,10 +4597,10 @@ class _$ImportedMultipleWalletsWithSetPasscodeImpl
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ImportedMultipleWalletsWithSetPasscodeImpl &&
+            other is _$_ImportedMultipleWalletsWithSetPasscode &&
             const DeepCollectionEquality().equals(other._accounts, _accounts));
   }
 
@@ -4277,11 +4611,10 @@ class _$ImportedMultipleWalletsWithSetPasscodeImpl
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ImportedMultipleWalletsWithSetPasscodeImplCopyWith<
-          _$ImportedMultipleWalletsWithSetPasscodeImpl>
-      get copyWith =>
-          __$$ImportedMultipleWalletsWithSetPasscodeImplCopyWithImpl<
-              _$ImportedMultipleWalletsWithSetPasscodeImpl>(this, _$identity);
+  _$$_ImportedMultipleWalletsWithSetPasscodeCopyWith<
+          _$_ImportedMultipleWalletsWithSetPasscode>
+      get copyWith => __$$_ImportedMultipleWalletsWithSetPasscodeCopyWithImpl<
+          _$_ImportedMultipleWalletsWithSetPasscode>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -4459,34 +4792,31 @@ class _$ImportedMultipleWalletsWithSetPasscodeImpl
 abstract class _ImportedMultipleWalletsWithSetPasscode
     extends WalletImportState {
   const factory _ImportedMultipleWalletsWithSetPasscode(
-          final List<Account> accounts) =
-      _$ImportedMultipleWalletsWithSetPasscodeImpl;
+      final List<Account> accounts) = _$_ImportedMultipleWalletsWithSetPasscode;
   const _ImportedMultipleWalletsWithSetPasscode._() : super._();
 
   List<Account> get accounts;
   @JsonKey(ignore: true)
-  _$$ImportedMultipleWalletsWithSetPasscodeImplCopyWith<
-          _$ImportedMultipleWalletsWithSetPasscodeImpl>
+  _$$_ImportedMultipleWalletsWithSetPasscodeCopyWith<
+          _$_ImportedMultipleWalletsWithSetPasscode>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$ImportedWithSetPasscodeImplCopyWith<$Res> {
-  factory _$$ImportedWithSetPasscodeImplCopyWith(
-          _$ImportedWithSetPasscodeImpl value,
-          $Res Function(_$ImportedWithSetPasscodeImpl) then) =
-      __$$ImportedWithSetPasscodeImplCopyWithImpl<$Res>;
+abstract class _$$_ImportedWithSetPasscodeCopyWith<$Res> {
+  factory _$$_ImportedWithSetPasscodeCopyWith(_$_ImportedWithSetPasscode value,
+          $Res Function(_$_ImportedWithSetPasscode) then) =
+      __$$_ImportedWithSetPasscodeCopyWithImpl<$Res>;
   @useResult
   $Res call({Account account});
 }
 
 /// @nodoc
-class __$$ImportedWithSetPasscodeImplCopyWithImpl<$Res>
-    extends _$WalletImportStateCopyWithImpl<$Res, _$ImportedWithSetPasscodeImpl>
-    implements _$$ImportedWithSetPasscodeImplCopyWith<$Res> {
-  __$$ImportedWithSetPasscodeImplCopyWithImpl(
-      _$ImportedWithSetPasscodeImpl _value,
-      $Res Function(_$ImportedWithSetPasscodeImpl) _then)
+class __$$_ImportedWithSetPasscodeCopyWithImpl<$Res>
+    extends _$WalletImportStateCopyWithImpl<$Res, _$_ImportedWithSetPasscode>
+    implements _$$_ImportedWithSetPasscodeCopyWith<$Res> {
+  __$$_ImportedWithSetPasscodeCopyWithImpl(_$_ImportedWithSetPasscode _value,
+      $Res Function(_$_ImportedWithSetPasscode) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -4494,7 +4824,7 @@ class __$$ImportedWithSetPasscodeImplCopyWithImpl<$Res>
   $Res call({
     Object? account = null,
   }) {
-    return _then(_$ImportedWithSetPasscodeImpl(
+    return _then(_$_ImportedWithSetPasscode(
       null == account
           ? _value.account
           : account // ignore: cast_nullable_to_non_nullable
@@ -4505,8 +4835,8 @@ class __$$ImportedWithSetPasscodeImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ImportedWithSetPasscodeImpl extends _ImportedWithSetPasscode {
-  const _$ImportedWithSetPasscodeImpl(this.account) : super._();
+class _$_ImportedWithSetPasscode extends _ImportedWithSetPasscode {
+  const _$_ImportedWithSetPasscode(this.account) : super._();
 
   @override
   final Account account;
@@ -4517,10 +4847,10 @@ class _$ImportedWithSetPasscodeImpl extends _ImportedWithSetPasscode {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ImportedWithSetPasscodeImpl &&
+            other is _$_ImportedWithSetPasscode &&
             (identical(other.account, account) || other.account == account));
   }
 
@@ -4530,9 +4860,10 @@ class _$ImportedWithSetPasscodeImpl extends _ImportedWithSetPasscode {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ImportedWithSetPasscodeImplCopyWith<_$ImportedWithSetPasscodeImpl>
-      get copyWith => __$$ImportedWithSetPasscodeImplCopyWithImpl<
-          _$ImportedWithSetPasscodeImpl>(this, _$identity);
+  _$$_ImportedWithSetPasscodeCopyWith<_$_ImportedWithSetPasscode>
+      get copyWith =>
+          __$$_ImportedWithSetPasscodeCopyWithImpl<_$_ImportedWithSetPasscode>(
+              this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -4709,33 +5040,32 @@ class _$ImportedWithSetPasscodeImpl extends _ImportedWithSetPasscode {
 
 abstract class _ImportedWithSetPasscode extends WalletImportState {
   const factory _ImportedWithSetPasscode(final Account account) =
-      _$ImportedWithSetPasscodeImpl;
+      _$_ImportedWithSetPasscode;
   const _ImportedWithSetPasscode._() : super._();
 
   Account get account;
   @JsonKey(ignore: true)
-  _$$ImportedWithSetPasscodeImplCopyWith<_$ImportedWithSetPasscodeImpl>
+  _$$_ImportedWithSetPasscodeCopyWith<_$_ImportedWithSetPasscode>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$NeedsToDeleteWatchAccountImplCopyWith<$Res> {
-  factory _$$NeedsToDeleteWatchAccountImplCopyWith(
-          _$NeedsToDeleteWatchAccountImpl value,
-          $Res Function(_$NeedsToDeleteWatchAccountImpl) then) =
-      __$$NeedsToDeleteWatchAccountImplCopyWithImpl<$Res>;
+abstract class _$$_NeedsToDeleteWatchAccountCopyWith<$Res> {
+  factory _$$_NeedsToDeleteWatchAccountCopyWith(
+          _$_NeedsToDeleteWatchAccount value,
+          $Res Function(_$_NeedsToDeleteWatchAccount) then) =
+      __$$_NeedsToDeleteWatchAccountCopyWithImpl<$Res>;
   @useResult
   $Res call({Account account});
 }
 
 /// @nodoc
-class __$$NeedsToDeleteWatchAccountImplCopyWithImpl<$Res>
-    extends _$WalletImportStateCopyWithImpl<$Res,
-        _$NeedsToDeleteWatchAccountImpl>
-    implements _$$NeedsToDeleteWatchAccountImplCopyWith<$Res> {
-  __$$NeedsToDeleteWatchAccountImplCopyWithImpl(
-      _$NeedsToDeleteWatchAccountImpl _value,
-      $Res Function(_$NeedsToDeleteWatchAccountImpl) _then)
+class __$$_NeedsToDeleteWatchAccountCopyWithImpl<$Res>
+    extends _$WalletImportStateCopyWithImpl<$Res, _$_NeedsToDeleteWatchAccount>
+    implements _$$_NeedsToDeleteWatchAccountCopyWith<$Res> {
+  __$$_NeedsToDeleteWatchAccountCopyWithImpl(
+      _$_NeedsToDeleteWatchAccount _value,
+      $Res Function(_$_NeedsToDeleteWatchAccount) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -4743,7 +5073,7 @@ class __$$NeedsToDeleteWatchAccountImplCopyWithImpl<$Res>
   $Res call({
     Object? account = null,
   }) {
-    return _then(_$NeedsToDeleteWatchAccountImpl(
+    return _then(_$_NeedsToDeleteWatchAccount(
       null == account
           ? _value.account
           : account // ignore: cast_nullable_to_non_nullable
@@ -4754,8 +5084,8 @@ class __$$NeedsToDeleteWatchAccountImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$NeedsToDeleteWatchAccountImpl extends _NeedsToDeleteWatchAccount {
-  const _$NeedsToDeleteWatchAccountImpl(this.account) : super._();
+class _$_NeedsToDeleteWatchAccount extends _NeedsToDeleteWatchAccount {
+  const _$_NeedsToDeleteWatchAccount(this.account) : super._();
 
   @override
   final Account account;
@@ -4766,10 +5096,10 @@ class _$NeedsToDeleteWatchAccountImpl extends _NeedsToDeleteWatchAccount {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$NeedsToDeleteWatchAccountImpl &&
+            other is _$_NeedsToDeleteWatchAccount &&
             (identical(other.account, account) || other.account == account));
   }
 
@@ -4779,9 +5109,9 @@ class _$NeedsToDeleteWatchAccountImpl extends _NeedsToDeleteWatchAccount {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$NeedsToDeleteWatchAccountImplCopyWith<_$NeedsToDeleteWatchAccountImpl>
-      get copyWith => __$$NeedsToDeleteWatchAccountImplCopyWithImpl<
-          _$NeedsToDeleteWatchAccountImpl>(this, _$identity);
+  _$$_NeedsToDeleteWatchAccountCopyWith<_$_NeedsToDeleteWatchAccount>
+      get copyWith => __$$_NeedsToDeleteWatchAccountCopyWithImpl<
+          _$_NeedsToDeleteWatchAccount>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -4958,20 +5288,20 @@ class _$NeedsToDeleteWatchAccountImpl extends _NeedsToDeleteWatchAccount {
 
 abstract class _NeedsToDeleteWatchAccount extends WalletImportState {
   const factory _NeedsToDeleteWatchAccount(final Account account) =
-      _$NeedsToDeleteWatchAccountImpl;
+      _$_NeedsToDeleteWatchAccount;
   const _NeedsToDeleteWatchAccount._() : super._();
 
   Account get account;
   @JsonKey(ignore: true)
-  _$$NeedsToDeleteWatchAccountImplCopyWith<_$NeedsToDeleteWatchAccountImpl>
+  _$$_NeedsToDeleteWatchAccountCopyWith<_$_NeedsToDeleteWatchAccount>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$ImportingFailedImplCopyWith<$Res> {
-  factory _$$ImportingFailedImplCopyWith(_$ImportingFailedImpl value,
-          $Res Function(_$ImportingFailedImpl) then) =
-      __$$ImportingFailedImplCopyWithImpl<$Res>;
+abstract class _$$ImportingFailedCopyWith<$Res> {
+  factory _$$ImportingFailedCopyWith(
+          _$ImportingFailed value, $Res Function(_$ImportingFailed) then) =
+      __$$ImportingFailedCopyWithImpl<$Res>;
   @useResult
   $Res call({WalletImportFailure failure});
 
@@ -4979,11 +5309,11 @@ abstract class _$$ImportingFailedImplCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$ImportingFailedImplCopyWithImpl<$Res>
-    extends _$WalletImportStateCopyWithImpl<$Res, _$ImportingFailedImpl>
-    implements _$$ImportingFailedImplCopyWith<$Res> {
-  __$$ImportingFailedImplCopyWithImpl(
-      _$ImportingFailedImpl _value, $Res Function(_$ImportingFailedImpl) _then)
+class __$$ImportingFailedCopyWithImpl<$Res>
+    extends _$WalletImportStateCopyWithImpl<$Res, _$ImportingFailed>
+    implements _$$ImportingFailedCopyWith<$Res> {
+  __$$ImportingFailedCopyWithImpl(
+      _$ImportingFailed _value, $Res Function(_$ImportingFailed) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -4991,7 +5321,7 @@ class __$$ImportingFailedImplCopyWithImpl<$Res>
   $Res call({
     Object? failure = null,
   }) {
-    return _then(_$ImportingFailedImpl(
+    return _then(_$ImportingFailed(
       null == failure
           ? _value.failure
           : failure // ignore: cast_nullable_to_non_nullable
@@ -5010,8 +5340,8 @@ class __$$ImportingFailedImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ImportingFailedImpl extends ImportingFailed {
-  const _$ImportingFailedImpl(this.failure) : super._();
+class _$ImportingFailed extends ImportingFailed {
+  const _$ImportingFailed(this.failure) : super._();
 
   @override
   final WalletImportFailure failure;
@@ -5022,10 +5352,10 @@ class _$ImportingFailedImpl extends ImportingFailed {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ImportingFailedImpl &&
+            other is _$ImportingFailed &&
             (identical(other.failure, failure) || other.failure == failure));
   }
 
@@ -5035,9 +5365,8 @@ class _$ImportingFailedImpl extends ImportingFailed {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ImportingFailedImplCopyWith<_$ImportingFailedImpl> get copyWith =>
-      __$$ImportingFailedImplCopyWithImpl<_$ImportingFailedImpl>(
-          this, _$identity);
+  _$$ImportingFailedCopyWith<_$ImportingFailed> get copyWith =>
+      __$$ImportingFailedCopyWithImpl<_$ImportingFailed>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -5214,20 +5543,20 @@ class _$ImportingFailedImpl extends ImportingFailed {
 
 abstract class ImportingFailed extends WalletImportState {
   const factory ImportingFailed(final WalletImportFailure failure) =
-      _$ImportingFailedImpl;
+      _$ImportingFailed;
   const ImportingFailed._() : super._();
 
   WalletImportFailure get failure;
   @JsonKey(ignore: true)
-  _$$ImportingFailedImplCopyWith<_$ImportingFailedImpl> get copyWith =>
+  _$$ImportingFailedCopyWith<_$ImportingFailed> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$ImportingDAFailedImplCopyWith<$Res> {
-  factory _$$ImportingDAFailedImplCopyWith(_$ImportingDAFailedImpl value,
-          $Res Function(_$ImportingDAFailedImpl) then) =
-      __$$ImportingDAFailedImplCopyWithImpl<$Res>;
+abstract class _$$_ImportingDAFailedCopyWith<$Res> {
+  factory _$$_ImportingDAFailedCopyWith(_$_ImportingDAFailed value,
+          $Res Function(_$_ImportingDAFailed) then) =
+      __$$_ImportingDAFailedCopyWithImpl<$Res>;
   @useResult
   $Res call(
       {List<Account> accounts,
@@ -5236,11 +5565,11 @@ abstract class _$$ImportingDAFailedImplCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$ImportingDAFailedImplCopyWithImpl<$Res>
-    extends _$WalletImportStateCopyWithImpl<$Res, _$ImportingDAFailedImpl>
-    implements _$$ImportingDAFailedImplCopyWith<$Res> {
-  __$$ImportingDAFailedImplCopyWithImpl(_$ImportingDAFailedImpl _value,
-      $Res Function(_$ImportingDAFailedImpl) _then)
+class __$$_ImportingDAFailedCopyWithImpl<$Res>
+    extends _$WalletImportStateCopyWithImpl<$Res, _$_ImportingDAFailed>
+    implements _$$_ImportingDAFailedCopyWith<$Res> {
+  __$$_ImportingDAFailedCopyWithImpl(
+      _$_ImportingDAFailed _value, $Res Function(_$_ImportingDAFailed) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -5250,7 +5579,7 @@ class __$$ImportingDAFailedImplCopyWithImpl<$Res>
     Object? selected = null,
     Object? balances = null,
   }) {
-    return _then(_$ImportingDAFailedImpl(
+    return _then(_$_ImportingDAFailed(
       null == accounts
           ? _value._accounts
           : accounts // ignore: cast_nullable_to_non_nullable
@@ -5269,8 +5598,8 @@ class __$$ImportingDAFailedImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ImportingDAFailedImpl extends _ImportingDAFailed {
-  const _$ImportingDAFailedImpl(final List<Account> accounts,
+class _$_ImportingDAFailed extends _ImportingDAFailed {
+  const _$_ImportingDAFailed(final List<Account> accounts,
       final Set<int> selected, final Map<String, List<TokenBalance>> balances)
       : _accounts = accounts,
         _selected = selected,
@@ -5307,10 +5636,10 @@ class _$ImportingDAFailedImpl extends _ImportingDAFailed {
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ImportingDAFailedImpl &&
+            other is _$_ImportingDAFailed &&
             const DeepCollectionEquality().equals(other._accounts, _accounts) &&
             const DeepCollectionEquality().equals(other._selected, _selected) &&
             const DeepCollectionEquality().equals(other._balances, _balances));
@@ -5326,8 +5655,8 @@ class _$ImportingDAFailedImpl extends _ImportingDAFailed {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ImportingDAFailedImplCopyWith<_$ImportingDAFailedImpl> get copyWith =>
-      __$$ImportingDAFailedImplCopyWithImpl<_$ImportingDAFailedImpl>(
+  _$$_ImportingDAFailedCopyWith<_$_ImportingDAFailed> get copyWith =>
+      __$$_ImportingDAFailedCopyWithImpl<_$_ImportingDAFailed>(
           this, _$identity);
 
   @override
@@ -5507,13 +5836,13 @@ abstract class _ImportingDAFailed extends WalletImportState {
   const factory _ImportingDAFailed(
       final List<Account> accounts,
       final Set<int> selected,
-      final Map<String, List<TokenBalance>> balances) = _$ImportingDAFailedImpl;
+      final Map<String, List<TokenBalance>> balances) = _$_ImportingDAFailed;
   const _ImportingDAFailed._() : super._();
 
   List<Account> get accounts;
   Set<int> get selected;
   Map<String, List<TokenBalance>> get balances;
   @JsonKey(ignore: true)
-  _$$ImportingDAFailedImplCopyWith<_$ImportingDAFailedImpl> get copyWith =>
+  _$$_ImportingDAFailedCopyWith<_$_ImportingDAFailed> get copyWith =>
       throw _privateConstructorUsedError;
 }

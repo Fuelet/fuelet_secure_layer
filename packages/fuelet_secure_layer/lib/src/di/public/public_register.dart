@@ -151,6 +151,7 @@ class PublicSecureLayerRegister {
         () async => WalletImportBloc(
           secureLayerLocator<IWalletCreateRepository>(),
           await secureLayerLocator.getAsync<FuelNetworkManager>(),
+          _privateSecureLayerLocator<IAccountsPrivateDataRepository>(),
         ),
       )
       ..registerFactoryAsync(

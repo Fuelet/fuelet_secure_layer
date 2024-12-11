@@ -2,13 +2,16 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:fuelet_secure_layer/fuelet_secure_layer.dart';
+import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
 import 'package:fuelet_secure_layer/src/features/wallet_import/application/validators.dart';
 import 'package:fuelet_secure_layer/src/utils/account_utils.dart';
 import 'package:fuelet_secure_layer/src/utils/either_x.dart';
 import 'package:fuelet_secure_layer/src/utils/iterable_x.dart';
 
 part 'wallet_import_bloc.freezed.dart';
+
 part 'wallet_import_event.dart';
+
 part 'wallet_import_state.dart';
 
 const dAccountsPerPage = 10;
@@ -16,10 +19,12 @@ const dAccountsPerPage = 10;
 class WalletImportBloc extends Bloc<WalletImportEvent, WalletImportState> {
   final IWalletCreateRepository _walletCreateRepository;
   final FuelNetworkProviderRepository _fuelNetworkProviderRepository;
+  final IAccountsPrivateDataRepository _accountsPrivateDataRepository;
 
   WalletImportBloc(
     this._walletCreateRepository,
     this._fuelNetworkProviderRepository,
+    this._accountsPrivateDataRepository,
   ) : super(const WalletImportState.initial()) {
     on<WalletImportEvent>(
       (event, emit) => event.map(
@@ -28,6 +33,8 @@ class WalletImportBloc extends Bloc<WalletImportEvent, WalletImportState> {
         importMultipleWallets: (event) => _onImportMultipleWallets(event, emit),
         watchWallet: (event) => _onWatchWallet(event, emit),
         importWalletsFromSeed: (event) => _onImportWalletsFromSeed(event, emit),
+        deriveWalletsFromSameSeed: (event) =>
+            _onDeriveWalletsFromSameSeed(event, emit),
         loadMoreDerivative: (event) => _onLoadMoreDerivative(event, emit),
         reset: (event) => _onReset(event, emit),
         readyToImport: (event) => _onReadyToImport(event, emit),
@@ -97,7 +104,9 @@ class WalletImportBloc extends Bloc<WalletImportEvent, WalletImportState> {
     _ImportWalletsFromSeed event,
     Emitter<WalletImportState> emit,
   ) async {
-    emit(const WalletImportState.inDAImportProcess([], {}, {}));
+    if (state is! _InDAImportProcess) {
+      emit(const WalletImportState.inDAImportProcess([], {}, {}));
+    }
 
     final isValid = SeedPhraseValidator.validate(event.seedPhrase);
     if (!isValid) {
@@ -127,6 +136,23 @@ class WalletImportBloc extends Bloc<WalletImportEvent, WalletImportState> {
         ),
       ),
     );
+  }
+
+  Future<void> _onDeriveWalletsFromSameSeed(
+    _DeriveWalletsFromSameSeed event,
+    Emitter<WalletImportState> emit,
+  ) async {
+    emit(const WalletImportState.inDAImportProcess([], {}, {}));
+    final privateData = await _accountsPrivateDataRepository
+        .getAccountPrivateData(event.deriveFrom.bech32Address);
+    final seedPhrase = privateData?.seedPhrase;
+    if (seedPhrase == null) {
+      emit(const WalletImportState.importingFailed(
+          WalletImportFailure.invalidSeedPhrase()));
+    } else {
+      add(WalletImportEvent.importWalletsFromSeed(seedPhrase,
+          existingAccounts: event.existingAccounts));
+    }
   }
 
   Future<void> _onImportWalletByPrivateKey(
