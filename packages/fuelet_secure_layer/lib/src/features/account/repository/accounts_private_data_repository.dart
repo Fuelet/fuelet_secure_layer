@@ -8,6 +8,9 @@ abstract interface class IAccountsPrivateDataRepository {
 
   Future<bool> seedPhraseExists(AccountAddressBech32 address);
 
+  /// Changes the key for the stored secrets
+  Future<void> changeKey(String oldKey, String newKey);
+
   Future<AccountPrivateData?> getAccountPrivateData(String address);
 
   /// Flushes private data to the underlying secure storage.

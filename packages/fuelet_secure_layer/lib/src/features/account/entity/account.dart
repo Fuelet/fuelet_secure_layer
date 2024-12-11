@@ -66,6 +66,7 @@ class Account with EquatableMixin {
 
   Account copyWith({
     String? name,
+    AccountAddress? fuelAddress,
     WalletGroup? walletGroup,
     DerivativeInfo? derivativeInfo,
     DateTime? createdAt,
@@ -73,7 +74,7 @@ class Account with EquatableMixin {
     final account = Account(
       hardwareSignerTag: hardwareSignerTag,
       addingMethod: addingMethod,
-      fuelAddress: fuelAddress,
+      fuelAddress: fuelAddress ?? this.fuelAddress,
       walletGroup: walletGroup ?? this.walletGroup,
       createdAt: createdAt ?? this.createdAt,
       derivativeInfo: derivativeInfo ?? this.derivativeInfo,

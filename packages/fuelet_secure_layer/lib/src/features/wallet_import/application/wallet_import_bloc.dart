@@ -186,11 +186,10 @@ class WalletImportBloc extends Bloc<WalletImportEvent, WalletImportState> {
       Account account =
           acc.copyWith(name: AccountUtils.generateName(event.existingAccounts));
 
-      final existingAccount = event.existingAccounts.firstWhereOrNull((e) =>
-          e.fuelAddress.bech32Address == account.fuelAddress.bech32Address);
+      final existingAccount =
+          _findExistingAccount(event.existingAccounts, account);
 
       if (existingAccount != null) {
-        // Account is already added, just going to update state with failure
         if (existingAccount.isOwner) {
           emit(
             const WalletImportState.importingFailed(
@@ -198,6 +197,11 @@ class WalletImportBloc extends Bloc<WalletImportEvent, WalletImportState> {
             ),
           );
           return;
+        } else {
+          account = account.copyWith(
+            name: existingAccount.name,
+            walletGroup: WalletGroup.myWallets,
+          );
         }
       }
       emit(WalletImportState.imported(account));
@@ -244,8 +248,7 @@ class WalletImportBloc extends Bloc<WalletImportEvent, WalletImportState> {
         Account account =
             acc.copyWith(name: AccountUtils.generateName(existingAccounts));
 
-        final existingAccount = existingAccounts.firstWhereOrNull((e) =>
-            e.fuelAddress.bech32Address == account.fuelAddress.bech32Address);
+        final existingAccount = _findExistingAccount(existingAccounts, account);
 
         if (existingAccount != null) {
           if (existingAccount.isOwner) {
@@ -260,8 +263,8 @@ class WalletImportBloc extends Bloc<WalletImportEvent, WalletImportState> {
 
             existingAccounts = existingAccounts
                 .where((a) =>
-                    a.fuelAddress.bech32Address !=
-                    existingAccount.fuelAddress.bech32Address)
+                    a.fuelAddress.bech32Address.toLowerCase() !=
+                    existingAccount.fuelAddress.bech32Address.toLowerCase())
                 .toList();
 
             emit(
@@ -307,14 +310,9 @@ class WalletImportBloc extends Bloc<WalletImportEvent, WalletImportState> {
 
     final account = response.asRight();
     if (account != null) {
-      final isAccountAlreadyAdded = event.existingAccounts.indexWhere(
-            (element) =>
-                element.fuelAddress.bech32Address ==
-                account.fuelAddress.bech32Address,
-          ) !=
-          -1;
-
-      if (isAccountAlreadyAdded) {
+      final existingAccount =
+          _findExistingAccount(event.existingAccounts, account);
+      if (existingAccount != null) {
         // Account already added, just going to update state with failure
         emit(
           const WalletImportState.importingFailed(
@@ -331,5 +329,12 @@ class WalletImportBloc extends Bloc<WalletImportEvent, WalletImportState> {
     if (failure != null) {
       emit(WalletImportState.importingFailed(failure));
     }
+  }
+
+  Account? _findExistingAccount(
+      List<Account> existingAccounts, Account newAccount) {
+    return existingAccounts.firstWhereOrNull((e) =>
+        e.fuelAddress.bech32Address.toLowerCase() ==
+        newAccount.fuelAddress.bech32Address.toLowerCase());
   }
 }
