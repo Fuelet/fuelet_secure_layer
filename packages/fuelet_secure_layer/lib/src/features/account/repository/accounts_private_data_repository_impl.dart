@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter_fuels/flutter_fuels.dart';
 import 'package:fuelet_secure_layer/src/features/account/entity/account_address_bech32.dart';
 import 'package:fuelet_secure_layer/src/features/account/entity/account_private_data.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
@@ -41,6 +42,16 @@ class AccountsPrivateDataRepositoryImpl
     final value = await _seedPhraseRepository.getWalletSeedPhrase(address);
 
     return value != null;
+  }
+
+  @override
+  Future<void> changeKey(String oldKey, String newKey) async {
+    final pk = await _privateKeyRepository.getWalletPrivateKey(oldKey);
+    final sp = await _seedPhraseRepository.getWalletSeedPhrase(oldKey);
+    await _privateKeyRepository.saveWalletPrivateKey(address: newKey, privateKey: pk);
+    await _seedPhraseRepository.saveWalletSeedPhrase(address: newKey, seedPhrase: sp);
+    await _privateKeyRepository.deleteWalletPrivateKey(oldKey);
+    await _seedPhraseRepository.deleteWalletSeedPhrase(oldKey);
   }
 
   @override
@@ -131,9 +142,14 @@ class AccountsPrivateDataRepositoryImpl
   @override
   Future<void> removeData(AccountAddressBech32 address) async {
     _updateEphemeralData(address, null);
+    final fuelAddress = FuelAddress.fromString(address);
 
-    await _privateKeyRepository.deleteWalletPrivateKey(address);
-    await _seedPhraseRepository.deleteWalletSeedPhrase(address);
+    await _privateKeyRepository
+        .deleteWalletPrivateKey(fuelAddress.bech32Address);
+    await _privateKeyRepository.deleteWalletPrivateKey(fuelAddress.b256Address);
+    await _seedPhraseRepository
+        .deleteWalletSeedPhrase(fuelAddress.bech32Address);
+    await _seedPhraseRepository.deleteWalletSeedPhrase(fuelAddress.b256Address);
   }
 
   @override

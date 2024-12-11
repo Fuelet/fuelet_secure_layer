@@ -36,9 +36,14 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
   @override
   Future<List<Account>> loadAccounts() async {
     final accountsBox = Hive.box<Account>(SecureLayerConstants.kAccountsBox);
-    final accounts = accountsBox.values.toList();
+    final accountsMap = accountsBox.toMap();
+    List<Account> accounts = [];
+    // Some accounts have been stored with b256 keys by mistake
+    List<String> keysToRepair = [];
 
-    for (var account in accounts) {
+    for (final entry in accountsMap.entries) {
+      var account = entry.value;
+
       // TODO: move this check and action to a proper place
       if (await _passwordManager.hasSessionPassword()) {
         await _privateDataRepository
@@ -49,8 +54,39 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
               .privateKeyExists(account.fuelAddress.bech32Address),
           seedPhraseExists: await _privateDataRepository
               .seedPhraseExists(account.fuelAddress.bech32Address));
+      account = _repairFuelAddress(account);
       account = _replaceForbiddenSymbolsIfNeeded(account);
       account = _changeWalletGroupIfNeeded(account);
+      accountsMap[entry.key] = account;
+
+      if (entry.key != account.fuelAddress.bech32Address) {
+        keysToRepair.add(entry.key);
+      } else {
+        accounts.add(account);
+      }
+    }
+
+    for (final key in keysToRepair) {
+      final account = accountsMap[key];
+      if (account == null) {
+        continue;
+      }
+      final sameAccount = accountsMap[account.fuelAddress.bech32Address];
+      if (sameAccount == null || (sameAccount.isWatchlist && account.isOwner)) {
+        await _privateDataRepository.changeKey(
+            key, account.fuelAddress.bech32Address);
+        await accountsBox.put(account.fuelAddress.bech32Address, account);
+        accounts = accounts
+            .where((acc) =>
+                acc.fuelAddress.bech32Address !=
+                account.fuelAddress.bech32Address)
+            .toList();
+        accounts.add(account);
+      }
+      await accountsBox.delete(key);
+      if (selectedAccount == key) {
+        setSelectedAccount(account.fuelAddress.bech32Address);
+      }
     }
 
     return accounts;
@@ -101,7 +137,11 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
   @override
   Future<void> removeAccount(String address) async {
     final accountsBox = Hive.box<Account>(SecureLayerConstants.kAccountsBox);
-    await accountsBox.delete(address);
+
+    // delete both possible keys from the storage
+    final fuelAddress = FuelAddress.fromString(address);
+    await accountsBox.delete(fuelAddress.b256Address);
+    await accountsBox.delete(fuelAddress.bech32Address);
 
     await _privateDataRepository.removeData(address);
   }
@@ -113,6 +153,14 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
     await accountsBox.clear();
 
     await _privateDataRepository.clearData();
+  }
+
+  Account _repairFuelAddress(Account account) {
+    final fuelAddress = FuelAddress.fromString(account.fuelAddress.b256Address);
+    return account.copyWith(
+        fuelAddress: AccountAddress(
+            b256Address: fuelAddress.b256Address,
+            bech32Address: fuelAddress.bech32Address));
   }
 
   Account _replaceForbiddenSymbolsIfNeeded(Account account) {

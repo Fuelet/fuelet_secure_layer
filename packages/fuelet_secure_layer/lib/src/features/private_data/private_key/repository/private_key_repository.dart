@@ -47,11 +47,8 @@ class PrivateKeyRepository {
   }
 
   Future<String?> getWalletPrivateKey(String walletAddress) async {
-    final data = await _secureStorage.read(key: _storageKey);
-    if (data == null) return null;
-
-    final privateKeysMap = JsonParsingHelper.jsonMapFromString(data);
-    return privateKeysMap[walletAddress];
+    final keys = await _getPrivateKeysMap();
+    return keys[walletAddress];
   }
 
   Future<void> deletePrivateKeys() {

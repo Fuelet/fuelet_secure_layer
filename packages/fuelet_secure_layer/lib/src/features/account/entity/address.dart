@@ -19,12 +19,18 @@ class AccountAddress with EquatableMixin {
   });
 
   @override
-  List<Object?> get props => [bech32Address, b256Address];
+  List<Object?> get props =>
+      [bech32Address.toLowerCase(), b256Address.toLowerCase()];
 
-  String defaultPresentationAddress({AccountAddressType? accountAddressType}) =>
-      switch (accountAddressType ??
-          SecureLayerConstants.priorityAccountAddressType) {
+  String defaultPresentationAddress() =>
+      switch (SecureLayerConstants.priorityAccountAddressType) {
         AccountAddressType.bech32Address => bech32Address,
         AccountAddressType.b256Address => b256Address,
+      };
+
+  String alternativePresentationAddress() =>
+      switch (SecureLayerConstants.priorityAccountAddressType) {
+        AccountAddressType.bech32Address => b256Address,
+        AccountAddressType.b256Address => bech32Address,
       };
 }
