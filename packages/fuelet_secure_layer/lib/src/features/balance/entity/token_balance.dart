@@ -7,6 +7,7 @@ class TokenBalance with EquatableMixin {
   final String asset;
   final String symbol;
   final String name;
+  final String? iconUrl;
   final String? coinId;
   final int? featured;
   final int? order;
@@ -18,6 +19,7 @@ class TokenBalance with EquatableMixin {
     required this.asset,
     required this.symbol,
     required this.name,
+    this.iconUrl,
     this.order,
     this.featured,
     this.coinId,
@@ -36,6 +38,7 @@ class TokenBalance with EquatableMixin {
         asset,
         symbol,
         name,
+        iconUrl,
         coinId,
         order,
         featured,
