@@ -37,8 +37,4 @@ class NetworkManager implements BlockchainNetworkRepository {
     await _sharedPrefsManager.selectedNetwork.set(networkDto);
     _selectedNetworkStreamController.add(network);
   }
-
-  Future<void> resetSelectedNetwork() async {
-    _sharedPrefsManager.selectedNetwork.set(null);
-  }
 }
