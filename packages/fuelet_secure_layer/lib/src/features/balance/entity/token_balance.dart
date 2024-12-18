@@ -19,7 +19,7 @@ class TokenBalance with EquatableMixin {
     required this.asset,
     required this.symbol,
     required this.name,
-    this.iconUrl,
+    required this.iconUrl,
     this.order,
     this.featured,
     this.coinId,
