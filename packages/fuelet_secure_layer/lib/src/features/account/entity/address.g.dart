@@ -17,7 +17,7 @@ class AccountAddressAdapter extends TypeAdapter<AccountAddress> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return AccountAddress(
-      b256Address: fields[1] as String,
+      stringB256Address: fields[1] as String,
       bech32Address: fields[0] as String,
     );
   }
@@ -29,7 +29,7 @@ class AccountAddressAdapter extends TypeAdapter<AccountAddress> {
       ..writeByte(0)
       ..write(obj.bech32Address)
       ..writeByte(1)
-      ..write(obj.b256Address);
+      ..write(obj.stringB256Address);
   }
 
   @override

@@ -156,10 +156,10 @@ class AccountsLocalRepositoryImpl implements IAccountsLocalRepository {
   }
 
   Account _repairFuelAddress(Account account) {
-    final fuelAddress = FuelAddress.fromString(account.fuelAddress.b256Address);
+    final fuelAddress = FuelAddress.fromString(account.fuelAddress.b256Address.value);
     return account.copyWith(
         fuelAddress: AccountAddress(
-            b256Address: fuelAddress.b256Address,
+            stringB256Address: fuelAddress.b256Address,
             bech32Address: fuelAddress.bech32Address));
   }
 

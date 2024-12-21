@@ -33,7 +33,7 @@ class WalletCreateRepositoryImpl implements IWalletCreateRepository {
         derivativeInfo == null || derivativeInfo.index == 0;
     final account = Account(
       fuelAddress: AccountAddress(
-        b256Address: wallet.b256Address,
+        stringB256Address: wallet.b256Address,
         bech32Address: wallet.bech32Address,
       ),
       createdAt: createdAt,
@@ -128,7 +128,7 @@ class WalletCreateRepositoryImpl implements IWalletCreateRepository {
         index: 0,
       ).then(
         (fuelWallet) => AccountAddress(
-          b256Address: fuelWallet.b256Address,
+          stringB256Address: fuelWallet.b256Address,
           bech32Address: fuelWallet.bech32Address,
         ),
       );
@@ -164,9 +164,9 @@ class WalletCreateRepositoryImpl implements IWalletCreateRepository {
     try {
       final fuelAddress = AccountAddress(
         bech32Address: bech32Address,
-        b256Address:
-            await FuelWalletAddressConverter.b256StringFromBech32String(
-                bech32Address),
+        stringB256Address:
+            FuelWalletAddressConverter.b256StringFromBech32String(bech32Address)
+                .value,
       );
 
       final account = Account(
@@ -212,13 +212,12 @@ class WalletCreateRepositoryImpl implements IWalletCreateRepository {
       throw Exception('createdHsInfo is null');
     }
 
-    final b256Address =
-        await FuelWalletAddressConverter.b256StringFromBech32String(
+    final b256Address = FuelWalletAddressConverter.b256StringFromBech32String(
       createdHsInfo.bech32,
     );
     final account = Account(
       fuelAddress: AccountAddress(
-        b256Address: b256Address,
+        stringB256Address: b256Address.value,
         bech32Address: createdHsInfo.bech32,
       ),
       createdAt: DateTime.now(),

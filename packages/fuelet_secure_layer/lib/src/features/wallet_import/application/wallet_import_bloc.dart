@@ -298,8 +298,7 @@ class WalletImportBloc extends Bloc<WalletImportEvent, WalletImportState> {
 
     final bech32Address = FuelWalletAddressConverter.isBech32(event.address)
         ? event.address
-        : await FuelWalletAddressConverter.bech32StringFromB256String(
-            event.address);
+        : FuelWalletAddressConverter.bech32StringFromB256String(event.address);
 
     response = await _walletCreateRepository.watchAccount(
       name: event.name,

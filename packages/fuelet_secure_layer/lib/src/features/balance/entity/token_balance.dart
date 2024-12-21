@@ -1,10 +1,11 @@
 import 'package:equatable/equatable.dart';
+import 'package:fuelet_secure_layer/src/model/hex_string.dart';
 
 class TokenBalance with EquatableMixin {
   final double amount;
   final int fractionalAmount;
   final int decimal;
-  final String asset;
+  final String _asset;
   final String symbol;
   final String name;
   final String? iconUrl;
@@ -16,14 +17,16 @@ class TokenBalance with EquatableMixin {
     required this.amount,
     required this.fractionalAmount,
     required this.decimal,
-    required this.asset,
+    required asset,
     required this.symbol,
     required this.name,
     required this.iconUrl,
     this.order,
     this.featured,
     this.coinId,
-  });
+  }) : _asset = asset;
+
+  HexString get asset => HexString(_asset);
 
   @override
   String toString() {
