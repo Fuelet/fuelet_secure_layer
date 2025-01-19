@@ -45,8 +45,13 @@ class Account with EquatableMixin {
     this.walletGroup = WalletGroup.myWallets,
     this.addingMethod = AccountAddingMethod.notDetected,
     this.derivativeInfo,
-    this.name,
-  });
+    String? name,
+  }) : name = name != null
+            ? name.replaceAllMapped(
+                RegExp(r'Account'),
+                (match) => 'Address',
+              )
+            : name;
 
   @override
   List<Object?> get props => [fuelAddress.bech32Address, name, addingMethod];
