@@ -48,8 +48,8 @@ class Account with EquatableMixin {
     String? name,
   }) : name = name != null
             ? name.replaceAllMapped(
-                RegExp(r'Account|account'),
-                (match) => match[0] == 'Account' ? 'Address' : 'address',
+                RegExp(r'Account'),
+                (match) => 'Address',
               )
             : name;
 
