@@ -39,7 +39,7 @@ void main() {
         expect(hexString.value,
             "0xfe1177573a47310756f27ef25c7229b5da8d5109a7258b297f23a6768c78cb40");
         expect(hexString.checksumValue,
-            "0xfE1177573a47310756F27Ef25C7229b5dA8d5109a7258B297f23a6768C78Cb40");
+            "0xfE1177573a47310756f27eF25c7229B5DA8d5109a7258b297F23a6768C78cB40");
       },
     );
   });

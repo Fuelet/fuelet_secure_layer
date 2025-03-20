@@ -1,5 +1,5 @@
-import 'package:eip55/eip55.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_fuels/flutter_fuels.dart';
 import 'package:fuelet_secure_layer/src/utils/hex_helper.dart';
 
 String _normalizeHex(String hex) {
@@ -14,7 +14,7 @@ class HexString extends Equatable {
   String get value => _value;
 
   // Same hex string with some letters in uppercase for human readable checks
-  String get checksumValue => addHexPrefix(toChecksumAddress(_value));
+  String get checksumValue => FuelAddress.fromString(value).b256Address;
 
   @override
   String toString() {
