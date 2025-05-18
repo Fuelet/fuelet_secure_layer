@@ -157,7 +157,6 @@ class PasswordManager {
         ),
       );
     } else if (Platform.isAndroid) {
-
       final base64 = base64Encode(utf8.encode(password));
       await _secureStorage.write(
         key: _biometricPasswordKey,
