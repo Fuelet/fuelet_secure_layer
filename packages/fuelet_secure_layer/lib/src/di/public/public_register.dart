@@ -83,7 +83,7 @@ class PublicSecureLayerRegister {
           _privateSecureLayerLocator<IAccountsPrivateDataRepository>(),
           commonSecureLayerLocator<FlutterSecureStorage>(),
           _privateSecureLayerLocator<SessionStoragePasswordManager>(),
-           secureLayerLocator<TPMService>(),
+          commonSecureLayerLocator<SecureEnclave>(),
         ),
       )
       ..registerSingleton<IAccountsLocalRepository>(
