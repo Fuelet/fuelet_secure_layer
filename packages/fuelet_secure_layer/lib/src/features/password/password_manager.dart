@@ -1,21 +1,16 @@
 import 'dart:convert';
-import 'dart:io' show Platform;
 
 import 'package:aes256gcm/aes256gcm.dart';
 import 'package:crypto/crypto.dart';
-import 'package:flutter_keychain/flutter_keychain.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
+import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometric_auth_provider.dart';
 import 'package:fuelet_secure_layer/src/features/password/password_management_exception.dart';
 import 'package:fuelet_secure_layer/src/features/session_storage/session_storage_password_manager.dart';
-import 'package:local_auth/local_auth.dart';
-import 'package:secure_enclave/secure_enclave.dart';
 
 const _secretToEncrypt = 'fuelet_secure_layer_secret_kmr_wpu0XFM4uaq3kym';
 const _legacyPasscodeKey = 'flt_password';
 const _passwordKey = 'fuelet_secure_layer_password';
-const _biometricPasswordKey = 'fuelet_biometric_encrypted_password';
-const _secureEnclaveKey = 'fuelet.biometricKey';
 
 final _passwordValidator =
     RegExp(r"""^[\w\s!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$""");
@@ -26,6 +21,13 @@ enum AuthorizationResponse {
   wrongPassword,
   correctLegacyPasscode,
   wrongLegacyPasscode,
+}
+
+enum BiometryAuthResult {
+  success,
+  skipped,
+  resetRequired,
+  tryAgainLater,
 }
 
 void validatePassword(String password) {
@@ -70,13 +72,13 @@ class PasswordManager {
   final IAccountsPrivateDataRepository _privateDataRepository;
   final FlutterSecureStorage _secureStorage;
   final SessionStoragePasswordManager _sessionStoragePasswordManager;
-  final SecureEnclave _secureEnclave;
+  final BiometryAuthProvider _biometryAuthProvider;
 
   PasswordManager(
     this._privateDataRepository,
     this._secureStorage,
     this._sessionStoragePasswordManager,
-    this._secureEnclave,
+    this._biometryAuthProvider,
   );
 
   Future<bool> get passwordExists async {
@@ -89,33 +91,34 @@ class PasswordManager {
     return value != null;
   }
 
-  Future<void> storePasswordForBiometry(String password) async {
-    validatePassword(password);
-
-    if (Platform.isIOS) {
-      await _storePasswordWithSecureEnclave(password);
-    } else if (Platform.isAndroid) {
-      await _storePasswordWithAndroidKeychain(password);
-    } else {
-      throw PasswordManagementException(
-          'Biometry not supported on this platform');
-    }
+  Future<BiometryAuthResult> storePasswordForBiometry(String password) async {
+    final passwordString = await _secureStorage.read(key: _passwordKey);
+    if (passwordString == null) throw PasswordManagementException('Password not set');
+    _validatePassword(passwordString, password);
+    return await _biometryAuthProvider.store(password);
   }
 
-  Future<bool> authorizeBiometry() async {
-    if (Platform.isIOS) {
-      return _authorizeBiometryIOS();
-    } else if (Platform.isAndroid) {
-      return _authorizeBiometryAndroid();
-    }
-
-    return false;
+  Future<BiometryAuthResult> authorizeBiometry() async {
+    return _biometryAuthProvider.authorize(
+      validatePassword: (password) async {
+        final stored = await _secureStorage.read(key: _passwordKey);
+        if (stored == null) {
+          return false;
+        }
+        return _validatePassword(stored, password);
+      },
+      setSessionPassword: (password) async {
+        await _sessionStoragePasswordManager
+            .storeSessionStoragePassword(password);
+      },
+    );
   }
 
   Future<void> setPassword(String password) async {
     validatePassword(password);
     final encrypted = await _createPasswordSecret(password);
     await _secureStorage.write(key: _passwordKey, value: encrypted);
+    await _secureStorage.delete(key: _legacyPasscodeKey);
     await setSessionStoragePassword(password);
   }
 
@@ -144,9 +147,7 @@ class PasswordManager {
     await _privateDataRepository.clearData();
     await _secureStorage.delete(key: _passwordKey);
     await _secureStorage.delete(key: _legacyPasscodeKey);
-    await _secureStorage.delete(key: _biometricPasswordKey);
-    await FlutterKeychain.remove(key: _biometricPasswordKey);
-    _secureEnclave.removeKey(_secureEnclaveKey);
+    await _biometryAuthProvider.reset();
   }
 
   Future<bool> hasSessionPassword() async {
@@ -161,91 +162,7 @@ class PasswordManager {
     }
   }
 
-  Future<void> resetSessionStoragePassword() {
-    return _sessionStoragePasswordManager.resetSessionStoragePassword();
-  }
-
-  Future<void> _storePasswordWithSecureEnclave(String password) async {
-    final keyResult = await _secureEnclave.generateKeyPair(
-      accessControl: AccessControlModel(
-        tag: _secureEnclaveKey,
-        options: [
-          AccessControlOption.privateKeyUsage,
-          AccessControlOption.biometryCurrentSet,
-        ],
-      ),
-    );
-
-    if (keyResult.error != null) {
-      throw PasswordManagementException(
-          'Failed to generate Secure Enclave key');
-    }
-
-    final result = await _secureEnclave.encrypt(
-      message: password,
-      tag: _secureEnclaveKey,
-    );
-
-    if (result.error != null || result.value == null) {
-      throw PasswordManagementException(
-          'Failed to encrypt with Secure Enclave');
-    }
-
-    final base64 = base64Encode(result.value!);
-    await _secureStorage.write(
-      key: _biometricPasswordKey,
-      value: base64,
-      iOptions: const IOSOptions(
-        accessibility: KeychainAccessibility.unlocked,
-      ),
-    );
-  }
-
-  Future<void> _storePasswordWithAndroidKeychain(String password) async {
-    final base64 = base64Encode(utf8.encode(password));
-    await FlutterKeychain.put(key: _biometricPasswordKey, value: base64);
-  }
-
-  Future<bool> _authorizeBiometryIOS() async {
-    final base64 = await _secureStorage.read(
-      key: _biometricPasswordKey,
-      iOptions: const IOSOptions(
-        accessibility: KeychainAccessibility.unlocked,
-      ),
-    );
-
-    if (base64 == null) return false;
-
-    final encryptedBytes = base64Decode(base64);
-    final result = await _secureEnclave.decrypt(
-      message: encryptedBytes,
-      tag: _secureEnclaveKey,
-    );
-
-    if (result.error != null || result.value == null) {
-      return false;
-    }
-
-    await setSessionStoragePassword(result.value!);
-    return true;
-  }
-
-  Future<bool> _authorizeBiometryAndroid() async {
-    final base64 = await FlutterKeychain.get(key: _biometricPasswordKey);
-
-    if (base64 == null) return false;
-
-    final localAuth = LocalAuthentication();
-    final didAuthenticate = await localAuth.authenticate(
-      localizedReason: 'Authenticate to use saved password',
-      options: const AuthenticationOptions(biometricOnly: true),
-    );
-
-    if (!didAuthenticate) return false;
-
-    final decoded = utf8.decode(base64Decode(base64));
-
-    await setSessionStoragePassword(decoded);
-    return decoded.isNotEmpty;
+  Future<void> resetSessionStoragePassword() async {
+    await _sessionStoragePasswordManager.resetSessionStoragePassword();
   }
 }

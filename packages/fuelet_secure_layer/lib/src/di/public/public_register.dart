@@ -9,6 +9,14 @@ import 'package:fuelet_secure_layer/src/features/account/repository/accounts_loc
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_local_repository_impl.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository_impl.dart';
+import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometric_auth_provider_impl/android_biometric_auth_provider.dart';
+import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometric_auth_provider.dart';
+import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometric_error_mapper/biometric_error_mapper_impl/android_biometric_error_mapper.dart';
+import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometric_error_mapper/biometric_error_mapper.dart';
+import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometric_error_mapper/ios_biometric_error_mapper.dart';
+import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometric_error_mapper/biometric_error_mapper_impl/web_biometric_error_mapper.dart';
+import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometric_auth_provider_impl/ios_biometric_auth_provider.dart';
+import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometric_auth_provider_impl/web_biometric_auth_provider.dart';
 import 'package:fuelet_secure_layer/src/features/cloud_backup/repository/cloud_backup_repository_android_impl.dart';
 import 'package:fuelet_secure_layer/src/features/cloud_backup/repository/cloud_backup_repository_ios_impl.dart';
 import 'package:fuelet_secure_layer/src/features/cloud_backup/repository/cloud_backup_repository_web_impl.dart';
@@ -83,7 +91,7 @@ class PublicSecureLayerRegister {
           _privateSecureLayerLocator<IAccountsPrivateDataRepository>(),
           commonSecureLayerLocator<FlutterSecureStorage>(),
           _privateSecureLayerLocator<SessionStoragePasswordManager>(),
-          commonSecureLayerLocator<SecureEnclave>(),
+          _privateSecureLayerLocator<BiometryAuthProvider>(),
         ),
       )
       ..registerSingleton<IAccountsLocalRepository>(

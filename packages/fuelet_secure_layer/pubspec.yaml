@@ -32,7 +32,6 @@ dependencies:
   freezed: ^2.3.2
   freezed_annotation: ^2.1.0
   equatable: ^2.0.5
-  local_auth: ^2.1.7 # BSD-3-Clause (LICENSE)
   flutter_keychain: ^2.5.0 # BSD-3-Clause (LICENSE)
   get_it: ^7.7.0 # MIT (LICENSE)
   google_sign_in: ^6.2.1 # BSD-3-Clause (LICENSE)
@@ -63,3 +62,8 @@ dev_dependencies:
   json_serializable: ^6.6.1
 
 flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.fuelet.fuelet_secure_layer
+        pluginClass: FueletBiometricAndroidPlugin
