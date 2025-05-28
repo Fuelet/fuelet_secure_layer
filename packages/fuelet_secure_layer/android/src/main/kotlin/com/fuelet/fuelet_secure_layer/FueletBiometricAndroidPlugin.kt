@@ -76,7 +76,7 @@ class FueletBiometricAndroidPlugin : FlutterPlugin, MethodChannel.MethodCallHand
             "decrypt" -> {
                 val encryptedBase64 = call.argument<String>("encrypted") ?: return result.error("MISSING_DATA", null, null)
                 val encrypted = encryptedBase64.decodeBase64()
-                authenticateWithBiometry(key, encrypted, result)
+                decryptWithBiometry(key, encrypted, result)
             }
             else -> result.notImplemented()
         }
@@ -146,7 +146,7 @@ class FueletBiometricAndroidPlugin : FlutterPlugin, MethodChannel.MethodCallHand
         }
     }
 
-    private fun authenticateWithBiometry(
+    private fun decryptWithBiometry(
         keyAlias: String,
         encrypted: ByteArray,
         result: MethodChannel.Result

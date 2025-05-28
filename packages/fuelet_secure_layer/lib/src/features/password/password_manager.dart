@@ -5,6 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
 import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometric_auth_provider.dart';
+import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometry_auth_result.dart';
 import 'package:fuelet_secure_layer/src/features/password/password_management_exception.dart';
 import 'package:fuelet_secure_layer/src/features/session_storage/session_storage_password_manager.dart';
 
@@ -21,13 +22,6 @@ enum AuthorizationResponse {
   wrongPassword,
   correctLegacyPasscode,
   wrongLegacyPasscode,
-}
-
-enum BiometryAuthResult {
-  success,
-  skipped,
-  resetRequired,
-  tryAgainLater,
 }
 
 void validatePassword(String password) {
@@ -93,7 +87,10 @@ class PasswordManager {
 
   Future<BiometryAuthResult> storePasswordForBiometry(String password) async {
     final passwordString = await _secureStorage.read(key: _passwordKey);
-    if (passwordString == null) throw PasswordManagementException('Password not set');
+    if (passwordString == null) {
+        await _biometryAuthProvider.reset();
+        return BiometryAuthResult.resetCompleted;
+    }
     _validatePassword(passwordString, password);
     return await _biometryAuthProvider.store(password);
   }
@@ -108,8 +105,7 @@ class PasswordManager {
         return _validatePassword(stored, password);
       },
       setSessionPassword: (password) async {
-        await _sessionStoragePasswordManager
-            .storeSessionStoragePassword(password);
+        await setSessionStoragePassword(password);
       },
     );
   }

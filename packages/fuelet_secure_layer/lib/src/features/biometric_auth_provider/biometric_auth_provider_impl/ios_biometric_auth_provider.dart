@@ -1,24 +1,28 @@
 import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:fuelet_secure_layer/fuelet_secure_layer.dart';
 import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometric_auth_provider.dart';
-import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometric_error_mapper/biometric_error_mapper.dart';
+import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometric_error_mapper/biometric_error_mapper_impl/ios_biometric_error_mapper.dart';
+import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometry_auth_result.dart';
 import 'package:secure_enclave/secure_enclave.dart';
 
 class IOSBiometricAuthProvider implements BiometryAuthProvider {
   final SecureEnclave _secureEnclave;
   final FlutterSecureStorage _secureStorage;
-  final BiometryErrorMapper _errorMapper;
+  final IOSBiometryErrorMapper _errorMapper;
 
-  IOSBiometricAuthProvider(this._secureEnclave, this._secureStorage, this._errorMapper);
+  final String kSecureEnclaveKey = 'fuelet.biometricKey';
+
+  IOSBiometricAuthProvider(this._secureEnclave, this._secureStorage)
+      : _errorMapper = IOSBiometryErrorMapper();
 
   @override
   Future<BiometryAuthResult> store(String password) async {
     final isKeyCreated =
         await _secureEnclave.isKeyCreated(tag: kSecureEnclaveKey);
     if (isKeyCreated.value == true) {
-      await _secureEnclave.removeKey(kSecureEnclaveKey);
+      final removalResult = await _secureEnclave.removeKey(kSecureEnclaveKey);
+      if (removalResult.error != null || !removalResult.value) return _resetAndReturn();
     }
 
     final keyResult = await _secureEnclave.generateKeyPair(
@@ -57,9 +61,8 @@ class IOSBiometricAuthProvider implements BiometryAuthProvider {
       iOptions: const IOSOptions(accessibility: KeychainAccessibility.unlocked),
     );
 
-    if (base64 == null) { 
-      await reset();
-      return BiometryAuthResult.resetRequired;
+    if (base64 == null) {
+      return await _resetAndReturn();
     }
 
     final encryptedBytes = base64Decode(base64);
@@ -69,9 +72,12 @@ class IOSBiometricAuthProvider implements BiometryAuthProvider {
     );
 
     if (result.error != null) {
-      return _errorMapper.map(code: result.error!.code.toString(), resetBiometry: () async {
-        return await _resetAndReturn();
-      });
+      return _errorMapper.map(
+          code: result.error!.code.toString(),
+          desc: result.error!.desc,
+          resetBiometry: () async {
+            return await _resetAndReturn();
+          });
     }
 
     final decrypted = result.value;
@@ -92,6 +98,6 @@ class IOSBiometricAuthProvider implements BiometryAuthProvider {
 
   Future<BiometryAuthResult> _resetAndReturn() async {
     await reset();
-    return BiometryAuthResult.resetRequired;
+    return BiometryAuthResult.resetCompleted;
   }
 }

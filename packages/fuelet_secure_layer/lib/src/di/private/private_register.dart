@@ -38,31 +38,15 @@ class PrivateSecureLayerRegister {
       );
 
     if (defaultTargetPlatform == TargetPlatform.iOS) {
-      _privateSecureLayerLocator.registerFactory<BiometryErrorMapper>(
-        () => IOSBiometryErrorMapper(),
-      );
-    } else if (defaultTargetPlatform == TargetPlatform.android) {
-      _privateSecureLayerLocator.registerFactory<BiometryErrorMapper>(
-        () => AndroidBiometryErrorMapper(),
-      );
-    } else {
-      _privateSecureLayerLocator.registerFactory<BiometryErrorMapper>(
-        () => WebBiometryErrorMapper(),
-      );
-    }
-    if (defaultTargetPlatform == TargetPlatform.iOS) {
       _privateSecureLayerLocator.registerFactory<BiometryAuthProvider>(
         () => IOSBiometricAuthProvider(
           commonSecureLayerLocator<SecureEnclave>(),
           secureStorage,
-          _privateSecureLayerLocator<BiometryErrorMapper>(),
         ),
       );
     } else if (defaultTargetPlatform == TargetPlatform.android) {
       _privateSecureLayerLocator.registerFactory<BiometryAuthProvider>(
-        () => AndroidBiometricAuthProvider(
-          _privateSecureLayerLocator<BiometryErrorMapper>(),
-        ),
+        () => AndroidBiometricAuthProvider(secureStorage),
       );
     } else {
       _privateSecureLayerLocator.registerFactory<BiometryAuthProvider>(

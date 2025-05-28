@@ -1,4 +1,4 @@
-import 'package:fuelet_secure_layer/fuelet_secure_layer.dart';
+import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometry_auth_result.dart';
 
 abstract class BiometryAuthProvider {
   Future<BiometryAuthResult> store(String password);
@@ -9,8 +9,4 @@ abstract class BiometryAuthProvider {
   Future<void> reset();
 }
 
-const kSecureEnclaveKey = 'fuelet.biometricKey';
 const kBiometricPasswordKey = 'fuelet_biometric_encrypted_password';
-
-
-
