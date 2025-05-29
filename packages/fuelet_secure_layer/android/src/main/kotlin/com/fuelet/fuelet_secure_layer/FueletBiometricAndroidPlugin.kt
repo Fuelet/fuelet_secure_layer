@@ -78,6 +78,17 @@ class FueletBiometricAndroidPlugin : FlutterPlugin, MethodChannel.MethodCallHand
                 val encrypted = encryptedBase64.decodeBase64()
                 decryptWithBiometry(key, encrypted, result)
             }
+            "exists" -> {
+                result.success(hasKey(key))
+            }
+            "delete" -> {
+                try {
+                    deleteKey(key)
+                    result.success(null)
+                } catch (e: Exception) {
+                    result.error("DELETE_EXCEPTION", e.toString(), null)
+                }
+            }
             else -> result.notImplemented()
         }
     }
@@ -100,6 +111,18 @@ class FueletBiometricAndroidPlugin : FlutterPlugin, MethodChannel.MethodCallHand
 
         keyGen.init(spec)
         keyGen.generateKey()
+    }
+
+    private fun hasKey(keyAlias: String): Boolean {
+        val keyStore = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
+        return keyStore.containsAlias(keyAlias)
+    }
+
+    private fun deleteKey(keyAlias: String) {
+        val keyStore = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
+        if (keyStore.containsAlias(keyAlias)) {
+            keyStore.deleteEntry(keyAlias)
+        }
     }
 
     private fun encryptWithBiometry(keyAlias: String, plaintext: String, result: MethodChannel.Result) {
@@ -129,7 +152,6 @@ class FueletBiometricAndroidPlugin : FlutterPlugin, MethodChannel.MethodCallHand
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                     if (resultHandled) return
                     resultHandled = true
-
                     result.error(errorCode.toString(), errString.toString(), null)
                 }
             })
@@ -146,11 +168,7 @@ class FueletBiometricAndroidPlugin : FlutterPlugin, MethodChannel.MethodCallHand
         }
     }
 
-    private fun decryptWithBiometry(
-        keyAlias: String,
-        encrypted: ByteArray,
-        result: MethodChannel.Result
-    ) {
+    private fun decryptWithBiometry(keyAlias: String, encrypted: ByteArray, result: MethodChannel.Result) {
         val activity = activity ?: return result.error("NO_ACTIVITY", null, null)
         var resultHandled = false
 
@@ -179,7 +197,6 @@ class FueletBiometricAndroidPlugin : FlutterPlugin, MethodChannel.MethodCallHand
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                     if (resultHandled) return
                     resultHandled = true
-
                     result.error(errorCode.toString(), errString.toString(), null)
                 }
             })

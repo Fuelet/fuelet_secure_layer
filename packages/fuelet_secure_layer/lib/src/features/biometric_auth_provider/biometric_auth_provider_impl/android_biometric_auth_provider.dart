@@ -9,16 +9,25 @@ class AndroidBiometricAuthProvider implements BiometryAuthProvider {
   final FlutterSecureStorage _secureStorage;
   final AndroidBiometryErrorMapper _errorMapper;
 
+  final String kAndroidKeyStoreKey = 'fuelet.biometricKey';
+
   AndroidBiometricAuthProvider(this._secureStorage)
       : _errorMapper = AndroidBiometryErrorMapper();
 
   @override
   Future<BiometryAuthResult> store(String password) async {
     try {
+      final hasKey = await FueletBiometricAndroid.exists(kAndroidKeyStoreKey);
+      if (hasKey) {
+        try {
+          await FueletBiometricAndroid.delete(kAndroidKeyStoreKey);
+        } catch (_) {
+          return await _resetAndReturn();
+        }
+      }
       final encrypted =
-          await FueletBiometricAndroid.encrypt(kBiometricPasswordKey, password);
-      final hasKey =
-          await _secureStorage.containsKey(key: kBiometricPasswordKey);
+          await FueletBiometricAndroid.encrypt(kAndroidKeyStoreKey, password);
+     
       if (hasKey) await _secureStorage.delete(key: kBiometricPasswordKey);
       await _secureStorage.write(
         key: kBiometricPasswordKey,
@@ -42,7 +51,7 @@ class AndroidBiometricAuthProvider implements BiometryAuthProvider {
 
     try {
       final decrypted = await FueletBiometricAndroid.decrypt(
-          kBiometricPasswordKey, encrypted);
+          kAndroidKeyStoreKey, encrypted);
       if (decrypted == null || decrypted.isEmpty) return await _resetAndReturn();
 
       final isValid = await validatePassword(decrypted);
@@ -64,6 +73,7 @@ class AndroidBiometricAuthProvider implements BiometryAuthProvider {
   @override
   Future<void> reset() async {
     await _secureStorage.delete(key: kBiometricPasswordKey);
+    FueletBiometricAndroid.delete(kAndroidKeyStoreKey);
   }
 
   Future<BiometryAuthResult> _resetAndReturn() async {

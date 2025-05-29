@@ -29,7 +29,8 @@ class IOSBiometryErrorMapper {
   static const String cryptoTokenKitAuthNeeded         = '-9'; // Re-auth required
 
   static final List<String> _laTryAgainCodes = [
-    errorBiometryLockout, // -8
+    errorBiometryLockout,       // -8
+    errorBiometryNotAvailable,  // -6
   ];
 
   static final List<String> _laSkippedCodes = [
@@ -39,17 +40,17 @@ class IOSBiometryErrorMapper {
     errorSystemCancel,         // -4
     errorAppCancel,            // -9
     errorNotInteractive,       // -11
+    errorInvalidContext,       // -10
   ];
 
   static final List<String> _laResetCodes = [
     errorPasscodeNotSet,        // -5
-    errorBiometryNotAvailable,  // -6
     errorBiometryNotEnrolled,   // -7
-    errorInvalidContext,        // -10
   ];
 
   static final List<String> _cryptoTryAgainCodes = [
-    cryptoTokenKitCommunicationError, // -2
+    cryptoTokenKitCommunicationError,  // -2
+    cryptoTokenKitAuthNeeded,          // -9
   ];
 
   static final List<String> _cryptoSkippedCodes = [
@@ -63,7 +64,6 @@ class IOSBiometryErrorMapper {
     cryptoTokenKitCorruptedData,   // -3
     cryptoTokenKitObjectNotFound,  // -6
     cryptoTokenKitTokenNotFound,   // -7
-    cryptoTokenKitAuthNeeded,      // -9
   ];
 
   Future<BiometryAuthResult> map({

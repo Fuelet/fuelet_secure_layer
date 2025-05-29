@@ -17,4 +17,17 @@ class FueletBiometricAndroid {
       'encrypted': encrypted,
     });
   }
+
+  static Future<void> delete(String key) async {
+    return await _channel.invokeMethod('delete', {
+      'key': key,
+    });
+  }
+
+  static Future<bool> exists(String key) async {
+    return await _channel.invokeMethod<bool>('exists', {
+          'key': key,
+        }) ??
+        false;
+  }
 }
