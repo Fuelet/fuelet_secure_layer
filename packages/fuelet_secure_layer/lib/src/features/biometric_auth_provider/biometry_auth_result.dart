@@ -3,4 +3,5 @@ enum BiometryAuthResult {
   skipped,
   resetCompleted,
   tryAgainLater,
+  wrongPassword,
 }

@@ -87,11 +87,16 @@ class PasswordManager {
 
   Future<BiometryAuthResult> storePasswordForBiometry(String password) async {
     final passwordString = await _secureStorage.read(key: _passwordKey);
+    
     if (passwordString == null) {
         await _biometryAuthProvider.reset();
         return BiometryAuthResult.resetCompleted;
     }
-    _validatePassword(passwordString, password);
+    final isPasswordValid = await _validatePassword(passwordString, password);
+    if (!isPasswordValid) {
+      return BiometryAuthResult.wrongPassword;
+    }
+  
     return await _biometryAuthProvider.store(password);
   }
 
