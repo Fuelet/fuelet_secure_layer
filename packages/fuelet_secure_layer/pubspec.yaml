@@ -61,3 +61,8 @@ dev_dependencies:
   json_serializable: ^6.6.1
 
 flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.fuelet.fuelet_secure_layer
+        pluginClass: FueletBiometricAndroidPlugin

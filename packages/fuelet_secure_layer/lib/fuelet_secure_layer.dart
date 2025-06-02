@@ -82,3 +82,4 @@ export 'src/features/wallet_import/entity/wallet_import_typedef.dart';
 export 'src/model/export.dart';
 export 'src/utils/string_utils.dart';
 export 'src/utils/wallet_address_converter.dart';
+export 'src/features/biometric_auth_provider/biometry_auth_result.dart';

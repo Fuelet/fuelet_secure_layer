@@ -4,6 +4,8 @@ import 'package:aes256gcm/aes256gcm.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
+import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometric_auth_provider.dart';
+import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometry_auth_result.dart';
 import 'package:fuelet_secure_layer/src/features/password/password_management_exception.dart';
 import 'package:fuelet_secure_layer/src/features/session_storage/session_storage_password_manager.dart';
 
@@ -38,19 +40,16 @@ void validatePassword(String password) {
 
 String _hashPassword(String password) {
   final bytes = utf8.encode(password);
-
   return sha256.convert(bytes).toString();
 }
 
 Future<String> _createPasswordSecret(String password) {
   final passwordHash = _hashPassword(password);
-
   return Aes256Gcm.encrypt(_secretToEncrypt, passwordHash);
 }
 
 Future<String> _decryptPasswordSecret(String encryptedSecret, String password) {
   final passwordHash = _hashPassword(password);
-
   return Aes256Gcm.decrypt(encryptedSecret, passwordHash);
 }
 
@@ -67,61 +66,89 @@ class PasswordManager {
   final IAccountsPrivateDataRepository _privateDataRepository;
   final FlutterSecureStorage _secureStorage;
   final SessionStoragePasswordManager _sessionStoragePasswordManager;
+  final BiometryAuthProvider _biometryAuthProvider;
 
   PasswordManager(
     this._privateDataRepository,
     this._secureStorage,
     this._sessionStoragePasswordManager,
+    this._biometryAuthProvider,
   );
 
   Future<bool> get passwordExists async {
     final value = await _secureStorage.read(key: _passwordKey);
-
     return value != null;
   }
 
   Future<bool> get legacyPasscodeExists async {
     final value = await _secureStorage.read(key: _legacyPasscodeKey);
-
     return value != null;
+  }
+
+  Future<BiometryAuthResult> storePasswordForBiometry(String password) async {
+    final passwordString = await _secureStorage.read(key: _passwordKey);
+    
+    if (passwordString == null) {
+        await _biometryAuthProvider.reset();
+        return BiometryAuthResult.resetCompleted;
+    }
+    final isPasswordValid = await _validatePassword(passwordString, password);
+    if (!isPasswordValid) {
+      return BiometryAuthResult.wrongPassword;
+    }
+  
+    return await _biometryAuthProvider.store(password);
+  }
+
+  Future<BiometryAuthResult> authorizeBiometry() async {
+    return _biometryAuthProvider.authorize(
+      validatePassword: (password) async {
+        final stored = await _secureStorage.read(key: _passwordKey);
+        if (stored == null) {
+          return false;
+        }
+        return _validatePassword(stored, password);
+      },
+      setSessionPassword: (password) async {
+        await setSessionStoragePassword(password);
+      },
+    );
   }
 
   Future<void> setPassword(String password) async {
     validatePassword(password);
-    final secretToStore = await _createPasswordSecret(password);
-    await _secureStorage.write(key: _passwordKey, value: secretToStore);
+    final encrypted = await _createPasswordSecret(password);
+    await _secureStorage.write(key: _passwordKey, value: encrypted);
     await _secureStorage.delete(key: _legacyPasscodeKey);
-
-    await _sessionStoragePasswordManager.storeSessionStoragePassword(password);
+    await setSessionStoragePassword(password);
   }
+
+  Future<void> setSessionStoragePassword(String password) =>
+      _sessionStoragePasswordManager.storeSessionStoragePassword(password);
 
   Future<AuthorizationResponse> authorize(String input) async {
     final passwordString = await _secureStorage.read(key: _passwordKey);
     // If passwordString is null, it means that the user might be using the legacy passcode policy
     if (passwordString == null) {
-      final passcode = await _secureStorage.read(key: _legacyPasscodeKey);
-      if (passcode == null) {
-        return AuthorizationResponse.noPassword;
-      }
-      if (passcode == input) {
-        return AuthorizationResponse.correctLegacyPasscode;
-      }
-
-      return AuthorizationResponse.wrongLegacyPasscode;
+      final legacyPassword = await _secureStorage.read(key: _legacyPasscodeKey);
+      if (legacyPassword == null) return AuthorizationResponse.noPassword;
+      return legacyPassword == input
+          ? AuthorizationResponse.correctLegacyPasscode
+          : AuthorizationResponse.wrongLegacyPasscode;
     }
 
     if (await _validatePassword(passwordString, input)) {
-      await _sessionStoragePasswordManager.storeSessionStoragePassword(input);
+      await setSessionStoragePassword(input);
       return AuthorizationResponse.success;
     }
-
     return AuthorizationResponse.wrongPassword;
   }
 
   Future<void> resetPassword() async {
     await _privateDataRepository.clearData();
-    await _secureStorage.delete(key: _legacyPasscodeKey);
     await _secureStorage.delete(key: _passwordKey);
+    await _secureStorage.delete(key: _legacyPasscodeKey);
+    await _biometryAuthProvider.reset();
   }
 
   Future<bool> hasSessionPassword() async {
@@ -129,16 +156,14 @@ class PasswordManager {
       final password =
           await _sessionStoragePasswordManager.getSessionStoragePassword();
       final passwordString = await _secureStorage.read(key: _passwordKey);
-      if (passwordString == null) {
-        return false;
-      }
+      if (passwordString == null) return false;
       return await _validatePassword(passwordString, password);
-    } catch (e) {
+    } catch (_) {
       return false;
     }
   }
 
-  Future<void> resetSessionStoragePassword() {
-    return _sessionStoragePasswordManager.resetSessionStoragePassword();
+  Future<void> resetSessionStoragePassword() async {
+    await _sessionStoragePasswordManager.resetSessionStoragePassword();
   }
 }

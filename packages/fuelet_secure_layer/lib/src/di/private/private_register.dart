@@ -36,5 +36,22 @@ class PrivateSecureLayerRegister {
           _privateSecureLayerLocator<IAccountsPrivateDataRepository>(),
         ),
       );
+
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      _privateSecureLayerLocator.registerFactory<BiometryAuthProvider>(
+        () => IOSBiometricAuthProvider(
+          commonSecureLayerLocator<SecureEnclave>(),
+          secureStorage,
+        ),
+      );
+    } else if (defaultTargetPlatform == TargetPlatform.android) {
+      _privateSecureLayerLocator.registerFactory<BiometryAuthProvider>(
+        () => AndroidBiometricAuthProvider(secureStorage),
+      );
+    } else {
+      _privateSecureLayerLocator.registerFactory<BiometryAuthProvider>(
+        () => WebBiometricAuthProvider(),
+      );
+    }
   }
 }

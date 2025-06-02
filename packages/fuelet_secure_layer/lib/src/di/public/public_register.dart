@@ -9,6 +9,10 @@ import 'package:fuelet_secure_layer/src/features/account/repository/accounts_loc
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_local_repository_impl.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository_impl.dart';
+import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometric_auth_provider_impl/android_biometric_auth_provider.dart';
+import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometric_auth_provider.dart';
+import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometric_auth_provider_impl/ios_biometric_auth_provider.dart';
+import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometric_auth_provider_impl/web_biometric_auth_provider.dart';
 import 'package:fuelet_secure_layer/src/features/cloud_backup/repository/cloud_backup_repository_android_impl.dart';
 import 'package:fuelet_secure_layer/src/features/cloud_backup/repository/cloud_backup_repository_ios_impl.dart';
 import 'package:fuelet_secure_layer/src/features/cloud_backup/repository/cloud_backup_repository_web_impl.dart';
@@ -83,6 +87,7 @@ class PublicSecureLayerRegister {
           _privateSecureLayerLocator<IAccountsPrivateDataRepository>(),
           commonSecureLayerLocator<FlutterSecureStorage>(),
           _privateSecureLayerLocator<SessionStoragePasswordManager>(),
+          _privateSecureLayerLocator<BiometryAuthProvider>(),
         ),
       )
       ..registerSingleton<IAccountsLocalRepository>(
