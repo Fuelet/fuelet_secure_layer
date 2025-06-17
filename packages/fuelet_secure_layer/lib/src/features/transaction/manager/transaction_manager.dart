@@ -30,11 +30,13 @@ class TransactionManager {
   Future<String> sendTransaction({
     required String address,
     required String transactionRequestHexOrJson,
+    bool returnTransactionResponse = false
   }) async {
     final walletUnlocked = await _getWalletUnlocked(address);
 
     return walletUnlocked!.sendTransaction(
-        transactionRequestHexOrJson: transactionRequestHexOrJson);
+        transactionRequestHexOrJson: transactionRequestHexOrJson,
+        returnTransactionResponse: returnTransactionResponse);
   }
 
   Future<String> signMessage({
