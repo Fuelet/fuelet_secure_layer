@@ -85,19 +85,20 @@ class PasswordManager {
     return value != null;
   }
 
-  Future<BiometryAuthResult> storePasswordForBiometry(String password) async {
+  Future<BiometryAuthResult> storePasswordForBiometry() async {
     final passwordString = await _secureStorage.read(key: _passwordKey);
+    final sessionPassword = await _sessionStoragePasswordManager.getSessionStoragePassword();
     
     if (passwordString == null) {
         await _biometryAuthProvider.reset();
         return BiometryAuthResult.resetCompleted;
     }
-    final isPasswordValid = await _validatePassword(passwordString, password);
+    final isPasswordValid = await _validatePassword(passwordString, sessionPassword);
     if (!isPasswordValid) {
       return BiometryAuthResult.wrongPassword;
     }
-  
-    return await _biometryAuthProvider.store(password);
+
+    return await _biometryAuthProvider.store(sessionPassword);
   }
 
   Future<BiometryAuthResult> authorizeBiometry() async {
@@ -142,6 +143,10 @@ class PasswordManager {
       return AuthorizationResponse.success;
     }
     return AuthorizationResponse.wrongPassword;
+  }
+
+  Future<void> resetBiometry() async {
+    await _biometryAuthProvider.reset();
   }
 
   Future<void> resetPassword() async {
