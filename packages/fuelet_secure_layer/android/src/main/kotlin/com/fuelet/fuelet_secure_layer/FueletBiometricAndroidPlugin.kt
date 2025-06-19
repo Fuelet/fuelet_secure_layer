@@ -106,7 +106,7 @@ class FueletBiometricAndroidPlugin : FlutterPlugin, MethodChannel.MethodCallHand
             .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
             .setUserAuthenticationRequired(true)
             .setUserAuthenticationParameters(0, KeyProperties.AUTH_BIOMETRIC_STRONG)
-            .setInvalidatedByBiometricEnrollment(false)
+            .setInvalidatedByBiometricEnrollment(true)
             .build()
 
         keyGen.init(spec)

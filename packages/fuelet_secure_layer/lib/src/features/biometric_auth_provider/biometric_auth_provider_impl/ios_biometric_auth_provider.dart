@@ -30,7 +30,7 @@ class IOSBiometricAuthProvider implements BiometryAuthProvider {
         tag: kSecureEnclaveKey,
         options: [
           AccessControlOption.privateKeyUsage,
-          AccessControlOption.biometryAny,
+          AccessControlOption.biometryCurrentSet,
         ],
       ),
     );
