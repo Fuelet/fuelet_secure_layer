@@ -16,6 +16,7 @@ class AndroidBiometryErrorMapper {
   static const String errorNoBiometrics = '11'; // ERROR_NO_BIOMETRICS: No biometrics enrolled.
   static const String errorHwNotPresent = '12'; // ERROR_HW_NOT_PRESENT: No biometric hardware available on this device.
   static const String errorNoDeviceCredential = '14'; // ERROR_NO_DEVICE_CREDENTIAL: Device credential authentication required.
+  static const String cipherInitFailed = 'CIPHER_INIT_FAILED'; // CIPHER_INIT_FAILED: Cipher initialization failed.
 
   // Retryable error
   static const Set<String> _tryAgainCodes = {
@@ -29,6 +30,7 @@ class AndroidBiometryErrorMapper {
     errorHwNotPresent, // 11
     errorNoBiometrics, // 12
     errorNoDeviceCredential, // 14
+    cipherInitFailed,
   };
 
   Future<BiometryAuthResult> map({
