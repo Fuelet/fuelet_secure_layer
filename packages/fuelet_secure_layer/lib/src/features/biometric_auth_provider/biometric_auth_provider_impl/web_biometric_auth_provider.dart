@@ -16,7 +16,5 @@ class WebBiometricAuthProvider implements BiometryAuthProvider {
   }
 
   @override
-  Future<void> reset() async {
-    throw UnimplementedError();
-  }
+  Future<void> reset() async {}
 }
