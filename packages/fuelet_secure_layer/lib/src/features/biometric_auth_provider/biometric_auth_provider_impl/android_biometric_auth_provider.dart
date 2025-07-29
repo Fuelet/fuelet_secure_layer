@@ -73,7 +73,7 @@ class AndroidBiometricAuthProvider implements BiometryAuthProvider {
   @override
   Future<void> reset() async {
     await _secureStorage.delete(key: kBiometricPasswordKey);
-    FueletBiometricAndroid.delete(kAndroidKeyStoreKey);
+    await FueletBiometricAndroid.delete(kAndroidKeyStoreKey);
   }
 
   Future<BiometryAuthResult> _resetAndReturn() async {
