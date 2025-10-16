@@ -1,1 +1,0 @@
-enum SensitiveDataType { privateKey, seedPhrase }
