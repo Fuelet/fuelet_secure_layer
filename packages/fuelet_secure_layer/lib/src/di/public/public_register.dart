@@ -9,8 +9,8 @@ import 'package:fuelet_secure_layer/src/features/account/repository/accounts_loc
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_local_repository_impl.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository_impl.dart';
-import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometric_auth_provider_impl/android_biometric_auth_provider.dart';
 import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometric_auth_provider.dart';
+import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometric_auth_provider_impl/android_biometric_auth_provider.dart';
 import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometric_auth_provider_impl/ios_biometric_auth_provider.dart';
 import 'package:fuelet_secure_layer/src/features/biometric_auth_provider/biometric_auth_provider_impl/web_biometric_auth_provider.dart';
 import 'package:fuelet_secure_layer/src/features/cloud_backup/repository/cloud_backup_repository_android_impl.dart';
@@ -23,8 +23,6 @@ import 'package:fuelet_secure_layer/src/features/hardware_signer/presentation/ui
 import 'package:fuelet_secure_layer/src/features/hardware_signer/presentation/ui/l10n_show_sensitive_data_screen.dart';
 import 'package:fuelet_secure_layer/src/features/hardware_signer/presentation/ui/sensitive_data_type.dart';
 import 'package:fuelet_secure_layer/src/features/hardware_signer/presentation/ui/sensitive_data_widget.dart';
-import 'package:fuelet_secure_layer/src/features/hardware_signer/repository/hardware_signer_repository.dart';
-import 'package:fuelet_secure_layer/src/features/hardware_signer/service/wallet_connect_service.dart';
 import 'package:fuelet_secure_layer/src/features/network/manager/fuel_network_manager.dart';
 import 'package:fuelet_secure_layer/src/features/network/manager/fuel_network_manager_impl.dart';
 import 'package:fuelet_secure_layer/src/features/network/manager/network_manager.dart';
@@ -55,10 +53,8 @@ import '../../features/account/entity/address.dart';
 
 // In order to access _privateSecureLayerLocator
 part 'package:fuelet_secure_layer/src/di/private/private_register.dart';
-
 // In order to let SaveSensitiveDataScreen use _privateSecureLayerLocator
 part 'package:fuelet_secure_layer/src/features/hardware_signer/presentation/ui/save_sensitive_data_screen.dart';
-
 // In order to let ShowSensitiveDataScreen use _privateSecureLayerLocator
 part 'package:fuelet_secure_layer/src/features/hardware_signer/presentation/ui/show_sensitive_data_screen.dart';
 
@@ -97,25 +93,10 @@ class PublicSecureLayerRegister {
           secureLayerLocator<PasswordManager>(),
         )..init(),
       )
-      ..registerSingleton(
-        HardwareSignerRepository(
-          secureLayerLocator<IAccountsLocalRepository>(),
-          _privateSecureLayerLocator<IAccountsPrivateDataRepository>(),
-          secureLayerLocator<TPMService>(),
-        ),
-      )
       ..registerFactory<IWalletCreateRepository>(
         () => WalletCreateRepositoryImpl(
           secureLayerLocator<IAccountsLocalRepository>(),
           _privateSecureLayerLocator<IAccountsPrivateDataRepository>(),
-          secureLayerLocator<HardwareSignerRepository>(),
-        ),
-      )
-      ..registerFactory(
-        () => WalletConnectService(
-          secureLayerLocator<IAccountsLocalRepository>(),
-          _privateSecureLayerLocator<IAccountsPrivateDataRepository>(),
-          secureLayerLocator<HardwareSignerRepository>(),
         ),
       )
       ..registerLazySingleton(
