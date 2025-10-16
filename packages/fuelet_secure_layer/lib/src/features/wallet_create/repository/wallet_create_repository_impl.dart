@@ -3,18 +3,14 @@ import 'package:flutter_fuels/flutter_fuels.dart';
 import 'package:fuelet_secure_layer/fuelet_secure_layer.dart';
 import 'package:fuelet_secure_layer/src/features/account/entity/account_private_data.dart';
 import 'package:fuelet_secure_layer/src/features/account/repository/accounts_private_data_repository.dart';
-import 'package:fuelet_secure_layer/src/features/wallet_create/entity/contract_id.dart';
-import 'package:fuelet_secure_layer/src/utils/either_x.dart';
 
 class WalletCreateRepositoryImpl implements IWalletCreateRepository {
   final IAccountsLocalRepository _accountsRepository;
   final IAccountsPrivateDataRepository _accountsPrivateDataRepository;
-  final HardwareSignerRepository _hardwareSignerRepository;
 
   const WalletCreateRepositoryImpl(
     this._accountsRepository,
     this._accountsPrivateDataRepository,
-    this._hardwareSignerRepository,
   );
 
   void _captureAccountPrivateData(
@@ -184,53 +180,5 @@ class WalletCreateRepositoryImpl implements IWalletCreateRepository {
     } catch (err) {
       return const Left(WalletImportFailure.invalidAddress());
     }
-  }
-
-  @override
-  Future<(Account, ContractId)> createHSAccount({
-    required String name,
-    required GraphQLRepository graphQLRepository,
-    required String currentNetworkUrl,
-    required BlockchainNetwork network,
-  }) async {
-    final existingAccountPrivateData = await _accountsPrivateDataRepository
-        .getAccountPrivateData(_accountsRepository.selectedAccount!);
-    final recoveryPrivateKey = existingAccountPrivateData?.privateKey;
-    if (recoveryPrivateKey == null) {
-      throw Exception('Failed to get private key');
-    }
-
-    final createdHsInfo = (await _hardwareSignerRepository.createHardwareSigner(
-      recoveryPrivateKey,
-      graphQLRepository,
-      currentNetworkUrl,
-      network,
-    ))
-        .asRight();
-
-    if (createdHsInfo == null) {
-      throw Exception('createdHsInfo is null');
-    }
-
-    final b256Address = FuelWalletAddressConverter.b256StringFromBech32String(
-      createdHsInfo.bech32,
-    );
-    final account = Account(
-      fuelAddress: AccountAddress(
-        stringB256Address: b256Address.value,
-        bech32Address: createdHsInfo.bech32,
-      ),
-      createdAt: DateTime.now(),
-      hardwareSignerTag: createdHsInfo.tag,
-      name: name,
-    );
-
-    // TODO: temp solution, remove later
-    final privateData = AccountPrivateData(
-      privateKey: recoveryPrivateKey,
-      seedPhrase: null,
-    );
-    _captureAccountPrivateData(account, privateData);
-    return (account, createdHsInfo.contractId);
   }
 }
